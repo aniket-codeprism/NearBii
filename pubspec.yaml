@@ -68,6 +68,7 @@ dependency_overrides:
   firebase_core_platform_interface: 4.5.1
 
 dev_dependencies:
+  dependency_validator: ^3.0.0
   flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter
