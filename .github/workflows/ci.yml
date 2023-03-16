@@ -14,8 +14,8 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: "12.x"
-      - uses: subosito/flutter-action@v2
-      - run: git show-ref
+      # - uses: subosito/flutter-action@v2
+      - run: git branch
       # - run: flutter pub get
       # - run: flutter build apk --no-sound-null-safety
       # - uses: actions/upload-artifact@v1
