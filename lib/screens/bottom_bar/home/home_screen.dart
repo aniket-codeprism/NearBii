@@ -694,51 +694,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SearchVendor(category)));
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Hero(
-                                tag: "searchIcon",
-                                child: Icon(
-                                  Icons.search,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ).pOnly(left: 5, right: 5),
-                            TextField(
-                              enabled: false,
-                              decoration: kTextFieldDecoration.copyWith(
-                                  hintText: '   Get Your Vendors NearBii',
-                                  hintStyle: const TextStyle(fontSize: 14)),
-                              onChanged: (value) {},
-                              onEditingComplete: () {},
-                            ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: SizedBox(
-                                height: 30,
-                                width: 50,
-                                child: AvatarGlow(
-                                    glowColor: Colors.amber,
-                                    duration:
-                                        const Duration(milliseconds: 2000),
-                                    repeat: true,
-                                    repeatPauseDuration:
-                                        const Duration(milliseconds: 100),
-                                    endRadius: 100,
-                                    child: Icon(Icons.mic_off)),
-                              ),
-                            ),
-                          ],
-                        ).px8(),
-                      ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Column(
@@ -760,6 +715,56 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Color(0xFF929292),
                               ),
                             ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        SearchVendor(category)));
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Hero(
+                                      tag: "searchIcon",
+                                      child: Icon(
+                                        Icons.search,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ).pOnly(left: 5, right: 5),
+                                  TextField(
+                                    enabled: false,
+                                    decoration: kTextFieldDecoration.copyWith(
+                                        contentPadding:
+                                            EdgeInsets.only(left: 30),
+                                        hintText: 'Get Your Vendors NearBii',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 14)),
+                                    onChanged: (value) {},
+                                    onEditingComplete: () {},
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 50,
+                                      child: AvatarGlow(
+                                          glowColor: Colors.amber,
+                                          duration: const Duration(
+                                              milliseconds: 2000),
+                                          repeat: true,
+                                          repeatPauseDuration:
+                                              const Duration(milliseconds: 100),
+                                          endRadius: 100,
+                                          child: Icon(Icons.mic_off)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ).pOnly(top: 10),
+
                             //services
                             Padding(
                               padding:
