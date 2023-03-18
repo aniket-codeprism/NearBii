@@ -80,7 +80,8 @@ class _SearchBarState extends State<SearchBar> {
           TextField(
             controller: searchController,
             decoration: kTextFieldDecoration.copyWith(
-                hintText: '   Search',
+                contentPadding: const EdgeInsets.only(left: 30),
+                hintText: 'Search',
                 hintStyle: const TextStyle(fontSize: 14)),
             onChanged: (value) {
               if (widget.onTypeSearch) {
@@ -95,7 +96,7 @@ class _SearchBarState extends State<SearchBar> {
             },
           ),
           Align(
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.centerRight,
             child: SizedBox(
               height: 30,
               width: 50,

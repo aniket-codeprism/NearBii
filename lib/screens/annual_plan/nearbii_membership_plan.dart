@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
+import 'package:nearbii/services/case_search_generator.dart';
 import 'package:nearbii/services/setUserMode.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,7 +64,17 @@ class _NearBiiMembershipPlanScreenState
       var imageUrl = await snapshot.ref.getDownloadURL();
 
       widget.businessDetailData["businessImage"] = imageUrl;
-      print(imageUrl);
+      List<String> cases = [];
+      cases.add(widget.businessDetailData["businessPinCode"]);
+      cases.add(widget.businessDetailData["name"]);
+      cases.add(widget.businessDetailData["bussinesDesc"]);
+      cases.add(widget.businessDetailData["businessName"]);
+      cases.add(widget.businessDetailData["businessMobileNumber"]);
+      cases.add(widget.businessDetailData["businessCity"]);
+      cases.add(widget.businessDetailData["businessCat"]);
+      cases.add(widget.businessDetailData["businessAddress"]);
+      var generateCases = generateCaseSearches(cases);
+      widget.businessDetailData["caseSearch"] = cases;
 
       await db
           .collection("vendor")
@@ -218,7 +229,7 @@ class _NearBiiMembershipPlanScreenState
         ),
       ),
       body: paymen
-          ? paymentDone()
+          ? const paymentDone()
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 34),

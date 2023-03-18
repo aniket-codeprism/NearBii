@@ -25,7 +25,7 @@ Widget getEventByDate(
           .snapshots()
           .handleError((error) {
             return Container(
-              child: SizedBox(
+              child: const SizedBox(
                 child: Text("Nothing to Show"),
               ),
             );
@@ -36,7 +36,7 @@ Widget getEventByDate(
             child: CircularProgressIndicator(),
           );
         }
-        if (snapshot.hasData && snapshot.data!.docs.length == 0) {
+        if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
           print(snapshot.data!.docs);
           return Container(
             child: const SizedBox(
@@ -85,7 +85,7 @@ Widget getEventByDate(
 
         return count != 0
             ? Container(
-                padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
                 height: height - 100,
                 width: MediaQuery.of(context).size.width,
                 child: SizedBox(
@@ -97,7 +97,7 @@ Widget getEventByDate(
                       itemBuilder: (context, index) {
                         return messageWidgets[index];
                       },
-                      separatorBuilder: (context, index) => SizedBox(
+                      separatorBuilder: (context, index) => const SizedBox(
                         width: 15,
                       ),
                     ),
@@ -105,7 +105,7 @@ Widget getEventByDate(
                 ),
               )
             : Container(
-                padding: EdgeInsets.only(top: 120),
+                padding: const EdgeInsets.only(top: 120),
                 alignment: Alignment.center,
                 child: Text(
                   "No Event Found In This Date",
@@ -120,7 +120,7 @@ Widget getEventByDate(
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         width: 30,
         height: 30,
         child: CircularProgressIndicator(),
@@ -132,7 +132,7 @@ Widget getEventByDate(
 Widget eventBox(BuildContext context, String title, int startDate, String time,
     String addr, String img) {
   return Container(
-    padding: EdgeInsets.only(top: 25),
+    padding: const EdgeInsets.only(top: 25),
     child: Material(
       elevation: 1,
       color: Colors.white,
@@ -162,7 +162,7 @@ Widget eventBox(BuildContext context, String title, int startDate, String time,
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 8, bottom: 11),
+                    padding: const EdgeInsets.only(top: 8, bottom: 11),
                     child: Row(
                       children: [
                         Icon(
@@ -200,7 +200,7 @@ Widget eventBox(BuildContext context, String title, int startDate, String time,
                         size: 20,
                         color: kDividerColor,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
@@ -216,11 +216,11 @@ Widget eventBox(BuildContext context, String title, int startDate, String time,
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Container(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(5),
                   bottomRight: Radius.circular(5),
