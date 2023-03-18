@@ -44,7 +44,7 @@ class _SearchVendorState extends State<SearchVendor> {
 
     pos ??= await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
     getVendors();
   }
 
@@ -163,10 +163,11 @@ class _SearchVendorState extends State<SearchVendor> {
     } else {
       moreData = false;
     }
-    if (this.mounted)
+    if (mounted) {
       setState(() {
         searching = false;
       });
+    }
   }
 
   sort() {
@@ -237,6 +238,8 @@ class _SearchVendorState extends State<SearchVendor> {
                         onChanged: ((value) {
                           if (value == null) return;
                           city = value;
+                          lastDocument = null;
+                          vendorList = [];
                           getVendors();
                         }),
                         //show selected item\
