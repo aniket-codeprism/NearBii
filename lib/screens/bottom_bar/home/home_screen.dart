@@ -148,30 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   late DateTime end;
-  final itemImagesName = [
-    'B2B',
-    'Doctor',
-    'Travel',
-    'Beauty',
-    'Education',
-    'Consultant',
-    'Rent &\nHire',
-    'Interior\ndesigner',
-    'Repairs &\nServices',
-    'Home\nServices'
-  ];
-  final itemImage = [
-    'assets/icons/handshake.png',
-    'assets/images/services/doctor.png',
-    'assets/images/services/travel.png',
-    'assets/images/services/beauty.png',
-    'assets/images/services/education.png',
-    'assets/images/services/consultant.png',
-    'assets/images/services/rent.png',
-    'assets/images/services/interior.png',
-    'assets/images/services/repairservices.png',
-    'assets/images/services/homeservices.png'
-  ];
 
   _gotoService(String data) {
     Navigator.push(

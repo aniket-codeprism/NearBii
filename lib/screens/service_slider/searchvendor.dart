@@ -76,9 +76,10 @@ class _SearchVendorState extends State<SearchVendor> {
     QuerySnapshot<Map<String, dynamic>> snapshot = await snap.limit(5).get();
     print(snapshot.size);
     if (snapshot.size > 0) {
+      moreData = true;
+      setState(() {});
       lastDocument = snapshot.docs.last;
       for (var ele in snapshot.docs) {
-        moreData = true;
         var vendor = VendorModel.fromMap(ele.data());
         // if ((vendor.businessCat
         //             .toString()
@@ -162,6 +163,7 @@ class _SearchVendorState extends State<SearchVendor> {
       }
     } else {
       moreData = false;
+      setState(() {});
     }
     if (mounted) {
       setState(() {

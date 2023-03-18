@@ -27,13 +27,6 @@ class _EventScreenState extends State<EventScreen> {
   int selectedIndex = 0;
   final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   final events = ['Concert', 'Art', 'Sports', 'Education', 'Food'];
-  final eventIcons = [
-    Image.asset('assets/images/events/concert.png'),
-    Image.asset('assets/images/events/arts.png'),
-    Image.asset('assets/images/events/sports.png'),
-    Image.asset('assets/images/events/education.png'),
-    Image.asset('assets/images/events/food.png'),
-  ];
 
   int dateStartIndex = 0;
   int dateWeekDay = 0;
@@ -42,9 +35,9 @@ class _EventScreenState extends State<EventScreen> {
   List<String> weekDayList = [];
   List<DateTime> weekFullDate = [];
 
-  String userLocation = "";
+  String city = "";
 
-  var controller = new ScrollController();
+  var controller = ScrollController();
   var pos;
   @override
   void initState() {
@@ -59,11 +52,11 @@ class _EventScreenState extends State<EventScreen> {
   }
 
   Future<void> getLocation() async {
-    userLocation = await getcurrentCityFromLocation();
+    city = await getcurrentCityFromLocation();
     pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   void getDates() {
@@ -204,7 +197,7 @@ class _EventScreenState extends State<EventScreen> {
                   ),
                 ),
                 //all events
-                getEventCatList(context, pos, userLocation),
+                getEventCatList(context, pos, city),
                 Row(
                   children: [
                     Text(
@@ -247,7 +240,11 @@ class _EventScreenState extends State<EventScreen> {
                 ),
 
                 if (pos != null)
-                  getNearEvent(context, userLocation, height, controller, pos),
+                  getNearEvent(
+                      city: city,
+                      height: height,
+                      controller: controller,
+                      pos: pos),
               ],
             ),
           ).pOnly(top: 20),
