@@ -91,6 +91,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         });
       }
     }
+    FirebaseFirestore.instance.settings.persistenceEnabled;
   }
 
   @override

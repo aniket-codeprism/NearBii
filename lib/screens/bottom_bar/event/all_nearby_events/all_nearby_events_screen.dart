@@ -344,6 +344,7 @@ class _AllNearbyEventsScreenState extends State<AllNearbyEventsScreen> {
       snap = snap.startAfterDocument(lastDocument!);
     }
     if (query.isNotEmptyAndNotNull) {
+      print(query);
       snap = snap.where("caseSearch", arrayContains: query);
     }
     QuerySnapshot<Map<String, dynamic>> snapshot = await snap.limit(5).get();

@@ -99,6 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
       var b =
           await FirebaseFirestore.instance.collection('User').doc(uid).get();
       Notifcheck.userDAta = b.data()!;
+      log(b.metadata.isFromCache.toString(), name: "cache");
+      log(FirebaseFirestore.instance.settings.persistenceEnabled.toString(),
+          name: "cacheEnabled");
       setState(() {
         print('name ${Notifcheck.userDAta!['name']}');
         name = Notifcheck.userDAta!['name'];

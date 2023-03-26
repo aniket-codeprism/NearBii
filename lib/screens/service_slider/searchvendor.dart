@@ -212,7 +212,7 @@ class _SearchVendorState extends State<SearchVendor> {
               ).pOnly(top: y / 32, left: y / 32, bottom: y / 32),
               SearchBar(
                 search: search,
-                onTypeSearch: true,
+                // onTypeSearch: true,
                 val: "",
               ).px16(),
               Row(
