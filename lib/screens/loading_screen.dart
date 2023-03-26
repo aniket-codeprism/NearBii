@@ -1,18 +1,13 @@
 // ignore_for_file: unnecessary_new
 
 import 'dart:async';
-import 'dart:ui';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/authentication/signin_screen.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/screens/bottom_bar/permissiondenied_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -66,11 +61,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
       try {
         await Geolocator.openLocationSettings();
         Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-          return PermissionDenied();
+          return const PermissionDenied();
         })));
-      } on Error catch (e) {
+      } on Error {
         Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-          return PermissionDenied();
+          return const PermissionDenied();
         })));
         // TODO
       }
@@ -84,10 +79,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
       }
       if (permission == LocationPermission.always ||
           permission == LocationPermission.whileInUse) {
-        await Future.delayed(Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 3));
         await Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: ((context) {
-          return MasterPage(
+          return const MasterPage(
             currentIndex: 0,
           );
         })), (route) => false);
