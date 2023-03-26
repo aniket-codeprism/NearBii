@@ -202,7 +202,8 @@ Future<Resource?> signInWithFacebook(BuildContext context) async {
 class LoginSignUpScreen extends StatefulWidget {
   final bool loginState;
 
-  const LoginSignUpScreen({Key? key, required this.loginState})
+  const LoginSignUpScreen(
+      {Key? key, required this.loginState, required String referalcode})
       : super(key: key);
 
   @override
