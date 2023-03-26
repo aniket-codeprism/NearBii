@@ -1,11 +1,8 @@
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/Model/vendormodel.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/authentication/isUser.dart';
 import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
 import 'package:nearbii/screens/vendor/vendorHome.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -57,7 +54,7 @@ class _ScanScreenState extends State<ScanScreen> {
     controller.resumeCamera();
     controller.scannedDataStream.listen((scanData) {
       setState(() {
-        result = scanData.code as String?;
+        result = scanData.code;
         qrScanState = false;
         //getVendor(scanData.code);
 
@@ -76,7 +73,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Widget QRCodeScaner(context) {
     return Container(
-      color: Color.fromARGB(132, 0, 0, 0),
+      color: const Color.fromARGB(132, 0, 0, 0),
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
       child: Center(
@@ -91,14 +88,14 @@ class _ScanScreenState extends State<ScanScreen> {
               onQRViewCreated: _onQRViewCreated,
             ),
             Container(
-              margin: EdgeInsets.only(top: 150),
+              margin: const EdgeInsets.only(top: 150),
               child: InkWell(
                   onTap: () {
                     setState(() {
                       qrScanState = false;
                     });
                   },
-                  child: Icon(
+                  child: const Icon(
                     Icons.close,
                     color: Colors.white,
                     size: 30,
@@ -147,7 +144,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             ],
                           )
                         : Container(),
-                    Text(result != null ? result : ""),
+                    Text(result ?? ""),
                     GestureDetector(
                       onTap: () => setState(() {
                         qrScanState = true;
@@ -184,7 +181,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                   ],
@@ -225,12 +222,10 @@ class _ScanScreenState extends State<ScanScreen> {
               .substring(0, 20))
           .get()
           .then((value) {
-        if (value != null) {
-          setState(() {
-            showQR = true;
-            name = value.get("businessName");
-          });
-        }
+        setState(() {
+          showQR = true;
+          name = value.get("businessName");
+        });
       }).catchError((onError) {});
     } else {
       setState(() {

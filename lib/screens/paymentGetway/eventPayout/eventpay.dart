@@ -4,14 +4,14 @@ import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class EventPayment extends StatefulWidget {
-  EventPayment({Key? key}) : super(key: key);
+  const EventPayment({Key? key}) : super(key: key);
 
   @override
   State<EventPayment> createState() => _EventPaymentState();
 }
 
 class _EventPaymentState extends State<EventPayment> {
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     updateTransatcion(

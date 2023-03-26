@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearbii/Model/notifStorage.dart';
-import 'package:nearbii/Model/vendormodel.dart';
 
 sendNotiicationByCity(String title, String city, String id, String type) async {
   const postUrl = 'https://fcm.googleapis.com/fcm/send';
@@ -18,7 +16,7 @@ sendNotiicationByCity(String title, String city, String id, String type) async {
 
   final data = {
     "notification": {
-      "body": "New Event In Your City By ${title}",
+      "body": "New Event In Your City By $title",
       "title": title
     },
     "priority": "high",
@@ -99,7 +97,7 @@ sendNotiicationAd(String title, String image) async {
   const postUrl = 'https://fcm.googleapis.com/fcm/send';
   const token =
       'AAAACt0GUvs:APA91bGNgTvPF7QExy-2kgfQlC2ghq1MwC4n2mq4EAgwc1NJtXghvhsQN63_xLaUP3SfHiSVyev3VTbyFwJRV9_gVhmjhKoyo-LmfF_Zat7nDKDHTS4SdCm98aEq9tb2WHPLVI8C4cES';
-  String toParams = "/topics/city_" + "ADS";
+  String toParams = "/topics/city_" "ADS";
 
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
   final data = {
@@ -146,13 +144,13 @@ sendNotificationWallet(String uidd, double amount, String s) async {
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
   final data = {
     "notification": {
-      "body": "${amount} Wallet Points ${s}",
-      "title": "${amount} Wallet Points ${s}"
+      "body": "$amount Wallet Points $s",
+      "title": "$amount Wallet Points $s"
     },
     "priority": "high",
     "data": {
       "click_action": "FLUTTER_NOTIFICATION_CLICK",
-      "title": "${amount} Wallet Points ${s}",
+      "title": "$amount Wallet Points $s",
       "amount": amount,
       "vendorUID": uid,
       "type": "wallet",

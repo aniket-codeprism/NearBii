@@ -11,7 +11,7 @@ import '../../constants.dart';
 
 Widget getAllEvents(double height, String query, String city, pos) {
   try {
-    var _firestore;
+    Query<Map<String, dynamic>> _firestore;
     if (city != "All India") {
       _firestore = FirebaseFirestore.instance
           .collection('Events')
@@ -26,7 +26,7 @@ Widget getAllEvents(double height, String query, String city, pos) {
         return SizedBox(
           width: 30,
           height: 30,
-          child: CircularProgressIndicator(),
+          child: const CircularProgressIndicator(),
         );
       }),
       builder: (context, snapshot) {
@@ -193,7 +193,7 @@ Widget eventBox(context, String title, int startDate, String time, String addr,
                   ),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.social_distance,
                         color: Colors.grey,
                         size: 15,
@@ -213,7 +213,7 @@ Widget eventBox(context, String title, int startDate, String time, String addr,
             Container(
               width: 100,
               height: 100,
-              padding: EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 10),
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(5),

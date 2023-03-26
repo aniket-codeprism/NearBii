@@ -20,7 +20,7 @@ class _NotificationSettingsScreenState
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -55,7 +55,7 @@ class _NotificationSettingsScreenState
                   //new business
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "New Businesses",
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
@@ -63,7 +63,7 @@ class _NotificationSettingsScreenState
                           color: Colors.black,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       CustomSwitch(
                         onTap: () {},
                         isActive: true,
@@ -77,7 +77,7 @@ class _NotificationSettingsScreenState
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: Row(
                       children: [
-                        Text(
+                        const Text(
                           "New Features of NearBii",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -85,7 +85,7 @@ class _NotificationSettingsScreenState
                             color: Colors.black,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         CustomSwitch(
                           onTap: () {},
                           isActive: true,
@@ -98,7 +98,7 @@ class _NotificationSettingsScreenState
                   //trending
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "Trending on NearBii",
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
@@ -106,7 +106,7 @@ class _NotificationSettingsScreenState
                           color: Colors.black,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       CustomSwitch(
                         onTap: () {},
                         isActive: true,
@@ -115,13 +115,13 @@ class _NotificationSettingsScreenState
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   //similar businesses
                   Row(
                     children: [
-                      Text(
+                      const Text(
                         "Similar Businesses",
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
@@ -129,7 +129,7 @@ class _NotificationSettingsScreenState
                           color: Colors.black,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       InkWell(
                         onTap: () {
                           setState(() {

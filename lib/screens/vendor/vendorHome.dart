@@ -7,7 +7,7 @@ import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
 
 class vendorHome extends StatefulWidget {
   final String id;
-  vendorHome({Key? key, required this.id}) : super(key: key);
+  const vendorHome({Key? key, required this.id}) : super(key: key);
 
   @override
   State<vendorHome> createState() => _vendorHomeState();

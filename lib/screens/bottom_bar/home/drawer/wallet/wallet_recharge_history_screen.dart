@@ -34,7 +34,7 @@ class _WalletRechargeHistoryScreenState
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(

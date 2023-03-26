@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
-import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
 import 'package:nearbii/screens/vendor/vendorHome.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../constants.dart';
 
@@ -21,7 +17,7 @@ Widget getOffersByFilter(BuildContext context, String cat, int off) {
           .snapshots()
           .handleError((error) {
         return Container(
-          child: SizedBox(
+          child: const SizedBox(
             width: 30,
             height: 30,
             child: CircularProgressIndicator(),
@@ -35,11 +31,11 @@ Widget getOffersByFilter(BuildContext context, String cat, int off) {
           );
         }
 
-        if (snapshot.data?.docs.length == 0) {
-          return const Center(
-            child: Text("No Offers Found"),
-          );
-        }
+        // if (snapshot.data?.docs.isEmpty) {
+        //   return const Center(
+        //     child: Text("No Offers Found"),
+        //   );
+        // }
 
         List<Widget> messageWidgets = snapshot.data!.docs.map<Widget>((m) {
           final data = m.data as dynamic;
@@ -66,7 +62,7 @@ Widget getOffersByFilter(BuildContext context, String cat, int off) {
         }).toList();
 
         return Container(
-          padding: EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: 10),
           child: SizedBox(
             height: height - 200,
             child: Padding(
@@ -77,7 +73,7 @@ Widget getOffersByFilter(BuildContext context, String cat, int off) {
                 itemBuilder: (context, index) {
                   return messageWidgets[index];
                 },
-                separatorBuilder: (context, index) => SizedBox(
+                separatorBuilder: (context, index) => const SizedBox(
                   width: 15,
                 ),
               ),
@@ -89,7 +85,7 @@ Widget getOffersByFilter(BuildContext context, String cat, int off) {
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         width: 30,
         height: 30,
         child: CircularProgressIndicator(),
@@ -104,7 +100,7 @@ Widget offerBox(
     child: Card(
       elevation: 4,
       child: Container(
-          padding: EdgeInsets.only(top: 25),
+          padding: const EdgeInsets.only(top: 25),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 29),
             child: Stack(
@@ -133,7 +129,7 @@ Widget offerBox(
                     width: MediaQuery.of(context).size.width - 210,
                     decoration: BoxDecoration(
                       color: kSignInContainerColor,
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(15),
                         bottomRight: Radius.circular(15),
                       ),
@@ -145,7 +141,7 @@ Widget offerBox(
                         children: [
                           Text(
                             title,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 20,
                               color: Colors.white,
@@ -153,7 +149,7 @@ Widget offerBox(
                           ),
                           Text(
                             subtitle,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
                               color: Colors.white,
@@ -169,7 +165,7 @@ Widget offerBox(
                   left: 0,
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.white,
                     ),
                     child: Padding(
@@ -186,10 +182,10 @@ Widget offerBox(
                               color: kLoadingScreenTextColor,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 23,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_forward_ios,
                             size: 16,
                           ),

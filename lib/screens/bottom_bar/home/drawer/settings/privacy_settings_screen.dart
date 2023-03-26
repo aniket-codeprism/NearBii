@@ -18,7 +18,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -60,10 +60,10 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                               Image.asset(
                                 'assets/icons/privacy_settings/friends 1.png',
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
-                              Text(
+                              const Text(
                                 "Everyone",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400,
@@ -73,7 +73,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                               ),
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
                           GestureDetector(
                             onTap: () {
                               setState(() {
@@ -92,7 +92,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       //only me
@@ -103,10 +103,10 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                               Image.asset(
                                 'assets/icons/privacy_settings/profile 1.png',
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
-                              Text(
+                              const Text(
                                 "Only Me",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w400,
@@ -116,7 +116,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                               ),
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
                           GestureDetector(
                             onTap: () {
                               setState(() {
@@ -156,7 +156,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                           borderRadius: BorderRadius.circular(5),
                           color: kSignInContainerColor,
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Save Changes",
                             style: TextStyle(

@@ -18,7 +18,7 @@ class _AdditionalInformationScreenState
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -72,7 +72,7 @@ class _AdditionalInformationScreenState
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Icon(
                                 Icons.keyboard_arrow_down_outlined,
                                 color: kAdvertiseContainerTextColor,
@@ -106,7 +106,7 @@ class _AdditionalInformationScreenState
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 Icon(
                                   Icons.calendar_today_outlined,
                                   color: kAdvertiseContainerTextColor,
@@ -139,7 +139,7 @@ class _AdditionalInformationScreenState
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Icon(
                                 Icons.calendar_today_outlined,
                                 color: kAdvertiseContainerTextColor,
@@ -173,7 +173,7 @@ class _AdditionalInformationScreenState
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 Icon(
                                   Icons.keyboard_arrow_down_outlined,
                                   color: kAdvertiseContainerTextColor,
@@ -206,7 +206,7 @@ class _AdditionalInformationScreenState
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Row(
                                 children: [
                                   Icon(
@@ -214,7 +214,7 @@ class _AdditionalInformationScreenState
                                     color: kAdvertiseContainerTextColor,
                                     size: 18,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 14,
                                   ),
                                   Icon(
@@ -243,7 +243,7 @@ class _AdditionalInformationScreenState
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           prefixIconColor: kHintTextColor,
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 13,
                           ),
@@ -280,7 +280,7 @@ class _AdditionalInformationScreenState
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         prefixIconColor: kHintTextColor,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 13,
                         ),
@@ -304,7 +304,7 @@ class _AdditionalInformationScreenState
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     //add photos
@@ -339,7 +339,7 @@ class _AdditionalInformationScreenState
                                   color: kAdvertiseContainerTextColor,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               ),
                               Text(
@@ -362,7 +362,7 @@ class _AdditionalInformationScreenState
               GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => PlansMainsScreen(),
+                    builder: (context) => const PlansMainsScreen(),
                   ),
                 ),
                 child: Container(
@@ -372,7 +372,7 @@ class _AdditionalInformationScreenState
                     color: kSignInContainerColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Make Payment",
                       style: TextStyle(
@@ -384,7 +384,7 @@ class _AdditionalInformationScreenState
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

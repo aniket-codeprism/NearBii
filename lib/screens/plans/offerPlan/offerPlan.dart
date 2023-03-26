@@ -6,21 +6,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
-import 'package:nearbii/screens/createEvent/paymentDone/paymentDone.dart';
-import 'package:nearbii/services/savePaymentRecipt/savePaymentRecipt.dart';
 import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart';
 
 class offerPlan extends StatefulWidget {
   final Map<String, dynamic> eventInfo;
   final String path;
-  offerPlan({required this.eventInfo, required this.path, Key? key})
+  const offerPlan({required this.eventInfo, required this.path, Key? key})
       : super(key: key);
 
   @override
@@ -120,7 +114,7 @@ class _offerPlanState extends State<offerPlan> {
 
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: ((context) {
-            return MasterPage(
+            return const MasterPage(
               currentIndex: 0,
             );
           })), (route) => false);
@@ -161,7 +155,7 @@ class _offerPlanState extends State<offerPlan> {
           appBar: AppBar(
             leading: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 35,
                 ),
                 GestureDetector(
@@ -222,7 +216,7 @@ class _offerPlanState extends State<offerPlan> {
                                     color: kLoadingScreenTextColor,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Text(
@@ -263,10 +257,10 @@ class _offerPlanState extends State<offerPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Publish your poster/post on the offer page. ",
                                         style: TextStyle(
@@ -288,10 +282,10 @@ class _offerPlanState extends State<offerPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
                                           "Notifications to the user within 3kms around you. ",
                                           style: TextStyle(
@@ -311,10 +305,10 @@ class _offerPlanState extends State<offerPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Redeem your Nearbii points for publishing offer or buy more via Nearbii wallet. ",
                                         style: TextStyle(
@@ -336,10 +330,10 @@ class _offerPlanState extends State<offerPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
                                           "Valid for 1 day",
                                           style: TextStyle(
@@ -365,14 +359,14 @@ class _offerPlanState extends State<offerPlan> {
                     },
                     child: Container(
                         width: MediaQuery.of(context).size.width * 0.80,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(20),
+                        margin: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(81, 182, 200, 1),
+                          color: const Color.fromRGBO(81, 182, 200, 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Make Payment",
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         )),

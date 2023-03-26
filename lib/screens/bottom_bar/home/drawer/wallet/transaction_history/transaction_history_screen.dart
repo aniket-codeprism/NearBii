@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/home/drawer/wallet/wallet_recharge_history_screen.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   final bool trans;
@@ -22,7 +20,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -50,7 +48,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                   color: kLoadingScreenTextColor,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               Container(
@@ -66,7 +64,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                     children: [
                       //start date label
                       Container(
-                        margin: EdgeInsets.only(top: 20),
+                        margin: const EdgeInsets.only(top: 20),
                         child: TextField(
                             controller: startDate,
                             decoration: InputDecoration(
@@ -89,11 +87,11 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                                       print("Date is not selected");
                                     }
                                   },
-                                  child: Icon(Icons.calendar_today)),
+                                  child: const Icon(Icons.calendar_today)),
                               hintText: "Event Start Date *",
-                              hintStyle: TextStyle(
+                              hintStyle: const TextStyle(
                                   color: Color.fromARGB(255, 203, 207, 207)),
-                              enabledBorder: OutlineInputBorder(
+                              enabledBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                 color: Color.fromARGB(173, 125, 209, 248),
                               )),
@@ -111,7 +109,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                               ),
                             )),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
 
@@ -133,7 +131,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
                               borderRadius: BorderRadius.circular(5),
                               color: kSignInContainerColor,
                             ),
-                            child: Center(
+                            child: const Center(
                               child: Text(
                                 "Get Statement",
                                 style: TextStyle(

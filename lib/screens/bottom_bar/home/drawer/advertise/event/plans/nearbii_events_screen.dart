@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -14,7 +13,7 @@ class NearBiiEventsScreen extends StatefulWidget {
 
 class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
   // static const platform = const MethodChannel("razorpay_flutter");
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     updateTransatcion(
@@ -90,7 +89,7 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -151,7 +150,7 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                                 color: kLoadingScreenTextColor,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             RichText(
@@ -213,10 +212,10 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Event visible to every user in the target city.",
                                     style: TextStyle(
@@ -237,10 +236,10 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Push notification to every user in the target city.",
                                       style: TextStyle(
@@ -260,10 +259,10 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Event visible in events window and category of event.",
                                     style: TextStyle(
@@ -284,10 +283,10 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Pay via payment gateway.",
                                       style: TextStyle(
@@ -307,10 +306,10 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Valid till end day of the event. ",
                                     style: TextStyle(
@@ -343,7 +342,7 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                     color: kSignInContainerColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Make Payment",
                       style: TextStyle(
@@ -355,7 +354,7 @@ class _NearBiiEventsScreenState extends State<NearBiiEventsScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

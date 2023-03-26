@@ -22,7 +22,7 @@ class _allEventByCatState extends State<allEventByCat> {
           appBar: AppBar(
             leading: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 35,
                 ),
                 GestureDetector(
@@ -36,7 +36,7 @@ class _allEventByCatState extends State<allEventByCat> {
               ],
             ),
           ),
-          body: Container(
+          body: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: SingleChildScrollView(
@@ -50,7 +50,7 @@ class _allEventByCatState extends State<allEventByCat> {
                     color: kLoadingScreenTextColor,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 getEventByCat(context, MediaQuery.of(context).size.height,

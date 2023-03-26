@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/screens/bottom_bar/event/allEventByCat.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../constants.dart';
 
@@ -15,7 +14,7 @@ Widget getEventCatList(BuildContext context, pos, String userLocation) {
           .snapshots()
           .handleError((error) {
         return Container(
-          child: SizedBox(
+          child: const SizedBox(
             width: 30,
             height: 30,
             child: CircularProgressIndicator(),
@@ -51,7 +50,7 @@ Widget getEventCatList(BuildContext context, pos, String userLocation) {
               itemBuilder: (context, index) {
                 return messageWidgets[index];
               },
-              separatorBuilder: (context, index) => SizedBox(
+              separatorBuilder: (context, index) => const SizedBox(
                 width: 15,
               ),
             ),
@@ -62,7 +61,7 @@ Widget getEventCatList(BuildContext context, pos, String userLocation) {
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         width: 30,
         height: 30,
         child: CircularProgressIndicator(),
@@ -95,7 +94,7 @@ Widget catbox(
               backgroundImage: NetworkImage(iconUrl),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 7,
           ),
           Text(

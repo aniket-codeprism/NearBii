@@ -17,7 +17,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -62,7 +62,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                                       DocumentSnapshot<Map<String, dynamic>>>
                                   snapshot) {
                             if (!snapshot.hasData) {
-                              return CircularProgressIndicator();
+                              return const CircularProgressIndicator();
                             }
                             var data = snapshot.data!.data();
                             return Html(data: data!["about"]);

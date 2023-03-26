@@ -16,7 +16,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(

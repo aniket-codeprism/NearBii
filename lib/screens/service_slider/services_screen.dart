@@ -8,7 +8,6 @@ import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
 
 import 'package:nearbii/screens/service_slider/more_services.dart';
 
-import 'package:nearbii/screens/service_slider/more_screen.dart';
 import 'package:nearbii/screens/service_slider/searchvendor.dart';
 
 import '../../constants.dart';
@@ -76,8 +75,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           if (catergor["title"]
                               .toString()
                               .toLowerCase()
-                              .contains(val.toString().toLowerCase()))
+                              .contains(val.toString().toLowerCase())) {
                             ServicesList.list[0].category.add(catergor);
+                          }
                         }
                       }
                     }
@@ -88,7 +88,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               const SizedBox(
                 height: 23,
               ),
-              Container(
+              SizedBox(
                 height: 15,
                 width: double.infinity,
                 child: ListView.builder(
@@ -122,7 +122,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 height: 28,
               ),
 
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: FutureBuilder(
                   future: getData(),

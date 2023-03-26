@@ -4,10 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
 import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../constants.dart';
@@ -103,7 +100,7 @@ Widget getOffers(BuildContext context, var pos, String city, String applied,
             if (difference <= limit) {
               return InkWell(
                   onTap: () async {
-                    Future.delayed(Duration(milliseconds: 5));
+                    Future.delayed(const Duration(milliseconds: 5));
                     await Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) {
                       return VendorProfileScreen(
@@ -157,7 +154,7 @@ Widget getOffers(BuildContext context, var pos, String city, String applied,
 class offerBox extends StatefulWidget {
   final data;
 
-  offerBox({Key? key, required this.data}) : super(key: key);
+  const offerBox({Key? key, required this.data}) : super(key: key);
 
   @override
   State<offerBox> createState() => _offerBoxState();
@@ -170,7 +167,7 @@ class _offerBoxState extends State<offerBox> {
       child: Card(
         elevation: 4,
         child: Container(
-            padding: EdgeInsets.only(top: 25),
+            padding: const EdgeInsets.only(top: 25),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 29),
               child: Stack(
@@ -197,9 +194,9 @@ class _offerBoxState extends State<offerBox> {
                     left: 1,
                     child: Container(
                       width: MediaQuery.of(context).size.width - 210,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color.fromARGB(115, 81, 182, 200),
-                        borderRadius: const BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topRight: Radius.circular(15),
                           bottomRight: Radius.circular(15),
                         ),
@@ -227,13 +224,13 @@ class _offerBoxState extends State<offerBox> {
                             ),
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.location_on,
                                   color: Color.fromARGB(133, 230, 32, 18),
                                 ),
                                 (widget.data["dis"].toString() + " Km")
                                     .text
-                                    .color(Color.fromARGB(142, 255, 255, 255))
+                                    .color(const Color.fromARGB(142, 255, 255, 255))
                                     .make(),
                               ],
                             )

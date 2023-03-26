@@ -4,6 +4,7 @@ Future<bool> isUser() async {
   SharedPreferences session = await SharedPreferences.getInstance();
   if (session.getString("type") == "User") {
     return true;
-  } else
+  } else {
     return false;
+  }
 }

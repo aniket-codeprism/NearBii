@@ -2020,7 +2020,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                                               .push(
                                                         MaterialPageRoute(
                                                           builder: (context) =>
-                                                              adsPlan(),
+                                                              const adsPlan(),
                                                         ),
                                                       ),
                                                       child: Row(

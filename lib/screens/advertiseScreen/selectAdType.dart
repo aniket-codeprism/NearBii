@@ -17,32 +17,32 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
     return Container(
       width: MediaQuery.of(context).size.width * 0.80,
       height: 120,
-      margin: EdgeInsets.only(top: 20),
-      padding: EdgeInsets.all(9),
+      margin: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.all(9),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           width: 1,
-          color: Color.fromARGB(173, 125, 209, 248),
+          color: const Color.fromARGB(173, 125, 209, 248),
         ),
       ),
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Color.fromRGBO(241, 246, 247, 1),
+              color: const Color.fromRGBO(241, 246, 247, 1),
               borderRadius: BorderRadius.circular(10),
             ),
             width: 110,
             height: 110,
-            child: Icon(Icons.add_outlined,
+            child: const Icon(Icons.add_outlined,
                 size: 60, color: Color.fromRGBO(196, 196, 196, 1)),
           ),
           Container(
-              margin: EdgeInsets.only(left: 10),
+              margin: const EdgeInsets.only(left: 10),
               child: Text(
                 text,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Color.fromARGB(255, 203, 207, 207), fontSize: 18),
               ))
         ],
@@ -59,7 +59,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
         appBar: AppBar(
           leading: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 45,
                 height: 20,
               ),
@@ -74,7 +74,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
             ],
           ),
         ),
-        body: Container(
+        body: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(
@@ -82,7 +82,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
             children: [
               Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.only(left: 20),
                 child: Text(
                   "Advertise Your Business!",
                   style: TextStyle(
@@ -92,7 +92,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Image.asset(
@@ -104,7 +104,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
                 onTap: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return AddEvent();
+                    return const AddEvent();
                   }));
                 },
                 child: myCard("Create Event"),
@@ -113,7 +113,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
                 onTap: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return AddEvent();
+                    return const AddEvent();
                   }));
                 },
                 child: myCard("Post Ad"),
@@ -122,7 +122,7 @@ class _SelectAdsScreenState extends State<SelectAdsScreen> {
                 onTap: () {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) {
-                    return PostOfferScreen();
+                    return const PostOfferScreen();
                   }));
                 },
                 child: myCard("Post Offer"),

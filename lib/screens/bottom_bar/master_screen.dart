@@ -30,7 +30,7 @@ class _MasterPageState extends State<MasterPage> {
   int selectedIndex = 0;
   final firestore = FirebaseFirestore.instance;
   _addServicesData() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     await firestore.collection('Services').get().then((value) {
       for (var docs in value.docs) {
         ServicesData data =
@@ -52,8 +52,9 @@ class _MasterPageState extends State<MasterPage> {
     if (!user) {
       var b =
           await FirebaseFirestore.instance.collection('vendor').doc(uid).get();
-      if (b.data() != null)
+      if (b.data() != null) {
         Notifcheck.currentVendor = VendorModel.fromMap(b.data()!);
+      }
     }
   }
 
@@ -61,7 +62,6 @@ class _MasterPageState extends State<MasterPage> {
   getcity() async {
     await CityList.getCities();
     setState(() {});
-    ;
   }
 
   @override
@@ -215,11 +215,11 @@ class _MasterPageState extends State<MasterPage> {
   @override
   Widget build(BuildContext context) {
     final screens = [
-      HomeScreen(),
-      EventScreen(),
-      OffersScreen(),
-      ScanScreen(),
-      ProfileScreen(),
+      const HomeScreen(),
+      const EventScreen(),
+      const OffersScreen(),
+      const ScanScreen(),
+      const ProfileScreen(),
     ];
     return WillPopScope(
       onWillPop: () async {
@@ -234,7 +234,7 @@ class _MasterPageState extends State<MasterPage> {
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               label: 'Home',
             ),
@@ -262,11 +262,11 @@ class _MasterPageState extends State<MasterPage> {
               ),
               label: 'Offers',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.qr_code_scanner_outlined),
               label: 'Scan',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person_outline_outlined),
               label: 'Profile',
             ),

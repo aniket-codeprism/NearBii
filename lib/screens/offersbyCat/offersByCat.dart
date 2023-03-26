@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/services/getOffers/getOffers.dart';
 import 'package:nearbii/services/getOffersbyFilter/getOffersByFilter.dart';
 
 class OffersByCatScreen extends StatefulWidget {
@@ -23,7 +22,7 @@ class _OffersByCatScreenState extends State<OffersByCatScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(

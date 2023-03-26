@@ -79,7 +79,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   ),
                   Column(
                     children: [
-                      Container(
+                      SizedBox(
                         height: 30,
                         width: 30,
                         child: Image.asset(
@@ -125,7 +125,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Container(
+                      SizedBox(
                         height: 18,
                         width: 18,
                         child: Image.network(

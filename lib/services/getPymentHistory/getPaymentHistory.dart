@@ -2,11 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../constants.dart';
@@ -26,7 +22,7 @@ Widget getPaymentHistory(
           .snapshots()
           .handleError((error) {
         return Container(
-          child: SizedBox(
+          child: const SizedBox(
             width: 30,
             height: 30,
             child: CircularProgressIndicator(),
@@ -54,7 +50,7 @@ Widget getPaymentHistory(
             child: ListView.separated(
                 itemCount: matter.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -103,7 +99,7 @@ Widget getPaymentHistory(
                     ],
                   );
                 },
-                separatorBuilder: (context, index) => Divider(
+                separatorBuilder: (context, index) => const Divider(
                       color: Colors.black,
                     )),
           ),
@@ -113,7 +109,7 @@ Widget getPaymentHistory(
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         child: Center(
           child: Text('Nothing to Show'),
         ),
@@ -141,7 +137,7 @@ Widget getPaymentHistoryByDate(
           .snapshots()
           .handleError((error) {
         return Container(
-          child: SizedBox(
+          child: const SizedBox(
             width: 30,
             height: 30,
             child: CircularProgressIndicator(),
@@ -175,7 +171,7 @@ Widget getPaymentHistoryByDate(
             child: ListView.separated(
                 itemCount: matter.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -228,7 +224,7 @@ Widget getPaymentHistoryByDate(
                     ],
                   );
                 },
-                separatorBuilder: (context, index) => Divider(
+                separatorBuilder: (context, index) => const Divider(
                       color: Colors.black,
                     )),
           ),
@@ -251,8 +247,8 @@ Widget historyBox(
     BuildContext context, String date, String reciptId, int amount) {
   return Container(
     width: MediaQuery.of(context).size.width,
-    padding: EdgeInsets.all(20),
-    color: Color.fromARGB(255, 190, 220, 245),
+    padding: const EdgeInsets.all(20),
+    color: const Color.fromARGB(255, 190, 220, 245),
     child: Column(
       children: [
         Row(
@@ -265,7 +261,7 @@ Widget historyBox(
                 color: kLoadingScreenTextColor,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Text(
               "done",
               style: TextStyle(
@@ -276,7 +272,7 @@ Widget historyBox(
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 3,
         ),
         Row(
@@ -289,7 +285,7 @@ Widget historyBox(
                 color: kWalletLightTextColor,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Text(
               "₹" + amount.toString(),
               style: TextStyle(

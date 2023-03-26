@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/authentication/isUser.dart';
 import 'package:nearbii/screens/bottom_bar/profile/user_profile_screen.dart';
 import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
@@ -41,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ? SafeArea(
             child: Scaffold(
               body: isUserProfile
-                  ? UserProfileScreen()
+                  ? const UserProfileScreen()
                   : VendorProfileScreen(
                       id: FirebaseAuth.instance.currentUser!.uid
                           .substring(0, 20),

@@ -18,7 +18,7 @@ class _StatementScreenState extends State<StatementScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -83,7 +83,7 @@ class _StatementScreenState extends State<StatementScreen> {
                                     color: kLoadingScreenTextColor,
                                   ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 Text(
                                   "Success",
                                   style: TextStyle(
@@ -94,12 +94,12 @@ class _StatementScreenState extends State<StatementScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 3,
                             ),
                             Row(
                               children: [
-                                Text(
+                                const Text(
                                   "Transaction ID: 42613",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
@@ -107,7 +107,7 @@ class _StatementScreenState extends State<StatementScreen> {
                                     color: Color(0xFF929292),
                                   ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 Text(
                                   "₹999",
                                   style: TextStyle(
@@ -121,7 +121,7 @@ class _StatementScreenState extends State<StatementScreen> {
                           ],
                         );
                       },
-                      separatorBuilder: (context, index) => SizedBox(
+                      separatorBuilder: (context, index) => const SizedBox(
                         height: 20,
                       ),
                     ),

@@ -22,7 +22,6 @@ import 'package:path/path.dart' as path;
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../../advertiseScreen/selectAdType.dart';
 
 bool isListBusiness = false;
 
@@ -45,7 +44,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         builder: (context) {
           return AlertDialog(
             content: Row(
-              children: [
+              children: const [
                 CircularProgressIndicator(),
                 SizedBox(
                   width: 10,
@@ -87,7 +86,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         Fluttertoast.showToast(msg: 'Uploaded');
 
         setState(() {});
-      } on FirebaseException catch (error) {
+      } on FirebaseException {
         // if (kDebugMode) {
         //   print(error);
         // }
@@ -111,11 +110,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  var data = null;
+  var data;
   Future<void> getUserData() async {
     data = Notifcheck.userDAta;
 
-    var b = await FirebaseFirestore.instance
+    var b = FirebaseFirestore.instance
         .collection('User')
         .doc(auth.currentUser?.uid.substring(0, 20))
         .snapshots()
@@ -703,7 +702,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.topRight,
-                                colors: [
+                                colors: const [
                                   Color(0x116C6464),
                                   Color(0xFFE7E7E7),
                                   Color(0x116C6464),
@@ -732,14 +731,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             child: Container(
               child: Wrap(
                 children: <Widget>[
-                  new ListTile(
+                  ListTile(
                       leading: const Icon(Icons.photo_library),
                       title: const Text('Gallery'),
                       onTap: () {
                         _selectProfileImageUpload("Gallery", image);
                         Navigator.of(context).pop();
                       }),
-                  new ListTile(
+                  ListTile(
                     leading: const Icon(Icons.photo_camera),
                     title: const Text('Camera'),
                     onTap: () {

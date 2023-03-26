@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ServiceCustomCard extends StatelessWidget {
@@ -52,13 +51,11 @@ class ServiceCustomCard extends StatelessWidget {
                   SizedBox(
                     width: 4,
                   ),
-                  Container(
+                  SizedBox(
                     height: 25,
                     width: 24,
                     child: Image.network(
-                      image != null
-                          ? image
-                          : 'https://firebasestorage.googleapis.com/v0/b/neabiiapp.appspot.com/o/services%2FPackers%20%26%20Movers%2Ftruck%201.png?alt=media&token=f977ec4b-febd-4458-835e-77d5905fd016',
+                      image ?? 'https://firebasestorage.googleapis.com/v0/b/neabiiapp.appspot.com/o/services%2FPackers%20%26%20Movers%2Ftruck%201.png?alt=media&token=f977ec4b-febd-4458-835e-77d5905fd016',
                       height: 19,
                       width: 19,
                       errorBuilder: (BuildContext context, Object exception,

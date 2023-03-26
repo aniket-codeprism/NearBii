@@ -18,7 +18,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -53,7 +53,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
               GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => AddEvent(),
+                    builder: (context) => const AddEvent(),
                   ),
                 ),
                 child: Container(
@@ -81,7 +81,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
                             color: kAdvertiseContainerTextColor,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 8.69,
                         ),
                         Text(
@@ -102,7 +102,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => adsPlan(),
+                      builder: (context) => const adsPlan(),
                     ),
                   ),
                   child: Container(
@@ -130,7 +130,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
                               color: kAdvertiseContainerTextColor,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8.69,
                           ),
                           Text(
@@ -150,7 +150,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
               GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => PostOfferScreen(),
+                    builder: (context) => const PostOfferScreen(),
                   ),
                 ),
                 child: Container(
@@ -178,7 +178,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
                             color: kAdvertiseContainerTextColor,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 8.69,
                         ),
                         Text(
@@ -194,7 +194,7 @@ class _AdvertiseScreenState extends State<AdvertiseScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

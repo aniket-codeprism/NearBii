@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/main.dart';
-import 'package:nearbii/screens/authentication/AuthenticationForm.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/screens/bottom_bar/permissiondenied_screen.dart';
 import 'package:nearbii/services/setUserMode.dart';
@@ -18,7 +16,7 @@ class OTP extends StatefulWidget {
   final String phone;
   final String name;
   final String password;
-  const OTP({required this.phone, this.name = 'Guest', this.password = 'fd'});
+  const OTP({super.key, required this.phone, this.name = 'Guest', this.password = 'fd'});
 
   @override
   _OTPState createState() => _OTPState();
@@ -35,7 +33,7 @@ class _OTPState extends State<OTP> {
       fontWeight: FontWeight.w400,
     ),
     decoration: BoxDecoration(
-      border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
+      border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
       borderRadius: BorderRadius.circular(20),
     ),
   );
@@ -55,7 +53,7 @@ class _OTPState extends State<OTP> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return PermissionDenied();
+        return const PermissionDenied();
       })));
       await Geolocator.openLocationSettings();
       // return Future.error('Location services are disabled.');
@@ -65,13 +63,13 @@ class _OTPState extends State<OTP> {
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return PermissionDenied();
+        return const PermissionDenied();
       })));
       return;
     }
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: ((context) {
-      return MasterPage(
+      return const MasterPage(
         currentIndex: 0,
       );
     })), (route) => false);
@@ -116,7 +114,7 @@ class _OTPState extends State<OTP> {
                       .doc(value.user!.uid.substring(0, 20))
                       .set(employeeDetails);
                   ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('Done')));
+                      .showSnackBar(const SnackBar(content: Text('Done')));
                   value.user!.updateDisplayName(widget.name);
                   data = employeeDetails;
                 }
@@ -162,7 +160,7 @@ class _OTPState extends State<OTP> {
           channelDescription: channel.description,
           color: Colors.blue,
           playSound: true,
-          styleInformation: BigTextStyleInformation(''),
+          styleInformation: const BigTextStyleInformation(''),
         ),
       ),
     );
@@ -200,7 +198,7 @@ class _OTPState extends State<OTP> {
         ),
         title: const Text(
           'Verify phone',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 19,
             color: Colors.black,
@@ -254,7 +252,7 @@ class _OTPState extends State<OTP> {
                       style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 13,
-                        color: const Color(0xFF676767),
+                        color: Color(0xFF676767),
                       ),
                       children: [
                         TextSpan(

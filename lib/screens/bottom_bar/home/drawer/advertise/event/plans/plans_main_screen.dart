@@ -27,9 +27,9 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
     'Get published on our offer page'
   ];
   final eventScreens = [
-    NearBiiEventsScreen(),
-    NearBiiAdsScreen(),
-    NearBiiOffersScreen(),
+    const NearBiiEventsScreen(),
+    const NearBiiAdsScreen(),
+    const NearBiiOffersScreen(),
   ];
 
   @override
@@ -40,7 +40,7 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -100,7 +100,7 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                                   color: Colors.white,
                                   child: plansImages[index],
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 Expanded(
@@ -136,8 +136,8 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                                                 color: kLoadingScreenTextColor,
                                               ),
                                             )
-                                          : SizedBox(),
-                                      SizedBox(
+                                          : const SizedBox(),
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                       index != 0
@@ -154,7 +154,7 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                                                         kLoadingScreenTextColor,
                                                   ),
                                                 ),
-                                                SizedBox(
+                                                const SizedBox(
                                                   width: 4,
                                                 ),
                                                 Image.asset(
@@ -221,8 +221,9 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                                               ? true
                                               : false;
                                       if (trueStateIndex > -1 &&
-                                          trueStateIndex < 3)
+                                          trueStateIndex < 3) {
                                         checkBoxState[trueStateIndex] = false;
+                                      }
                                       trueStateIndex = index;
                                     },
                                   );
@@ -234,7 +235,7 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                       ),
                     );
                   },
-                  separatorBuilder: (context, index) => SizedBox(
+                  separatorBuilder: (context, index) => const SizedBox(
                     height: 20.18,
                   ),
                 ),
@@ -256,7 +257,7 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                     color: kSignInContainerColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Select & Next",
                       style: TextStyle(
@@ -268,7 +269,7 @@ class _PlansMainsScreenState extends State<PlansMainsScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

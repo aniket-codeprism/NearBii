@@ -228,7 +228,7 @@ class _EventScreenState extends State<EventScreen> {
                       GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => AllNearbyEventsScreen(),
+                            builder: (context) => const AllNearbyEventsScreen(),
                           ),
                         ),
                         child: Row(

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../constants.dart';
@@ -18,7 +17,7 @@ Widget getVendorReview(BuildContext context, String uid) {
           .snapshots()
           .handleError((error) {
         return Container(
-          child: SizedBox(
+          child: const SizedBox(
             width: 30,
             height: 30,
             child: CircularProgressIndicator(),
@@ -43,12 +42,12 @@ Widget getVendorReview(BuildContext context, String uid) {
           padding: const EdgeInsets.only(top: 30, bottom: 20),
           child: ListView.separated(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: messageWidgets.length,
             itemBuilder: (context, index) {
               return messageWidgets[index];
             },
-            separatorBuilder: (context, index) => SizedBox(
+            separatorBuilder: (context, index) => const SizedBox(
               height: 34,
             ),
           ),
@@ -58,7 +57,7 @@ Widget getVendorReview(BuildContext context, String uid) {
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         width: 30,
         height: 30,
         child: CircularProgressIndicator(),
@@ -78,7 +77,7 @@ Widget userReview(String name, dynamic rating, String msg, String profile) {
             radius: 15,
             backgroundImage: NetworkImage(profile),
           ),
-          SizedBox(
+          const SizedBox(
             width: 9,
           ),
           Column(
@@ -104,7 +103,7 @@ Widget userReview(String name, dynamic rating, String msg, String profile) {
                       color: kLoadingScreenTextColor,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   RatingBar(
@@ -131,12 +130,12 @@ Widget userReview(String name, dynamic rating, String msg, String profile) {
                         color: kWalletLightTextColor,
                       ),
                     ),
-                    itemPadding: EdgeInsets.symmetric(horizontal: 0),
+                    itemPadding: const EdgeInsets.symmetric(horizontal: 0),
                     onRatingUpdate: (rating) {},
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               // Row(

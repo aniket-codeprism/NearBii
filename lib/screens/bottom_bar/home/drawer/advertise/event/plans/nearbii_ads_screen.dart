@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:nearbii/constants.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class NearBiiAdsScreen extends StatefulWidget {
   const NearBiiAdsScreen({Key? key}) : super(key: key);
@@ -17,7 +15,7 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -119,10 +117,10 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Appear on the top of list in your category. ",
                                     style: TextStyle(
@@ -143,10 +141,10 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Users around your area will get notified in message box. ",
                                       style: TextStyle(
@@ -166,10 +164,10 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Ad Visible for every user around 3kms in your category.",
                                     style: TextStyle(
@@ -190,10 +188,10 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Redeem your Nearbii points to advertise or buy more points via Nearbii wallet.",
                                       style: TextStyle(
@@ -213,10 +211,10 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Valid for 1day.",
                                     style: TextStyle(
@@ -248,7 +246,7 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                     color: kSignInContainerColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Make Payment",
                       style: TextStyle(
@@ -260,7 +258,7 @@ class _NearBiiAdsScreenState extends State<NearBiiAdsScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

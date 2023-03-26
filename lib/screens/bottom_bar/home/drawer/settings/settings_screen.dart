@@ -23,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -87,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: kSettingsScreenLightContainerHeadingColor,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
@@ -138,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: kSettingsScreenLightContainerHeadingColor,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
@@ -192,7 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     kSettingsScreenLightContainerHeadingColor,
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Switch(
                               onChanged: (value) {
                                 switch1 = value;
@@ -304,7 +304,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         GestureDetector(
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PrivacySettingsScreen(),
+                              builder: (context) => const PrivacySettingsScreen(),
                             ),
                           ),
                           child: Text(
@@ -319,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         GestureDetector(
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => TermsAndConditionsScreen(),
+                              builder: (context) => const TermsAndConditionsScreen(),
                             ),
                           ),
                           child: Padding(
@@ -338,7 +338,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         GestureDetector(
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PrivacyPolicyScreen(),
+                              builder: (context) => const PrivacyPolicyScreen(),
                             ),
                           ),
                           child: Text(
@@ -354,7 +354,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 50,
                 ),
               ],

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/home/drawer/wallet/transaction_history/transaction_history_screen.dart';
-import 'package:nearbii/screens/bottom_bar/home/drawer/wallet/wallet_recharge_history_screen.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -31,7 +30,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
 
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   Map<String, dynamic> walletData = {};
 
@@ -173,7 +172,7 @@ class _WalletScreenState extends State<WalletScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -216,7 +215,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Wallet Balance",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
@@ -224,12 +223,12 @@ class _WalletScreenState extends State<WalletScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Text(
                           "₹ " + myBalance.toString(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
                             color: Colors.white,
@@ -313,12 +312,12 @@ class _WalletScreenState extends State<WalletScreen> {
                                 ),
                               );
                             },
-                            separatorBuilder: (context, index) => SizedBox(
+                            separatorBuilder: (context, index) => const SizedBox(
                               width: 5,
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 15,
                         ),
                         //add money button
@@ -333,7 +332,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
                                   color: kSignInContainerColor),
-                              child: Center(
+                              child: const Center(
                                 child: Text(
                                   "Add Money",
                                   style: TextStyle(
@@ -354,7 +353,7 @@ class _WalletScreenState extends State<WalletScreen> {
               GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => TransactionHistoryScreen(false),
+                    builder: (context) => const TransactionHistoryScreen(false),
                   ),
                 ),
                 child: Container(
@@ -378,7 +377,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               height: 40,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Flexible(
@@ -389,13 +388,13 @@ class _WalletScreenState extends State<WalletScreen> {
                   ),
                 ).py16(),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 16,
               ),
               GestureDetector(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => TransactionHistoryScreen(true),
+                    builder: (context) => const TransactionHistoryScreen(true),
                   ),
                 ),
                 child: Container(
@@ -419,7 +418,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               height: 40,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           ),
                           "Transaction History".text.semiBold.make()
@@ -465,7 +464,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                 color: kLoadingScreenTextColor,
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               "₹ " + walletData["lastRecharge"].toString(),
                               style: TextStyle(
@@ -488,7 +487,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                   color: kLoadingScreenTextColor,
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 "₹ " + walletData["afterRecharge"].toString(),
                                 style: TextStyle(
@@ -510,10 +509,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                 color: kLoadingScreenTextColor,
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Text(
                               "₹ " + walletData["beforeRecharge"].toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
                                 color: Colors.red,

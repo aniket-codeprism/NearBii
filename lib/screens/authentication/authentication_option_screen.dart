@@ -12,6 +12,6 @@ class _AuthenticationOptionScreenState
     extends State<AuthenticationOptionScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return const Scaffold();
   }
 }

@@ -97,7 +97,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                             };
                             int today = DateTime.now().weekday;
                             if (today >= work[workday.first.toLowerCase()]! &&
-                                today <= work![workday.last.toLowerCase()]!) {
+                                today <= work[workday.last.toLowerCase()]!) {
                               if (nowMin < openMin || nowMin > closeMin) {
                                 item.open = ("closed");
                               } else {
@@ -107,7 +107,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                               item.open = ("closed");
                             }
 
-                            return Container(
+                            return SizedBox(
                               height: y / 6,
                               child: Row(
                                 children: [
@@ -278,7 +278,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
     );
   }
 
-  var pos = null;
+  var pos;
 
   getBookmarks() async {
     bookmarks = [];
@@ -299,7 +299,7 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         var vend = VendorModel.fromMap(c.data()!);
         vend.userId = c.id;
         vend.book.value = true;
-        vend.distance = await Geolocator.distanceBetween(
+        vend.distance = Geolocator.distanceBetween(
             vend.businessLocation.lat,
             vend.businessLocation.long,
             pos.latitude,

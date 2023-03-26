@@ -15,7 +15,7 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -117,10 +117,10 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Publish your poster/post on the offer page. ",
                                     style: TextStyle(
@@ -141,10 +141,10 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Notifications to the user within 3kms around you. ",
                                       style: TextStyle(
@@ -164,10 +164,10 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Redeem your Nearbii points for publishing offer or buy more via Nearbii wallet. ",
                                     style: TextStyle(
@@ -179,7 +179,7 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Row(
@@ -189,10 +189,10 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Valid for 1 day.",
                                     style: TextStyle(
@@ -224,7 +224,7 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                     color: kSignInContainerColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Post Offer",
                       style: TextStyle(
@@ -236,7 +236,7 @@ class _NearBiiOffersScreenState extends State<NearBiiOffersScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

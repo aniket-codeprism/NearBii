@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 import '../../constants.dart';
 
@@ -34,7 +32,7 @@ Widget getEventByCat(
             child: CircularProgressIndicator(),
           );
         }
-        if (snapshot.hasData && snapshot.data!.docs.length == 0) {
+        if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
           return Container(
             child: const SizedBox(
               child: Text("Nothing to Show"),
@@ -65,7 +63,7 @@ Widget getEventByCat(
         }).toList();
 
         return Container(
-          padding: EdgeInsets.only(top: 10, left: 20, right: 10),
+          padding: const EdgeInsets.only(top: 10, left: 20, right: 10),
           child: SizedBox(
             height: height,
             child: Padding(
@@ -76,7 +74,7 @@ Widget getEventByCat(
                 itemBuilder: (context, index) {
                   return messageWidgets[index];
                 },
-                separatorBuilder: (context, index) => SizedBox(
+                separatorBuilder: (context, index) => const SizedBox(
                   width: 15,
                 ),
               ),
@@ -88,7 +86,7 @@ Widget getEventByCat(
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         width: 30,
         height: 30,
         child: CircularProgressIndicator(),
@@ -100,7 +98,7 @@ Widget getEventByCat(
 Widget eventBox(BuildContext context, String title, int startDate, String time,
     String addr, List img) {
   return Container(
-    padding: EdgeInsets.only(top: 25),
+    padding: const EdgeInsets.only(top: 25),
     child: Material(
       elevation: 1,
       color: Colors.white,
@@ -130,7 +128,7 @@ Widget eventBox(BuildContext context, String title, int startDate, String time,
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 8, bottom: 11),
+                    padding: const EdgeInsets.only(top: 8, bottom: 11),
                     child: Row(
                       children: [
                         Icon(
@@ -168,7 +166,7 @@ Widget eventBox(BuildContext context, String title, int startDate, String time,
                         size: 20,
                         color: kDividerColor,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
@@ -184,11 +182,11 @@ Widget eventBox(BuildContext context, String title, int startDate, String time,
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Container(
               width: 100,
               height: 100,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(5),
                   bottomRight: Radius.circular(5),

@@ -45,7 +45,7 @@ Widget getVendorImage(BuildContext acontext, uid, isVisitor) {
                     imageList.add(qs[i]['image']);
                   }
                   showGeneralDialog(
-                      barrierColor: Color.fromARGB(103, 26, 26, 26),
+                      barrierColor: const Color.fromARGB(103, 26, 26, 26),
                       context: dcontext,
                       pageBuilder: (BuildContext context,
                           Animation<double> animation,
@@ -58,7 +58,7 @@ Widget getVendorImage(BuildContext acontext, uid, isVisitor) {
                               bottom: 0,
                               right: 0,
                               child: Center(
-                                child: Container(
+                                child: SizedBox(
                                   width: MediaQuery.of(context).size.width,
                                   height: MediaQuery.of(context).size.height,
                                   child: VxSwiper(
@@ -66,12 +66,12 @@ Widget getVendorImage(BuildContext acontext, uid, isVisitor) {
                                       height:
                                           MediaQuery.of(context).size.height,
                                       scrollDirection: Axis.horizontal,
-                                      scrollPhysics: BouncingScrollPhysics(),
+                                      scrollPhysics: const BouncingScrollPhysics(),
                                       enableInfiniteScroll: false,
                                       autoPlay: false,
                                       reverse: false,
                                       pauseAutoPlayOnTouch:
-                                          Duration(seconds: 3),
+                                          const Duration(seconds: 3),
                                       initialPage: index,
                                       isFastScrollingEnabled: false,
                                       onPageChanged: (value) {
@@ -99,7 +99,7 @@ Widget getVendorImage(BuildContext acontext, uid, isVisitor) {
                                         .delete();
                                     Navigator.pop(context);
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.delete_rounded,
                                     size: 30,
                                     color: Colors.red,

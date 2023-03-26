@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/Model/notifStorage.dart';
@@ -37,7 +35,7 @@ class _OffersScreenState extends State<OffersScreen> {
     var poss = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         pos = poss;
         isLoading = false;
@@ -49,7 +47,7 @@ class _OffersScreenState extends State<OffersScreen> {
   getCity() async {
     getCat();
     city = await getcurrentCityFromLocation();
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -78,7 +76,7 @@ class _OffersScreenState extends State<OffersScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Container(
+                SizedBox(
                   height: 20,
                   child: Center(
                     child: DropdownSearch<String>(
@@ -114,7 +112,7 @@ class _OffersScreenState extends State<OffersScreen> {
                     ),
                   ),
                 ).expand(),
-                Container(
+                SizedBox(
                   height: 20,
                   child: Center(
                     child: DropdownSearch<String>(
@@ -134,7 +132,7 @@ class _OffersScreenState extends State<OffersScreen> {
                         })),
                   ),
                 ).expand(),
-                Container(
+                SizedBox(
                   height: 20,
                   child: Center(
                     child: DropdownSearch<String>(
@@ -175,6 +173,6 @@ class _OffersScreenState extends State<OffersScreen> {
     for (var ele in b.docs) {
       cat.add(ele.id);
     }
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 }

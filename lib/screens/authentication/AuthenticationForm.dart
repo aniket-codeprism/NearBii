@@ -122,7 +122,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
                   child: Column(
                     children: [
                       //name field
-                      Container(
+                      SizedBox(
                         height: 50,
                         child: TextFormField(
                           //controller: mobileController,
@@ -171,7 +171,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
                       if (widget.Phone.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 25),
-                          child: Container(
+                          child: SizedBox(
                             height: 50,
                             child: TextFormField(
                               controller: mobileController,

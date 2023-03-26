@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nearbii/screens/bottom_bar/home/home_screen.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 
 class paymentDone extends StatefulWidget {

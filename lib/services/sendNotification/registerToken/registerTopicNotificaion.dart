@@ -14,7 +14,7 @@ void subscribeTopicCity() async {
     log("nocity");
   }
   await FirebaseMessaging.instance.subscribeToTopic("city_" + city.toString());
-  await FirebaseMessaging.instance.subscribeToTopic("city_" + "ADS");
+  await FirebaseMessaging.instance.subscribeToTopic("city_" "ADS");
   await FirebaseMessaging.instance.subscribeToTopic("Offer");
   await FirebaseMessaging.instance.subscribeToTopic(
       FirebaseAuth.instance.currentUser!.uid.substring(0, 20));
@@ -25,14 +25,14 @@ void subscribeTopicCity() async {
  unsubscribeTopicity() async {
   SharedPreferences session = await SharedPreferences.getInstance();
 
-  String? city = await session.getString("userLocation");
+  String? city = session.getString("userLocation");
 
   await FirebaseMessaging.instance
       .unsubscribeFromTopic("city_" + city.toString());
 
   await FirebaseMessaging.instance
       .unsubscribeFromTopic("city_" + city.toString());
-  await FirebaseMessaging.instance.unsubscribeFromTopic("city_" + "ADS");
+  await FirebaseMessaging.instance.unsubscribeFromTopic("city_" "ADS");
   await FirebaseMessaging.instance.unsubscribeFromTopic("Offer");
   await FirebaseMessaging.instance.unsubscribeFromTopic(
       FirebaseAuth.instance.currentUser!.uid.substring(0, 20));

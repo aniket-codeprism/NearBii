@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,19 +6,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
-import 'package:nearbii/screens/createEvent/paymentDone/paymentDone.dart';
-import 'package:nearbii/services/savePaymentRecipt/savePaymentRecipt.dart';
 import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class adsPlan extends StatefulWidget {
+  const adsPlan({super.key});
+
   @override
   State<adsPlan> createState() => _adsPlanState();
 }
@@ -29,7 +25,7 @@ class _adsPlanState extends State<adsPlan> {
 
   late FirebaseStorage storage;
 
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   @override
   void initState() {
@@ -129,7 +125,7 @@ class _adsPlanState extends State<adsPlan> {
            
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: ((context) {
-              return MasterPage(
+              return const MasterPage(
                 currentIndex: 0,
               );
             })), (route) => false);
@@ -140,7 +136,7 @@ class _adsPlanState extends State<adsPlan> {
       print(lefthours);
       Fluttertoast.showToast(
           msg:
-              "${lefthours} Hours are Still Left.You cannot Post Ads Till ${lefthours} Hours");
+              "$lefthours Hours are Still Left.You cannot Post Ads Till $lefthours Hours");
     }
   }
 
@@ -152,7 +148,7 @@ class _adsPlanState extends State<adsPlan> {
           appBar: AppBar(
             leading: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 35,
                 ),
                 GestureDetector(
@@ -255,10 +251,10 @@ class _adsPlanState extends State<adsPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Appear on the top of list in your category. ",
                                         style: TextStyle(
@@ -280,10 +276,10 @@ class _adsPlanState extends State<adsPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
                                           "Users around your area will get notified in message box. ",
                                           style: TextStyle(
@@ -303,10 +299,10 @@ class _adsPlanState extends State<adsPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Ad Visible for every user around 3kms in your category.",
                                         style: TextStyle(
@@ -328,10 +324,10 @@ class _adsPlanState extends State<adsPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
                                           "Redeem your Nearbii points to advertise or buy more points via Nearbii wallet.",
                                           style: TextStyle(
@@ -351,10 +347,10 @@ class _adsPlanState extends State<adsPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Valid for 1day.",
                                         style: TextStyle(
@@ -379,19 +375,19 @@ class _adsPlanState extends State<adsPlan> {
                     },
                     child: Container(
                         width: MediaQuery.of(context).size.width * 0.80,
-                        margin: EdgeInsets.only(top: 10),
-                        padding: EdgeInsets.all(20),
+                        margin: const EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(81, 182, 200, 1),
+                          color: const Color.fromRGBO(81, 182, 200, 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Done",
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         )),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                 ],

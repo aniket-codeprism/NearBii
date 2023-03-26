@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../constants.dart';
 

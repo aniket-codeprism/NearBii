@@ -93,7 +93,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               );
                               print(item);
                             },
-                            child: Container(
+                            child: SizedBox(
                               height: 150,
                               child: Stack(
                                 children: [

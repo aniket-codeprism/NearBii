@@ -1,16 +1,10 @@
 // ignore_for_file: await_only_futures, unused_local_variable, unnecessary_const, prefer_typing_uninitialized_variables, unused_element, prefer_const_constructors, unnecessary_string_interpolations, unnecessary_null_comparison
 
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/home/home_screen.dart';
-import 'package:nearbii/screens/bottom_bar/profile/profile_screen.dart';
-import 'package:nearbii/screens/bottom_bar/profile/user_profile_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -53,9 +47,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // updateProfileData["hi"] = 1;
     print(updateProfileData);
     print(FirebaseAuth.instance.currentUser!.uid);
-    if (updateProfileData['name'] != null)
+    if (updateProfileData['name'] != null) {
       FirebaseAuth.instance.currentUser!
           .updateDisplayName(updateProfileData['name']);
+    }
 
     print(FirebaseAuth.instance.currentUser!.displayName);
     _db
@@ -493,7 +488,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 width: 200,
                                 child: RichText(
                                     text: TextSpan(
-                                  text: this.newEmail ?? "",
+                                  text: newEmail ?? "",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w400,
                                     fontSize: 16,

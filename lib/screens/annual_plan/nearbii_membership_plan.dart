@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/services/case_search_generator.dart';
 import 'package:nearbii/services/setUserMode.dart';
 

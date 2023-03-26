@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/Model/vendormodel.dart';
@@ -16,7 +15,7 @@ import 'package:velocity_x/velocity_x.dart';
 class BusinessServicesDetailsScreen extends StatefulWidget {
   final bool edit;
   VendorModel? data;
-  BusinessServicesDetailsScreen({Key? key, this.edit = false, this.data = null})
+  BusinessServicesDetailsScreen({Key? key, this.edit = false, this.data})
       : super(key: key);
 
   @override
@@ -76,7 +75,7 @@ class _BusinessServicesDetailsScreenState
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.blue),
                     textStyle: MaterialStateProperty.all(
-                        TextStyle(color: Colors.white)),
+                        const TextStyle(color: Colors.white)),
                   ),
                   onPressed: () async {
                     if (lattitudeController.text.isEmptyOrNull ||
@@ -93,7 +92,7 @@ class _BusinessServicesDetailsScreenState
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.blue),
                     textStyle: MaterialStateProperty.all(
-                        TextStyle(color: Colors.white)),
+                        const TextStyle(color: Colors.white)),
                   ),
                   onPressed: () async {
                     showDialog(
@@ -104,7 +103,6 @@ class _BusinessServicesDetailsScreenState
                                   width: 50,
                                   child: CircularProgressIndicator())
                               .centered();
-                          ;
                         });
 
                     var loc = await GeolocatorPlatform.instance
@@ -327,7 +325,7 @@ class _BusinessServicesDetailsScreenState
                         child: DropdownSearch<String>(
                           //mode of dropdown
                           //list of dropdown items
-                          popupProps: PopupProps.menu(
+                          popupProps: const PopupProps.menu(
                             showSearchBox: true,
                           ),
                           dropdownDecoratorProps: DropDownDecoratorProps(
@@ -645,7 +643,7 @@ class _BusinessServicesDetailsScreenState
                       color: kSignInContainerColor,
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Continue",
                         style: TextStyle(
@@ -657,7 +655,7 @@ class _BusinessServicesDetailsScreenState
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 61,
                 ),
               ],

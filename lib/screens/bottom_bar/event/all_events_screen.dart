@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/speech_screen.dart';
-import 'package:nearbii/services/getAllEvents/getAllEvents.dart';
 
 class AllEventsScreen extends StatefulWidget {
   const AllEventsScreen({Key? key}) : super(key: key);

@@ -18,7 +18,7 @@ class _AnnualPlanMainScreenState extends State<AnnualPlanMainScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -85,7 +85,7 @@ class _AnnualPlanMainScreenState extends State<AnnualPlanMainScreen> {
                       color: kSignInContainerColor,
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Continue",
                         style: TextStyle(

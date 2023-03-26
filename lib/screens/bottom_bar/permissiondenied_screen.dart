@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -44,7 +43,7 @@ class PermissionDenied extends StatelessWidget {
     if (!serviceEnabled) {
       await Geolocator.openLocationSettings();
       await Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return PermissionDenied();
+        return const PermissionDenied();
       })));
       // return Future.error('Location services are disabled.');
     }
@@ -58,7 +57,7 @@ class PermissionDenied extends StatelessWidget {
         permission == LocationPermission.whileInUse) {
       await Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: ((context) {
-        return MasterPage(
+        return const MasterPage(
           currentIndex: 0,
         );
       })), (route) => false);

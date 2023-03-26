@@ -324,11 +324,12 @@ class _CategoryItemState extends State<CategoryItem> {
         }
       }
     }
-    if (this.mounted)
+    if (mounted) {
       setState(() {
         x = 1;
         cat = catAll;
       });
+    }
   }
 
   search(String val) {

@@ -59,7 +59,7 @@ class _MoreServicesState extends State<MoreServices> {
                 height: 35,
               ),
 
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: height * .9,
                 child: ListView.builder(
