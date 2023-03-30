@@ -97,7 +97,7 @@ sendNotiicationAd(String title, String image) async {
   const postUrl = 'https://fcm.googleapis.com/fcm/send';
   const token =
       'AAAACt0GUvs:APA91bGNgTvPF7QExy-2kgfQlC2ghq1MwC4n2mq4EAgwc1NJtXghvhsQN63_xLaUP3SfHiSVyev3VTbyFwJRV9_gVhmjhKoyo-LmfF_Zat7nDKDHTS4SdCm98aEq9tb2WHPLVI8C4cES';
-  String toParams = "/topics/city_" "ADS";
+  String toParams = "/topics/city_".toString() + "ADS";
 
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
   final data = {

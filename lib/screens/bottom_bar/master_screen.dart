@@ -15,8 +15,6 @@ import 'package:nearbii/screens/bottom_bar/profile/profile_screen.dart';
 import 'package:nearbii/screens/bottom_bar/scan_screen.dart';
 import 'package:nearbii/services/sendNotification/registerToken/registerTopicNotificaion.dart';
 import 'package:nearbii/services/setUserMode.dart';
-import '../../Model/services.dart';
-import '../authentication/isUser.dart';
 
 class MasterPage extends StatefulWidget {
   final int currentIndex;
@@ -29,26 +27,10 @@ class MasterPage extends StatefulWidget {
 class _MasterPageState extends State<MasterPage> {
   int selectedIndex = 0;
   final firestore = FirebaseFirestore.instance;
-  _addServicesData() async {
-    await Future.delayed(const Duration(seconds: 1));
-    await firestore.collection('Services').get().then((value) {
-      for (var docs in value.docs) {
-        ServicesData data =
-            ServicesData(title: docs.id, category: docs.get('subcategory'));
-        ServicesList.list.add(data);
-        ServicesList.alldata.add(data);
-        TitleList.data.add(docs.id);
-        TitleList.allData.add(docs.id);
-      }
-    });
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
   loadUser() async {
-    bool user = await isUser();
+    bool user = await Notifcheck.api.isUser();
     if (!user) {
       var b =
           await FirebaseFirestore.instance.collection('vendor').doc(uid).get();
@@ -58,7 +40,6 @@ class _MasterPageState extends State<MasterPage> {
     }
   }
 
-  late FirebaseMessaging messaging;
   getcity() async {
     await CityList.getCities();
     setState(() {});
@@ -73,7 +54,8 @@ class _MasterPageState extends State<MasterPage> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-      log(message.data["type"].toString(), name: "notifications");
+      log(android.toString(), name: "notifications");
+      log(notification.toString(), name: "notifications");
       if (notification != null && android != null) {
         if (message.data["type"].toString() == "event") {
           flutterLocalNotificationsPlugin.show(
@@ -208,7 +190,6 @@ class _MasterPageState extends State<MasterPage> {
       }
     });
 
-    _addServicesData();
     super.initState();
   }
 
@@ -230,7 +211,10 @@ class _MasterPageState extends State<MasterPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: screens[selectedIndex],
+        body: IndexedStack(
+          index: selectedIndex,
+          children: screens,
+        ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: <BottomNavigationBarItem>[

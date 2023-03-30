@@ -50,18 +50,19 @@ class _SearchVendorState extends State<SearchVendor> {
 
   getVendors() async {
     String finalCity = city;
-    Query<Map<String, dynamic>> snap =
-        FirebaseFirestore.instance.collection("vendor");
+    Query<Map<String, dynamic>> snap = FirebaseFirestore.instance
+        .collection("vendor")
+        .orderBy("adsBuyTimestamp", descending: true);
     if (finalCity == "All India") {
-      snap = FirebaseFirestore.instance.collection("vendor");
+      snap = FirebaseFirestore.instance
+          .collection("vendor")
+          .orderBy("adsBuyTimestamp", descending: true);
       if (widget.category.isEmptyOrNull) {
       } else {
         snap = snap.where("businessSubCat", isEqualTo: widget.category);
       }
     } else {
-      snap = FirebaseFirestore.instance
-          .collection("vendor")
-          .where("businessCity", isEqualTo: finalCity);
+      snap = snap.where("businessCity", isEqualTo: finalCity);
       if (widget.category.isEmptyOrNull) {
       } else {
         snap = snap.where("businessSubCat", isEqualTo: widget.category);
@@ -74,12 +75,10 @@ class _SearchVendorState extends State<SearchVendor> {
       snap = snap.startAfterDocument(lastDocument!);
     }
     QuerySnapshot<Map<String, dynamic>> snapshot = await snap.limit(5).get();
-    print(snapshot.size);
     if (snapshot.size > 0) {
-      moreData = true;
-      setState(() {});
       lastDocument = snapshot.docs.last;
       for (var ele in snapshot.docs) {
+        moreData = true;
         var vendor = VendorModel.fromMap(ele.data());
         // if ((vendor.businessCat
         //             .toString()
@@ -163,7 +162,6 @@ class _SearchVendorState extends State<SearchVendor> {
       }
     } else {
       moreData = false;
-      setState(() {});
     }
     if (mounted) {
       setState(() {
@@ -197,83 +195,104 @@ class _SearchVendorState extends State<SearchVendor> {
     var x = MediaQuery.of(context).size.width;
     var y = MediaQuery.of(context).size.height;
 
-    return Material(
-      child: Scaffold(
-        body: SafeArea(
-            child: Container(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(Icons.arrow_back)),
-                ],
-              ).pOnly(top: y / 32, left: y / 32, bottom: y / 32),
-              SearchBar(
-                search: search,
-                // onTypeSearch: true,
-                val: "",
-              ).px16(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 120,
-                    height: 30,
-                    child: Center(
-                      child: DropdownSearch<String>(
-                        //mode of dropdown
-                        //list of dropdown items
-                        popupProps: PopupProps.menu(
-                          showSearchBox: true,
+    return Scaffold(
+      appBar: AppBar(
+        title: widget.category.text.color(Colors.black).make(),
+        leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            )),
+      ),
+      body: SafeArea(
+          child: Container(
+        child: Column(
+          children: [
+            SearchBar(
+              search: search,
+              val: "",
+            ).px16().pOnly(top: y / 64),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  width: 120,
+                  height: 30,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border:
+                          Border.all(color: Color.fromARGB(255, 81, 182, 200))),
+                  child: Center(
+                    child: DropdownSearch<String>(
+                      //mode of dropdown
+                      //list of dropdown items
+                      popupProps: PopupProps.bottomSheet(
+                        interceptCallBacks: true,
+                        showSelectedItems: true,
+                        searchDelay: Duration.zero,
+                        searchFieldProps: TextFieldProps(
+                          decoration: InputDecoration(
+                              icon: Icon(Icons.search),
+                              hintText: "Search City",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20))),
                         ),
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.end,
-                            dropdownSearchDecoration: InputDecoration.collapsed(
-                                focusColor: Colors.lightBlue,
-                                hintText: 'City')),
-                        items: CityList.ListCity.map((e) {
-                          return e.name;
-                        }).toList(),
-                        onChanged: ((value) {
-                          if (value == null) return;
-                          city = value;
-                          lastDocument = null;
-                          vendorList = [];
-                          getVendors();
-                        }),
-                        //show selected item\
-                        selectedItem: city,
+                        bottomSheetProps: BottomSheetProps(
+                            backgroundColor: Color.fromARGB(255, 232, 244, 247),
+                            elevation: 10,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20))),
+                        showSearchBox: true,
                       ),
+                      dropdownButtonProps: DropdownButtonProps(
+                        padding: EdgeInsets.all(0),
+                      ),
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                          textAlignVertical: TextAlignVertical.center,
+                          textAlign: TextAlign.end,
+                          dropdownSearchDecoration: InputDecoration.collapsed(
+                              focusColor: Colors.lightBlue, hintText: 'City')),
+                      items: CityList.ListCity.map((e) {
+                        return e.name;
+                      }).toList(),
+                      onChanged: ((value) {
+                        if (value == null) return;
+                        if (value == city) return;
+                        lastDocument = null;
+                        city = value;
+                        vendorList = [];
+                        getVendors();
+                      }),
+                      //show selected item\
+                      selectedItem: city,
                     ),
                   ),
-                  SizedBox(
-                    width: 120,
-                    height: 30,
-                    child: DropdownSearch<String>(
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.end,
-                            dropdownSearchDecoration: InputDecoration.collapsed(
-                                focusColor: Colors.lightBlue,
-                                hintText: 'City')),
-                        selectedItem: applied,
-                        items: filter.map((e) => e).toList(),
-                        onChanged: ((value) {
-                          if (value == null) return;
-                          applied = value.toString();
-                          sort();
-                        })),
-                  )
-                ],
-              ).px16().pOnly(top: 8).pOnly(bottom: y / 32),
-              result()
-            ],
-          ),
-        )),
-      ),
+                ),
+                // SizedBox(
+                //   width: 120,
+                //   height: 30,
+                //   child: DropdownSearch<String>(
+                //       dropdownDecoratorProps: DropDownDecoratorProps(
+                //           textAlignVertical: TextAlignVertical.center,
+                //           textAlign: TextAlign.end,
+                //           dropdownSearchDecoration: InputDecoration.collapsed(
+                //               focusColor: Colors.lightBlue,
+                //               hintText: 'City')),
+                //       selectedItem: applied,
+                //       items: filter.map((e) => e).toList(),
+                //       onChanged: ((value) {
+                //         if (value == null) return;
+                //         applied = value.toString();
+                //         sort();
+                //       })),
+                // )
+              ],
+            ).px16().pOnly(top: 8).pOnly(bottom: y / 32),
+            result()
+          ],
+        ),
+      )),
     );
   }
 
@@ -319,6 +338,7 @@ class _SearchVendorState extends State<SearchVendor> {
                         shrinkWrap: true,
                         padding: const EdgeInsets.only(bottom: 20),
                         itemBuilder: ((context, i) {
+                          if (vendorList.length < 5) moreData = false;
                           if (i < vendorList.length) {
                             var item = vendorList[i];
                             return ValueListenableBuilder(

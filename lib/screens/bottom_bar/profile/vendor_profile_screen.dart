@@ -6,8 +6,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:nearbii/Model/notifStorage.dart';
+import 'package:nearbii/screens/auth/LoginSignUpScreen.dart';
 import 'package:nearbii/screens/annual_plan/business_service_details_screen.dart';
-import 'package:nearbii/screens/bottom_bar/home/drawer/wallet/wallet_screen.dart';
+import 'package:nearbii/screens/wallet/wallet_screen.dart';
 import 'package:nearbii/services/sendNotification/registerToken/registerTopicNotificaion.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:readmore/readmore.dart';
@@ -30,7 +31,6 @@ import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/annual_plan/GoogleMapScreen.dart';
 import 'package:nearbii/screens/annual_plan/annual_plan_main_screen.dart';
 import 'package:nearbii/screens/annual_plan/renew_annual_plan.dart';
-import 'package:nearbii/screens/authentication/signin_screen.dart';
 import 'package:nearbii/screens/bottom_bar/home/drawer/advertise/post_offer_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/screens/createEvent/addEvent/addEvent.dart';
@@ -267,26 +267,20 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
     }
 
     if (Notifcheck.currentVendor == null && (!widget.isVisiter)) {
-      await FirebaseFirestore.instance
-          .collection('vendor')
-          .doc(uid)
-          .get()
-          .then((value) {
-        if (value.data() != null) {
-          Notifcheck.currentVendor = VendorModel.fromMap(value.data()!);
-          currentVendor = Notifcheck.currentVendor!;
-        }
-      });
+      var vendor =
+          await FirebaseFirestore.instance.collection('vendor').doc(uid).get();
+
+      if (vendor.data() != null) {
+        Notifcheck.currentVendor = VendorModel.fromMap(vendor.data()!);
+        currentVendor = Notifcheck.currentVendor!;
+      }
     } else {
-      await FirebaseFirestore.instance
-          .collection('vendor')
-          .doc(uid)
-          .get()
-          .then((value) {
-        if (value.data() != null) {
-          currentVendor = VendorModel.fromMap(value.data()!);
-        }
-      });
+      var vendor =
+          await FirebaseFirestore.instance.collection('vendor').doc(uid).get();
+
+      if (vendor.data() != null) {
+        currentVendor = VendorModel.fromMap(vendor.data()!);
+      }
     }
 
     setState(() {
@@ -2064,6 +2058,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                                     //logout
                                                     GestureDetector(
                                                       onTap: () async {
+                                                        await unsubscribeTopicity();
                                                         await FirebaseAuth
                                                             .instance
                                                             .signOut();
@@ -2079,7 +2074,6 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                                           (Route route) =>
                                                               false,
                                                         );
-                                                        await unsubscribeTopicity();
                                                       },
                                                       child: Row(
                                                         children: [

@@ -131,7 +131,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -156,10 +155,6 @@ void main() async {
   );
 
   runApp(const NearBii());
-}
-
-Future<void> _messageHandler(RemoteMessage message) async {
-  print('0xE background message ${message.notification!.body}');
 }
 
 class NearBii extends StatelessWidget {
@@ -199,6 +194,5 @@ class NearBii extends StatelessWidget {
               },
               child: LoadingScreen()),
         ));
-    //home: BusinessServicesDetailsScreen());
   }
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable, avoid_print, unused_import
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ import 'package:nearbii/services/getEventCat/eventCat.dart';
 import 'package:nearbii/services/getNearEvent/getNearEvent.dart';
 import 'package:nearbii/services/getcity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swipe_refresh/swipe_refresh.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class EventScreen extends StatefulWidget {
@@ -256,49 +258,57 @@ class _EventScreenState extends State<EventScreen> {
                   ),
 
                   if (pos != null)
-                    messageWidgets.isNotEmpty
-                        ? Container(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: ListView.separated(
-                                controller: controller,
-                                shrinkWrap: true,
-                                itemCount: messageWidgets.length + 1,
-                                itemBuilder: (context, i) {
-                                  if (messageWidgets.length < 5) {
-                                    moreData = false;
-                                  }
-                                  if (i < messageWidgets.length) {
-                                    return messageWidgets[i];
-                                  } else {
-                                    return (moreData
-                                            ? const CircularProgressIndicator()
-                                                .centered()
-                                            : "Opps !! No More Events"
-                                                .text
-                                                .make()
-                                                .centered())
-                                        .py8();
-                                  }
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                  width: 15,
-                                ),
-                              ),
-                            ),
-                          )
-                        : //   return Padding(
-                        const Padding(
-                            padding: EdgeInsets.only(top: 150),
-                            child: Center(
-                              child: SizedBox(
-                                height: 50,
-                                child: Text("No Nearby Events to show "),
-                              ),
-                            ),
-                          )
+                    SwipeRefresh.builder(
+                        itemCount: 1,
+                        stateStream: _stream,
+                        onRefresh: swipe,
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        itemBuilder: (BuildContext context, int index) {
+                          return messageWidgets.isNotEmpty
+                              ? Container(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: ListView.separated(
+                                      controller: controller,
+                                      shrinkWrap: true,
+                                      itemCount: messageWidgets.length + 1,
+                                      itemBuilder: (context, i) {
+                                        if (messageWidgets.length < 5) {
+                                          moreData = false;
+                                        }
+                                        if (i < messageWidgets.length) {
+                                          return messageWidgets[i];
+                                        } else {
+                                          return (moreData
+                                                  ? const CircularProgressIndicator()
+                                                      .centered()
+                                                  : "Opps !! No More Events"
+                                                      .text
+                                                      .make()
+                                                      .centered())
+                                              .py8();
+                                        }
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(
+                                        width: 15,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : //   return Padding(
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 150),
+                                  child: Center(
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: Text("No Nearby Events to show "),
+                                    ),
+                                  ),
+                                );
+                        })
                   else
                     Column(
                       children: [
@@ -440,7 +450,11 @@ class _EventScreenState extends State<EventScreen> {
   var lastDocument;
   bool moreData = true;
   List<Widget> messageWidgets = [];
-  void getEventsFromCity({required String city}) async {
+  void getEventsFromCity({required String city, bool refresh = false}) async {
+    if (refresh) {
+      messageWidgets = [];
+      lastDocument = null;
+    }
     final _firestore = FirebaseFirestore.instance;
     Query<Map<String, dynamic>> snap =
         _firestore.collection('Events').where("city", isEqualTo: city);
@@ -453,15 +467,8 @@ class _EventScreenState extends State<EventScreen> {
       lastDocument = snapshot.docs.last;
       for (var ele in snapshot.docs) {
         moreData = true;
-        // messageWidgets = snapshot.data!.docs.map((m)
-        // {
-        final data = ele.data as dynamic;
 
-        // Fluttertoast.showToast(
-        //     msg: "Loc: " +
-        //         data()["pinLocation"].toString().split(',').last.toString() +
-        //         "City: " +
-        //         city);
+        final data = ele.data as dynamic;
 
         {
           log(data()['eventLocation']["lat"].toString(), name: "event");
@@ -506,8 +513,16 @@ class _EventScreenState extends State<EventScreen> {
     } else {
       moreData = false;
     }
+    _controller.sink.add(SwipeRefreshState.hidden);
     if (mounted) {
       setState(() {});
     }
+  }
+
+  final _controller = StreamController<SwipeRefreshState>.broadcast();
+
+  Stream<SwipeRefreshState> get _stream => _controller.stream;
+  swipe() {
+    getEventsFromCity(city: city, refresh: true);
   }
 }

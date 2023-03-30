@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/Model/vendormodel.dart';
@@ -227,10 +226,6 @@ class _ScanScreenState extends State<ScanScreen> {
           name = value.get("businessName");
         });
       }).catchError((onError) {});
-    } else {
-      setState(() {
-        qrScanState = true;
-      });
-    }
+    } else {}
   }
 }

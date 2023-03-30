@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/home/drawer/wallet/wallet_recharge_history_screen.dart';
+import 'package:nearbii/screens/wallet/wallet_recharge_history_screen.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
 class TransactionHistoryScreen extends StatefulWidget {
   final bool trans;
-  const TransactionHistoryScreen(this. trans, {Key? key}) : super(key: key);
+  const TransactionHistoryScreen(this.trans, {Key? key}) : super(key: key);
 
   @override
   State<TransactionHistoryScreen> createState() =>
@@ -41,7 +41,7 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.trans?"Transaction History":"Wallet History",
+                widget.trans ? "Transaction History" : "Wallet History",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 20,

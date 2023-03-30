@@ -1,155 +1,7 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../../constants.dart';
-
-Widget getOffers(BuildContext context, var pos, String city, String applied,
-    String selectedcat) {
-  var height = MediaQuery.of(context).size.height;
-  FirebaseFirestore.instance
-      .collection("User")
-      .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
-      .set({"offerNotif": false}, SetOptions(merge: true));
-
-  try {
-    final _firestore = selectedcat == "Category"
-        ? city != 'All India'
-            ? FirebaseFirestore.instance
-                .collection('Offers')
-                .where("city", isEqualTo: city)
-            : FirebaseFirestore.instance.collection('Offers')
-        : FirebaseFirestore.instance
-            .collection('Offers')
-            .where("city", isEqualTo: city)
-            .where("category", isEqualTo: selectedcat);
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.snapshots().handleError((error) {
-        return Container(
-          child: const SizedBox(
-            width: 30,
-            height: 30,
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        List dmta = snapshot.data!.docs;
-        List ndmta = [];
-
-        if (dmta.isEmpty) {
-          return Center(
-            child: "Nothing to Show".text.make().py12(),
-          );
-        }
-        for (var ele in dmta) {
-          Map deta = ele.data();
-          var dis = Geolocator.distanceBetween(
-                pos.latitude,
-                pos.longitude,
-                ele.data()["location"]["lat"],
-                ele.data()["location"]["long"],
-              ) /
-              1000;
-          deta.addEntries({"dis": dis.toDoubleStringAsFixed(digit: 3)}.entries);
-
-          deta.addEntries({"ref": ele.reference}.entries);
-          log(ele.reference.toString());
-          ndmta.add(deta);
-          log(deta.toString());
-        }
-        if (applied == "Distance") {
-          ndmta.sort(
-            (a, b) {
-              return a["dis"].compareTo(b["dis"]);
-            },
-          );
-        } else {
-          ndmta.sort(
-            (a, b) {
-              return b["Title"].compareTo(a["Title"]);
-            },
-          );
-        }
-        log(ndmta.first["dis"].toString());
-
-        List<Widget> messageWidgets = ndmta.map<Widget>((m) {
-          final data = m as dynamic;
-          var dis = 5;
-
-          {
-            print(data['date']);
-            Timestamp ts = data['date'];
-            DateTime dt =
-                DateTime.fromMillisecondsSinceEpoch(ts.millisecondsSinceEpoch);
-            final difference = DateTime.now().difference(dt).inSeconds;
-            double limit = 86400;
-            print(difference);
-            if (difference <= limit) {
-              return InkWell(
-                  onTap: () async {
-                    Future.delayed(const Duration(milliseconds: 5));
-                    await Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return VendorProfileScreen(
-                        id: data["uid"],
-                        isVisiter: true,
-                      );
-                    }));
-                  },
-                  child: offerBox(
-                    data: data,
-                  ));
-            } else {
-              m["ref"].delete();
-            }
-          }
-
-          return Container();
-        }).toList();
-
-        return Container(
-          padding: const EdgeInsets.only(top: 10),
-          child: SizedBox(
-            height: height - MediaQuery.of(context).size.height / 3.8,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: ListView.separated(
-                scrollDirection: Axis.vertical,
-                itemCount: messageWidgets.length,
-                itemBuilder: (context, index) {
-                  return messageWidgets[index];
-                },
-                separatorBuilder: (context, index) => const SizedBox(
-                  width: 15,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  } catch (Ex) {
-    print("0x1Error To Get User");
-    return const SizedBox(
-      width: 30,
-      height: 30,
-      child: CircularProgressIndicator(),
-    );
-  }
-}
 
 class offerBox extends StatefulWidget {
   final data;
@@ -230,7 +82,8 @@ class _offerBoxState extends State<offerBox> {
                                 ),
                                 (widget.data["dis"].toString() + " Km")
                                     .text
-                                    .color(const Color.fromARGB(142, 255, 255, 255))
+                                    .color(const Color.fromARGB(
+                                        142, 255, 255, 255))
                                     .make(),
                               ],
                             )

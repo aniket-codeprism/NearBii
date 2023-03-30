@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/constants.dart';
@@ -119,7 +120,13 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
     };
 
     try {
-      _razorpay.open(options);
+      if (kDebugMode) {
+        PaymentSuccessResponse response =
+            PaymentSuccessResponse("paymentId", "orderId", "signature");
+        _handlePaymentSuccess(response);
+      } else {
+        _razorpay.open(options);
+      }
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }

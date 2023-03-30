@@ -194,13 +194,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             const Spacer(),
                             Switch(
-                              onChanged: (value) {
+                              onChanged: (value) async {
                                 switch1 = value;
                                 setState(() {});
                                 if (value) {
                                   subscribeTopicCity();
                                 } else {
-                                  unsubscribeTopicity();
+                                  await unsubscribeTopicity();
                                 }
                               },
                               activeColor: const Color(0xFF59B2C6),
@@ -304,7 +304,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         GestureDetector(
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const PrivacySettingsScreen(),
+                              builder: (context) =>
+                                  const PrivacySettingsScreen(),
                             ),
                           ),
                           child: Text(
@@ -319,7 +320,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         GestureDetector(
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => const TermsAndConditionsScreen(),
+                              builder: (context) =>
+                                  const TermsAndConditionsScreen(),
                             ),
                           ),
                           child: Padding(

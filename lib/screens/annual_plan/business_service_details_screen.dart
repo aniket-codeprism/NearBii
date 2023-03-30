@@ -477,53 +477,54 @@ class _BusinessServicesDetailsScreenState
                         ),
                       ),
                       //Aadhar Number
-                      TextFormField(
-                        enabled: !widget.edit,
-                        initialValue: businessDetailData['aadharCardNumber'],
-                        onChanged: (val) =>
-                            businessDetailData['aadharCardNumber'] = val,
-                        validator: (value) {
-                          if (value == null ||
-                              value.isEmpty ||
-                              value.length < 12) {
-                            return 'Please enter Correct Aadhar Number';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Aadhar Number *',
-                          hintStyle: TextStyle(
-                            color: kAdvertiseContainerTextColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIconColor: kHintTextColor,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 13,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: kAdvertiseContainerColor),
-                            gapPadding: 10,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: kAdvertiseContainerColor),
-                            gapPadding: 10,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: kAdvertiseContainerColor),
-                            gapPadding: 10,
+                      if (false)
+                        TextFormField(
+                          enabled: !widget.edit,
+                          initialValue: businessDetailData['aadharCardNumber'],
+                          onChanged: (val) =>
+                              businessDetailData['aadharCardNumber'] = val,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value.length < 12) {
+                              return 'Please enter Correct Aadhar Number';
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Aadhar Number *',
+                            hintStyle: TextStyle(
+                              color: kAdvertiseContainerTextColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIconColor: kHintTextColor,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 13,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: kAdvertiseContainerColor),
+                              gapPadding: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: kAdvertiseContainerColor),
+                              gapPadding: 10,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: kAdvertiseContainerColor),
+                              gapPadding: 10,
+                            ),
                           ),
                         ),
-                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -616,7 +617,7 @@ class _BusinessServicesDetailsScreenState
                         businessDetailData['businessLocation']["lat"] != null &&
                         businessDetailData['businessLocation']["long"] !=
                             null &&
-                        businessDetailData['aadharCardNumber'].length == 12 &&
+                        // businessDetailData['aadharCardNumber'].length == 12 &&
                         businessDetailData['businessMobileNumber'].length ==
                             10) {
                       // ScaffoldMessenger.of(context).showSnackBar(

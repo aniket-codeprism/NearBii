@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -69,7 +70,13 @@ class _EventPaymentState extends State<EventPayment> {
     };
 
     try {
-      _razorpay.open(options);
+      if (kDebugMode) {
+        PaymentSuccessResponse response =
+            PaymentSuccessResponse("paymentId", "orderId", "signature");
+        _handlePaymentSuccess(response);
+      } else {
+        _razorpay.open(options);
+      }
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }

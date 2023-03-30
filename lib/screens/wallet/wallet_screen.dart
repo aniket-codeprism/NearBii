@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/home/drawer/wallet/transaction_history/transaction_history_screen.dart';
+import 'package:nearbii/screens/wallet/referal.dart';
+import 'package:nearbii/screens/wallet/transaction_history_screen.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -158,7 +160,13 @@ class _WalletScreenState extends State<WalletScreen> {
     };
 
     try {
-      _razorpay.open(options);
+      if (kDebugMode) {
+        PaymentSuccessResponse response =
+            PaymentSuccessResponse("paymentId", "orderId", "signature");
+        _handlePaymentSuccess(response);
+      } else {
+        _razorpay.open(options);
+      }
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }
@@ -202,42 +210,79 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
               ),
               //wallet balance
-              Padding(
-                padding: const EdgeInsets.only(top: 30, bottom: 20),
-                child: Container(
-                  height: 71,
-                  width: 163,
-                  decoration: BoxDecoration(
-                    color: kSignInContainerColor,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Wallet Balance",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30, bottom: 20),
+                    child: Container(
+                      height: 71,
+                      decoration: BoxDecoration(
+                        color: kSignInContainerColor,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "Wallet Balance",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              "₹ " + myBalance.toString(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "₹ " + myBalance.toString(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                      ).px12(),
                     ),
                   ),
-                ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30, bottom: 20),
+                    child: Container(
+                      height: 71,
+                      decoration: BoxDecoration(
+                        color: kSignInContainerColor,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              "Referal Wallet",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            )
+                          ],
+                        ),
+                      ).px12(),
+                    ).onInkTap(() {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: ((context) {
+                        return const Referal();
+                      })));
+                    }),
+                  ),
+                ],
               ),
               //add money label
               Text(
@@ -312,7 +357,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                 ),
                               );
                             },
-                            separatorBuilder: (context, index) => const SizedBox(
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
                               width: 5,
                             ),
                           ),

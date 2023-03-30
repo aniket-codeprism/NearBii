@@ -74,7 +74,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
     offerData["subTitle"] = subTitle.text;
     offerData["offerImg"] = offImg;
     offerData["city"] = city;
-    offerData["off"] = 0;
+    offerData["off"] = double.parse(title.text);
     offerData["uid"] = uid;
     offerData["date"] = DateTime.now();
     offerData["location"] = Notifcheck.currentVendor!.businessLocation.toMap();

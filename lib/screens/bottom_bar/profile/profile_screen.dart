@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nearbii/screens/authentication/isUser.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/screens/bottom_bar/profile/user_profile_screen.dart';
 import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -25,16 +27,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   loadUser() async {
-    bool user = await isUser();
-    print(user);
+    bool user = await Notifcheck.api.isUser();
+    log(user.toString(), name: "checkuser");
     isUserProfile = user;
     setState(() {
+      log("loaded");
       isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    log(isLoading.toString(), name: "loaded");
     return !isLoading
         ? SafeArea(
             child: Scaffold(
