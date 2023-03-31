@@ -648,7 +648,7 @@ class _BusinessAdditionalDetailsScreenState
                       },
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: 'Coupan Code (Optional)',
+                        hintText: 'Coupon Code (Optional)',
                         hintStyle: TextStyle(
                           color: kAdvertiseContainerTextColor,
                           fontSize: 18,

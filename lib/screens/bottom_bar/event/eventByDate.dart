@@ -8,7 +8,7 @@ import 'package:nearbii/constants.dart';
 import 'package:nearbii/services/getcity.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../viewEvent.dart';
+import 'viewEvent.dart';
 
 class allEventByDate extends StatefulWidget {
   final DateTime date;

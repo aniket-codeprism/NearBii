@@ -6,7 +6,8 @@ class allEventByCat extends StatefulWidget {
   final String cat;
   var pos;
   String city;
-  allEventByCat({required this.cat, required this.pos, Key? key, required this.city})
+  allEventByCat(
+      {required this.cat, required this.pos, Key? key, required this.city})
       : super(key: key);
 
   @override

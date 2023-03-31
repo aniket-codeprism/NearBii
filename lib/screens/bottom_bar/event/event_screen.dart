@@ -9,10 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/event/all_events_screen.dart';
-import 'package:nearbii/screens/bottom_bar/event/all_nearby_events/all_nearby_events_screen.dart';
+import 'package:nearbii/screens/bottom_bar/event/all_nearby_events_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:nearbii/screens/bottom_bar/event/eventByDate/eventByDate.dart';
+import 'package:nearbii/screens/bottom_bar/event/eventByDate.dart';
 import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
 import 'package:nearbii/services/getEventCat/eventCat.dart';
 import 'package:nearbii/services/getNearEvent/getNearEvent.dart';
@@ -60,7 +59,7 @@ class _EventScreenState extends State<EventScreen> {
     city = await getcurrentCityFromLocation();
     pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    getEventsFromCity(city: city);
+    getEventsFromCity(city: city, refresh: true);
   }
 
   void getDates() {
@@ -104,168 +103,172 @@ class _EventScreenState extends State<EventScreen> {
             }
             return true;
           },
-          child: SingleChildScrollView(
-            controller: controller,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 34),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //Events label
-                  Text(
-                    "Events",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
-                      color: kLoadingScreenTextColor,
-                    ),
-                  ),
-                  //dates
-                  SizedBox(
-                    height: 112,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8, bottom: 8),
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: weekDateList.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedIndex = index;
-
-                                Navigator.of(context)
-                                    .push(MaterialPageRoute(builder: (context) {
-                                  return allEventByDate(
-                                      date: weekFullDate[index]);
-                                }));
-                              });
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: selectedIndex == index
-                                    ? kSignInContainerColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 9, horizontal: 7),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      weekDayList[index].toString(),
-                                      style: TextStyle(
-                                        fontWeight: selectedIndex == index
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
-                                        fontSize: 18,
-                                        color: selectedIndex == index
-                                            ? Colors.white
-                                            : kLoadingScreenTextColor,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Text(
-                                      weekDateList[index].toString(),
-                                      style: TextStyle(
-                                        fontWeight: selectedIndex == index
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
-                                        fontSize: 18,
-                                        color: selectedIndex == index
-                                            ? Colors.white
-                                            : kLoadingScreenTextColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) => const SizedBox(
-                          width: 10,
-                        ),
-                      ),
-                    ),
-                  ),
-                  //Divider
-                  Container(
-                    color: kDrawerDividerColor,
-                    height: 0.5,
-                    width: double.infinity,
-                  ),
-                  //All Events label
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20, bottom: 19),
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        "All Events",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: kLoadingScreenTextColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  //all events
-                  getEventCatList(context, pos, city),
-                  Row(
-                    children: [
-                      Text(
-                        "Events Nearby",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: kLoadingScreenTextColor,
-                        ),
-                      ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const AllNearbyEventsScreen(),
+          child: SwipeRefresh.builder(
+              scrollController: controller,
+              itemCount: 1,
+              stateStream: _stream,
+              onRefresh: swipe,
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              itemBuilder: (BuildContext context, int index) {
+                return SingleChildScrollView(
+                  controller: controller,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 34),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Events label
+                        Text(
+                          "Events",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                            color: kLoadingScreenTextColor,
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Text(
-                              "See All",
+                        //dates
+                        SizedBox(
+                          height: 112,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8, bottom: 8),
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: weekDateList.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = index;
+
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        return allEventByDate(
+                                            date: weekFullDate[index]);
+                                      }));
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: selectedIndex == index
+                                          ? kSignInContainerColor
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 9, horizontal: 7),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            weekDayList[index].toString(),
+                                            style: TextStyle(
+                                              fontWeight: selectedIndex == index
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              fontSize: 18,
+                                              color: selectedIndex == index
+                                                  ? Colors.white
+                                                  : kLoadingScreenTextColor,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          Text(
+                                            weekDateList[index].toString(),
+                                            style: TextStyle(
+                                              fontWeight: selectedIndex == index
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              fontSize: 18,
+                                              color: selectedIndex == index
+                                                  ? Colors.white
+                                                  : kLoadingScreenTextColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(
+                                width: 10,
+                              ),
+                            ),
+                          ),
+                        ),
+                        //Divider
+                        Container(
+                          color: kDrawerDividerColor,
+                          height: 0.5,
+                          width: double.infinity,
+                        ),
+                        //All Events label
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20, bottom: 19),
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Text(
+                              "All Events",
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: 16,
                                 color: kLoadingScreenTextColor,
                               ),
                             ),
-                            const SizedBox(
-                              width: 8,
+                          ),
+                        ),
+                        //all events
+                        getEventCatList(context, pos, city),
+                        Row(
+                          children: [
+                            Text(
+                              "Events Nearby",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: kLoadingScreenTextColor,
+                              ),
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: kLoadingScreenTextColor,
-                              size: 13,
-                            )
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AllNearbyEventsScreen(),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "See All",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: kLoadingScreenTextColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: kLoadingScreenTextColor,
+                                    size: 13,
+                                  )
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
 
-                  if (pos != null)
-                    SwipeRefresh.builder(
-                        itemCount: 1,
-                        stateStream: _stream,
-                        onRefresh: swipe,
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        itemBuilder: (BuildContext context, int index) {
-                          return messageWidgets.isNotEmpty
+                        if (pos != null)
+                          messageWidgets.isNotEmpty
                               ? Container(
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Padding(
@@ -307,22 +310,22 @@ class _EventScreenState extends State<EventScreen> {
                                       child: Text("No Nearby Events to show "),
                                     ),
                                   ),
-                                );
-                        })
-                  else
-                    Column(
-                      children: [
-                        const CircularProgressIndicator(),
-                        5.heightBox,
-                        "Please wait,Getting your Location Info"
-                            .text
-                            .makeCentered(),
+                                )
+                        else
+                          Column(
+                            children: [
+                              const CircularProgressIndicator(),
+                              5.heightBox,
+                              "Please wait,Getting your Location Info"
+                                  .text
+                                  .makeCentered(),
+                            ],
+                          )
                       ],
-                    )
-                ],
-              ),
-            ).pOnly(top: 20),
-          ),
+                    ),
+                  ).pOnly(top: 20),
+                );
+              }),
         ),
       ),
     );

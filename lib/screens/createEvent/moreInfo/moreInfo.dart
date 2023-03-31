@@ -106,8 +106,8 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                   ),
                   decoration: InputDecoration(
                     hintText: "Time Slot *",
-                    hintStyle:
-                        const TextStyle(color: Color.fromARGB(255, 203, 207, 207)),
+                    hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 203, 207, 207)),
                     enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                       color: Color.fromARGB(173, 125, 209, 248),
@@ -337,7 +337,8 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                     //       items: dropdownItems),
                     // ),
                     Container(
-                      margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                      margin:
+                          const EdgeInsets.only(top: 20, left: 20, right: 20),
                       child: TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -461,9 +462,16 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
 
                     getTimeSlotDrop(context),
                     Container(
-                      margin:
-                          const EdgeInsets.only(top: 20, left: 20, right: 20),
+                      width: 120,
+                      height: 30,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: const Color.fromARGB(255, 81, 182, 200))),
                       child: DropdownSearch<String>(
+                        dropdownButtonProps: DropdownButtonProps(
+                          padding: EdgeInsets.all(0),
+                        ),
                         //mode of dropdown
                         //list of dropdown items
                         popupProps: const PopupProps.menu(

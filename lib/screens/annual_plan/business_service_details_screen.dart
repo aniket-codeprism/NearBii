@@ -323,49 +323,37 @@ class _BusinessServicesDetailsScreenState
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         child: DropdownSearch<String>(
+                          dropdownButtonProps: const DropdownButtonProps(
+                            padding: EdgeInsets.all(0),
+                          ),
                           //mode of dropdown
                           //list of dropdown items
-                          popupProps: const PopupProps.menu(
+                          popupProps: PopupProps.bottomSheet(
+                            interceptCallBacks: true,
+                            showSelectedItems: true,
+                            searchDelay: Duration.zero,
+                            searchFieldProps: TextFieldProps(
+                              decoration: InputDecoration(
+                                  icon: const Icon(Icons.search),
+                                  hintText: "Search City",
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20))),
+                            ),
+                            bottomSheetProps: BottomSheetProps(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 232, 244, 247),
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20))),
                             showSearchBox: true,
                           ),
-                          dropdownDecoratorProps: DropDownDecoratorProps(
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.start,
-                            dropdownSearchDecoration: InputDecoration(
-                              hintText: 'City *',
-                              hintStyle: TextStyle(
-                                color: kAdvertiseContainerTextColor,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              prefixIconColor: kHintTextColor,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 13,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: kAdvertiseContainerColor),
-                                gapPadding: 10,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: kAdvertiseContainerColor),
-                                gapPadding: 10,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: kAdvertiseContainerColor),
-                                gapPadding: 10,
-                              ),
-                            ),
-                          ),
-                          selectedItem: businessDetailData['businessCity'],
+                          dropdownDecoratorProps: const DropDownDecoratorProps(
+                              textAlignVertical: TextAlignVertical.center,
+                              textAlign: TextAlign.end,
+                              dropdownSearchDecoration:
+                                  InputDecoration.collapsed(
+                                      focusColor: Colors.lightBlue,
+                                      hintText: 'City')),
                           items: CityList.ListCity.map((e) {
                             return e.name;
                           }).toList(),

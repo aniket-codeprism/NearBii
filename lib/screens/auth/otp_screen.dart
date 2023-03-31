@@ -324,7 +324,7 @@ class _OTPState extends State<OTP> {
         data = employeeDetails;
         if (widget.exists.uid.isNotEmptyAndNotNull) {
           saveReferalWallet(widget.referal, user.displayName,
-              user.uid.substring(0, 20), widget.exists);
+              user.uid.substring(0, 20), widget.exists, "otp");
         }
         setUserMode();
         _determinePosition();

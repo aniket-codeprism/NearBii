@@ -81,7 +81,7 @@ Future<void> signup(BuildContext context, String referalcode) async {
             .then((value) {
           if (exists.uid.isNotEmpty) {
             saveReferalWallet(
-                referalcode, user.displayName, randomUUDI, exists);
+                referalcode, user.displayName, randomUUDI, exists, "gsa");
           }
           // Write UserID Store in Secure Data Store
 
@@ -201,7 +201,7 @@ Future<Resource?> signInWithFacebook(
                 .set(employeeDetails)
                 .then((value) {
               saveReferalWallet(referalcode, auth.currentUser!.displayName,
-                  auth.currentUser!.uid.substring(0, 20), exists);
+                  auth.currentUser!.uid.substring(0, 20), exists, "fb");
 
               // Navigator.of(context).pushReplacement(
               //   MaterialPageRoute(
@@ -245,9 +245,9 @@ Future<Resource?> signInWithFacebook(
   }
 }
 
-void saveReferalWallet(referalCode, name, String uiddd, ReferalCheck exists) {
-  uiddd = uiddd.length > 20 ? uiddd.substring(0, 20) : uiddd;
-  log("referal");
+void saveReferalWallet(
+    referalCode, name, String uiddd, ReferalCheck exists, methodname) {
+  log(uiddd.length.toString());
   var referalData = {
     "referalCode": referalCode,
     "timestamp": DateTime.now().millisecondsSinceEpoch,
@@ -263,6 +263,7 @@ void saveReferalWallet(referalCode, name, String uiddd, ReferalCheck exists) {
 }
 
 void updateReferalWallet(referalCode, uid, ReferalCheck exists) {
+  log(uid.length.toString());
   var referalData = {"isVendor": true};
   FirebaseFirestore.instance
       .collection("User")

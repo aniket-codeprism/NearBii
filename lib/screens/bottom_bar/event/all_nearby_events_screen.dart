@@ -12,7 +12,7 @@ import 'package:nearbii/constants.dart';
 import 'package:nearbii/services/getcity.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../viewEvent.dart';
+import 'viewEvent.dart';
 
 class AllNearbyEventsScreen extends StatefulWidget {
   const AllNearbyEventsScreen({Key? key}) : super(key: key);
@@ -124,30 +124,61 @@ class _AllNearbyEventsScreenState extends State<AllNearbyEventsScreen> {
                     ),
                   ),
 
-                  DropdownSearch<String>(
-                    //mode of dropdown
-                    //list of dropdown items
-                    popupProps: const PopupProps.menu(
-                      showSearchBox: true,
+                  Container(
+                    width: 120,
+                    height: 30,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: const Color.fromARGB(255, 81, 182, 200))),
+                    child: Center(
+                      child: DropdownSearch<String>(
+                        dropdownButtonProps: const DropdownButtonProps(
+                          padding: EdgeInsets.all(0),
+                        ),
+                        //mode of dropdown
+                        //list of dropdown items
+                        popupProps: PopupProps.bottomSheet(
+                          interceptCallBacks: true,
+                          showSelectedItems: true,
+                          searchDelay: Duration.zero,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                                icon: const Icon(Icons.search),
+                                hintText: "Search City",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                          ),
+                          bottomSheetProps: BottomSheetProps(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 232, 244, 247),
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20))),
+                          showSearchBox: true,
+                        ),
+                        dropdownDecoratorProps: const DropDownDecoratorProps(
+                            textAlignVertical: TextAlignVertical.center,
+                            textAlign: TextAlign.end,
+                            dropdownSearchDecoration: InputDecoration.collapsed(
+                                focusColor: Colors.lightBlue,
+                                hintText: 'City')),
+                        items: citites.map((e) {
+                          return e.name;
+                        }).toList(),
+                        onChanged: ((value) {
+                          if (value == null) return;
+                          city = value;
+                          print(city);
+                          lastDocument = null;
+                          messageWidgets = [];
+                          getAllEvents();
+                        }),
+                        //show selected item
+                        selectedItem: city,
+                      ).px16(),
                     ),
-                    dropdownDecoratorProps: const DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                      labelText: "City",
-                    )),
-                    items: citites.map((e) {
-                      return e.name;
-                    }).toList(),
-                    onChanged: ((value) {
-                      if (value == null) return;
-                      city = value;
-                      print(city);
-                      lastDocument = null;
-                      messageWidgets = [];
-                      getAllEvents();
-                    }),
-                    //show selected item
-                    selectedItem: city,
-                  ).px16(),
+                  ),
                   if (messageWidgets.isEmpty && query.isNotEmptyAndNotNull)
                     const CircularProgressIndicator().centered()
                   else

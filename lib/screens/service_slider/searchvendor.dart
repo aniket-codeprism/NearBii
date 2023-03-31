@@ -225,6 +225,9 @@ class _SearchVendorState extends State<SearchVendor> {
                           Border.all(color: Color.fromARGB(255, 81, 182, 200))),
                   child: Center(
                     child: DropdownSearch<String>(
+                      dropdownButtonProps: DropdownButtonProps(
+                        padding: EdgeInsets.all(0),
+                      ),
                       //mode of dropdown
                       //list of dropdown items
                       popupProps: PopupProps.bottomSheet(
@@ -244,9 +247,6 @@ class _SearchVendorState extends State<SearchVendor> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20))),
                         showSearchBox: true,
-                      ),
-                      dropdownButtonProps: DropdownButtonProps(
-                        padding: EdgeInsets.all(0),
                       ),
                       dropdownDecoratorProps: DropDownDecoratorProps(
                           textAlignVertical: TextAlignVertical.center,
@@ -272,7 +272,7 @@ class _SearchVendorState extends State<SearchVendor> {
                 // SizedBox(
                 //   width: 120,
                 //   height: 30,
-                //   child: DropdownSearch<String>(
+                //   child:  DropdownSearch<String>(
                 //       dropdownDecoratorProps: DropDownDecoratorProps(
                 //           textAlignVertical: TextAlignVertical.center,
                 //           textAlign: TextAlign.end,

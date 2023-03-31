@@ -58,7 +58,7 @@ class _offerPlanState extends State<offerPlan> {
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
 
   void buyPlane(BuildContext context) async {
-    loadBalance();
+    await loadBalance();
 
     if (balance <= 50) {
       Fluttertoast.showToast(
