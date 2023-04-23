@@ -79,8 +79,7 @@ class _adsPlanState extends State<adsPlan> {
     await loadBalance();
     print(lefthours);
 
-    if (lefthours < 0) 
-    {
+    if (lefthours < 0) {
       if (balance <= 50) {
         Fluttertoast.showToast(
             msg: "You Don't have 50 coins", toastLength: Toast.LENGTH_LONG);
@@ -120,9 +119,7 @@ class _adsPlanState extends State<adsPlan> {
                 Notifcheck.currentVendor!.businessImage.isEmptyOrNull
                     ? Notifcheck.defCover
                     : Notifcheck.currentVendor!.businessImage);
-           
 
-           
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: ((context) {
               return const MasterPage(
@@ -281,7 +278,7 @@ class _adsPlanState extends State<adsPlan> {
                                       ),
                                       const Flexible(
                                         child: Text(
-                                          "Users around your area will get notified in message box. ",
+                                          "Users around your area will get notified in notification bell. ",
                                           style: TextStyle(
                                             fontWeight: FontWeight.w400,
                                             fontSize: 16,
@@ -304,7 +301,7 @@ class _adsPlanState extends State<adsPlan> {
                                     ),
                                     const Flexible(
                                       child: Text(
-                                        "Ad Visible for every user around 3kms in your category.",
+                                        "Ad Visible for every user around you in your category.",
                                         style: TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 16,

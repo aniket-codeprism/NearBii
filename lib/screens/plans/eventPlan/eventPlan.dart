@@ -28,8 +28,6 @@ class eventPlan extends StatefulWidget {
 class _eventPlanState extends State<eventPlan> {
   late FirebaseFirestore db;
 
-  late FirebaseStorage storage;
-
   late final Razorpay _razorpay = Razorpay();
 
   saveToDB(List<String> path) async {
@@ -73,12 +71,10 @@ class _eventPlanState extends State<eventPlan> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    if (!kDebugMode) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: ((context) {
-        return const paymentDone();
-      })), (route) => false);
-    }
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: ((context) {
+      return const paymentDone();
+    })), (route) => false);
     updateTransatcion(
         FirebaseAuth.instance.currentUser!.uid.substring(0, 20),
         "NearBii Add Event Price",
@@ -134,10 +130,13 @@ class _eventPlanState extends State<eventPlan> {
   }
 
   void buyPlane() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 99900.0,
       'name': 'NearBii Add Event Price',
       'description': 'Pay for events and enjoy with croud',
@@ -150,12 +149,7 @@ class _eventPlanState extends State<eventPlan> {
     };
 
     try {
-      if (kDebugMode) {
-        _handlePaymentSuccess(
-            PaymentSuccessResponse("paymentId", "orderId", "signature"));
-      } else {
-        _razorpay.open(options);
-      }
+      _razorpay.open(options);
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }
@@ -199,7 +193,7 @@ class _eventPlanState extends State<eventPlan> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 30, bottom: 45),
+                    padding: const EdgeInsets.only(top: 30, bottom: 0),
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -218,7 +212,7 @@ class _eventPlanState extends State<eventPlan> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 26),
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

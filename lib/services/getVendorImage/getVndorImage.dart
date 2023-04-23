@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../../Model/notifStorage.dart';
+
 Widget getVendorImage(BuildContext acontext, uid, isVisitor) {
   try {
     final _firestore = FirebaseFirestore.instance;
@@ -66,7 +68,8 @@ Widget getVendorImage(BuildContext acontext, uid, isVisitor) {
                                       height:
                                           MediaQuery.of(context).size.height,
                                       scrollDirection: Axis.horizontal,
-                                      scrollPhysics: const BouncingScrollPhysics(),
+                                      scrollPhysics:
+                                          const BouncingScrollPhysics(),
                                       enableInfiniteScroll: false,
                                       autoPlay: false,
                                       reverse: false,

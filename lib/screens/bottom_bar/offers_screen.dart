@@ -5,7 +5,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/Model/notifStorage.dart';
@@ -29,16 +28,13 @@ class _OffersScreenState extends State<OffersScreen> {
   late Position pos;
   bool isLoading = true;
 
-  var selectedcat = "Category";
+  var selectedcat = "All Category";
 
   var controller = ScrollController();
   @override
   void initState() {
     // TODO: implement initState
-    FirebaseFirestore.instance
-        .collection("User")
-        .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
-        .set({"offerNotif": false}, SetOptions(merge: true));
+
     refersh();
     super.initState();
   }
@@ -72,11 +68,19 @@ class _OffersScreenState extends State<OffersScreen> {
     city = await getcurrentCityFromLocation();
   }
 
-  List<String> filter = ["High", "Low"];
+  List<String> filter = ["High", "Low", "Latest"];
   String applied = "High";
   List<ServiceModel> cat = [];
   Future<void> getCat() async {
     cat = await Notifcheck.api.getServices();
+    cat.insert(
+        0,
+        ServiceModel(
+            id: "All Category",
+            image: "image",
+            subcategory: [],
+            isActive: true,
+            order: 0));
   }
 
   var lastDocument;
@@ -91,22 +95,31 @@ class _OffersScreenState extends State<OffersScreen> {
     }
     log((applied == "High" ? true : false).toString(), name: "discount");
     log((applied).toString(), name: "discount");
-    var snap = FirebaseFirestore.instance
-        .collection('Offers')
-        .orderBy("off", descending: applied == "High" ? true : false);
-    var _firestore = selectedcat == "Category"
-        ? city != 'All India'
-            ? snap.where("city", isEqualTo: city)
-            : FirebaseFirestore.instance.collection('Offers')
-        : snap
-            .where("city", isEqualTo: city)
-            .where("category", isEqualTo: selectedcat);
+    Query<Map<String, dynamic>> snap =
+        FirebaseFirestore.instance.collection('Offers');
+    switch (applied) {
+      case "High":
+        snap = snap.orderBy("off", descending: true);
+        break;
+      case "Latest":
+        snap = snap.orderBy("date", descending: true);
+        break;
+      case "Low":
+        snap = snap.orderBy("off", descending: false);
+        break;
+    }
+    if (city != 'All India') {
+      snap = snap.where("city", isEqualTo: city);
+    }
+    if (selectedcat != "All Category") {
+      snap = snap.where("category", isEqualTo: selectedcat);
+    }
+
     List ndmta = [];
     if (lastDocument != null) {
-      _firestore = _firestore.startAfterDocument(lastDocument);
+      snap = snap.startAfterDocument(lastDocument);
     }
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await _firestore.limit(2).get();
+    QuerySnapshot<Map<String, dynamic>> snapshot = await snap.limit(2).get();
     var dmta = snapshot.docs;
     if (snapshot.docs.isNotEmpty) {
       lastDocument = snapshot.docs.last;
@@ -135,11 +148,10 @@ class _OffersScreenState extends State<OffersScreen> {
     List<Widget> widgets = ndmta.map<Widget>((m) {
       final data = m as dynamic;
       var dis = 5;
-      Timestamp ts = data['date'];
-      DateTime dt =
-          DateTime.fromMillisecondsSinceEpoch(ts.millisecondsSinceEpoch);
-      final difference = DateTime.now().difference(dt).inSeconds;
-      double limit = 86400;
+      var ts = data['date'];
+      DateTime dt = DateTime.fromMillisecondsSinceEpoch(ts);
+      final difference = DateTime.now().difference(dt).inMinutes;
+      double limit = 43800;
       print(difference);
       if (difference <= limit) {
         return InkWell(
@@ -193,7 +205,6 @@ class _OffersScreenState extends State<OffersScreen> {
               itemCount: 1,
               stateStream: _stream,
               onRefresh: swipe,
-              shrinkWrap: true,
               padding: const EdgeInsets.symmetric(vertical: 10),
               itemBuilder: (BuildContext context, int index) {
                 return SingleChildScrollView(
@@ -221,7 +232,6 @@ class _OffersScreenState extends State<OffersScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              "Select City".text.lg.make().py2().px2(),
                               Container(
                                 height: 30,
                                 decoration: BoxDecoration(
@@ -237,6 +247,12 @@ class _OffersScreenState extends State<OffersScreen> {
                                     //mode of dropdown
                                     //list of dropdown items
                                     popupProps: PopupProps.bottomSheet(
+                                      title: Divider(
+                                        height: 10,
+                                        thickness: 2,
+                                        color:
+                                            Color.fromARGB(255, 81, 182, 200),
+                                      ).px(128).py2(),
                                       interceptCallBacks: true,
                                       showSelectedItems: true,
                                       searchDelay: Duration.zero,
@@ -296,7 +312,6 @@ class _OffersScreenState extends State<OffersScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              "Discount".text.lg.make().py2().px2(),
                               Container(
                                 height: 30,
                                 decoration: BoxDecoration(
@@ -310,8 +325,7 @@ class _OffersScreenState extends State<OffersScreen> {
                                         padding: EdgeInsets.all(0),
                                       ),
                                       popupProps: PopupProps.menu(
-                                        constraints:
-                                            BoxConstraints(maxHeight: 100),
+                                        fit: FlexFit.loose,
                                       ),
                                       dropdownDecoratorProps:
                                           DropDownDecoratorProps(
@@ -338,6 +352,7 @@ class _OffersScreenState extends State<OffersScreen> {
                                       onChanged: ((value) {
                                         if (value == null) return;
                                         applied = value.toString();
+
                                         _getOffers(refersh: true);
                                       })),
                                 ),
@@ -347,7 +362,6 @@ class _OffersScreenState extends State<OffersScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              "Category".text.lg.make().py2().px2(),
                               Container(
                                 height: 30,
                                 decoration: BoxDecoration(
@@ -360,7 +374,36 @@ class _OffersScreenState extends State<OffersScreen> {
                                       dropdownButtonProps: DropdownButtonProps(
                                         padding: EdgeInsets.all(0),
                                       ),
-                                      popupProps: PopupProps.menu(),
+                                      //mode of dropdown
+                                      //list of dropdown items
+                                      popupProps: PopupProps.bottomSheet(
+                                        title: Divider(
+                                          height: 10,
+                                          thickness: 2,
+                                          color:
+                                              Color.fromARGB(255, 81, 182, 200),
+                                        ).px(128).py2(),
+                                        interceptCallBacks: true,
+                                        showSelectedItems: true,
+                                        searchDelay: Duration.zero,
+                                        searchFieldProps: TextFieldProps(
+                                          decoration: InputDecoration(
+                                              icon: Icon(Icons.search),
+                                              hintText: "Search Category",
+                                              border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20))),
+                                        ),
+                                        bottomSheetProps: BottomSheetProps(
+                                            backgroundColor: Color.fromARGB(
+                                                255, 232, 244, 247),
+                                            elevation: 10,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20))),
+                                        showSearchBox: true,
+                                      ),
                                       dropdownDecoratorProps:
                                           DropDownDecoratorProps(
                                               baseStyle:
@@ -384,10 +427,10 @@ class _OffersScreenState extends State<OffersScreen> {
                                       selectedItem: selectedcat,
                                       items: cat.map((e) => e.id).toList(),
                                       onChanged: ((value) {
-                                        setState(() {
-                                          if (value == null) return;
-                                          selectedcat = value.toString();
-                                        });
+                                        if (value == null) return;
+                                        selectedcat = value.toString();
+
+                                        _getOffers(refersh: true);
                                       })),
                                 ),
                               ),

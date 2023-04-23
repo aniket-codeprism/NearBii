@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
 
 class AboutUsScreen extends StatefulWidget {

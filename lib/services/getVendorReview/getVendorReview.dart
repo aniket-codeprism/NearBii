@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../../Model/notifStorage.dart';
 import '../../constants.dart';
 
 Widget getVendorReview(BuildContext context, String uid) {

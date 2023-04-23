@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/main.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';

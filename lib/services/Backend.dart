@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/Model/ServiceModel.dart';
 import 'package:nearbii/Model/catModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 import '../Model/BannerModel.dart';
 import '../Model/notifStorage.dart';
@@ -32,10 +32,10 @@ class Backend {
     return _session!;
   }
 
-  Set<ServiceModel> _services = HashSet();
+  List<ServiceModel> _services = [];
 
   Future<List<ServiceModel>> getServices({bool refersh = false}) async {
-    if (refersh) _services = HashSet();
+    if (refersh) _services = [];
     if (_services.isEmpty) {
       QuerySnapshot<Map<String, dynamic>> services =
           await FirebaseFirestore.instance.collection("Services").get();
@@ -47,19 +47,25 @@ class Backend {
         map["id"] = ele.id;
         _services.add(ServiceModel.fromMap(map));
       }
+      _services = _services.sortedByString((element) => element.id);
     }
     return _services.toList();
   }
 
+  bool showNumber = true;
   Future<Map> fetchUserData({bool refresh = false}) async {
     final session = await cureentSession;
     Map<String, dynamic> memberData = {};
     if (refresh) {
+      Notifcheck.userDAta = null;
+    }
+    if (Notifcheck.userDAta == null) {
       final currentUserCollection = userCollection
           .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20));
       var b = await currentUserCollection.get();
       Notifcheck.userDAta = b.data()!;
-      if (Notifcheck.userDAta["phone"] == null) {
+      if (Notifcheck.userDAta["phone"] == null && showNumber) {
+        showNumber = false;
         Fluttertoast.showToast(msg: "Please Update Your Phone Number");
       }
     }
@@ -116,7 +122,6 @@ class Backend {
         homeIcons.add(service);
       }
     }
-    getBanners();
     return homeIcons;
   }
 

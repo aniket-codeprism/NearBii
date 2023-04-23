@@ -24,8 +24,6 @@ class offerPlan extends StatefulWidget {
 class _offerPlanState extends State<offerPlan> {
   late FirebaseFirestore db;
 
-  late FirebaseStorage storage;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -85,6 +83,7 @@ class _offerPlanState extends State<offerPlan> {
             .child('vndor/offers/${fileName.absolute.toString()}');
         UploadTask uploadTask = reference.putFile(File(widget.path));
         TaskSnapshot snapshot = await uploadTask;
+
         var imageUrl = await snapshot.ref.getDownloadURL();
 
         widget.eventInfo["offerImg"] = imageUrl;
@@ -94,22 +93,6 @@ class _offerPlanState extends State<offerPlan> {
             .add(widget.eventInfo)
             .then((value) async {
           String myid = value.id;
-          await FirebaseFirestore.instance
-              .collection('vendor')
-              .doc(uid)
-              .get()
-              .then((value) {
-            var time = DateTime.now().millisecondsSinceEpoch;
-            name = value.get("businessName");
-            FirebaseFirestore.instance.collection("notif").doc(myid).set({
-              "id": myid,
-              "isOffer": true,
-              "uid": widget.eventInfo["uid"],
-              "location": value.get("businessLocation"),
-              "name": value.get("businessName"),
-              "image": value.get("businessImage"),
-            });
-          });
           Fluttertoast.showToast(msg: "OfferPosted");
 
           Navigator.of(context).pushAndRemoveUntil(
@@ -120,11 +103,12 @@ class _offerPlanState extends State<offerPlan> {
           })), (route) => false);
         }).catchError((onError) async {
           Fluttertoast.showToast(
-              msg: "Something went Wrong we will Added amount again");
+              msg: "cant take you to home page due to some error");
 
           Map<String, dynamic> wallet = {};
 
           wallet["wallet"] = balance;
+          wallet["error"] = onError.toString();
 
           await FirebaseFirestore.instance
               .collection('User')
@@ -287,7 +271,7 @@ class _offerPlanState extends State<offerPlan> {
                                       ),
                                       const Flexible(
                                         child: Text(
-                                          "Notifications to the user within 3kms around you. ",
+                                          "Notifications to the users around you. ",
                                           style: TextStyle(
                                             fontWeight: FontWeight.w400,
                                             fontSize: 16,
@@ -319,32 +303,6 @@ class _offerPlanState extends State<offerPlan> {
                                       ),
                                     ),
                                   ],
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: kSignUpContainerColor,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(
-                                        width: 20,
-                                      ),
-                                      const Flexible(
-                                        child: Text(
-                                          "Valid for 1 day",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ],
                             ),

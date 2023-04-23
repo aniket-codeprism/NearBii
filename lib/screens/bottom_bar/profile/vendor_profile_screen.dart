@@ -12,6 +12,7 @@ import 'package:nearbii/screens/wallet/wallet_screen.dart';
 import 'package:nearbii/services/sendNotification/registerToken/registerTopicNotificaion.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:readmore/readmore.dart';
+import 'package:swipe_refresh/swipe_refresh.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'dart:async';
@@ -109,6 +110,12 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
     //     msg: DateTime.now().microsecondsSinceEpoch.toString());
   }
 
+  refersh() {
+    db = FirebaseFirestore.instance;
+    _fetchBookMarked();
+    loadVendorData(refersh: true);
+  }
+
   bool isLoading = true;
 
   String userBGImage =
@@ -196,7 +203,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
   bool showRating = true;
   double vendorRating = 0.0;
   late VendorModel currentVendor;
-  loadVendorData() async {
+  loadVendorData({bool refersh = false}) async {
     setState(() {
       uid = widget.id;
     });
@@ -265,7 +272,9 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
     if (uid == FirebaseAuth.instance.currentUser!.uid.substring(0, 20)) {
       widget.isVisiter = false;
     }
-
+    if (refersh) {
+      Notifcheck.currentVendor = null;
+    }
     if (Notifcheck.currentVendor == null && (!widget.isVisiter)) {
       var vendor =
           await FirebaseFirestore.instance.collection('vendor').doc(uid).get();
@@ -351,10 +360,10 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
           .doc(uid)
           .set({"rating": vendorRating}, SetOptions(merge: true));
     }
+    _controller.sink.add(SwipeRefreshState.hidden);
   }
 
   var rating = 0.0;
-  var walletAfterReview;
 
   submitRating() async {
     reviewkey.currentState!.validate();
@@ -379,7 +388,6 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
             .doc(myid)
             .get()
             .then((value) {
-          walletAfterReview = value.get("wallet");
           Map<String, dynamic> revData = {};
 
           revData["uid"] = uid;
@@ -395,15 +403,12 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
               .collection("Reviews")
               .add(revData)
               .then((value) async {
-            Map<String, dynamic> wallet = {};
-            wallet["wallet"] = walletAfterReview + 10;
             await FirebaseFirestore.instance
                 .collection('User')
                 .doc(uid)
-                .update(wallet)
-                .then((value) {
+                .update({"wallet": FieldValue.increment(10)}).then((value) {
               updateWallet(uid, "Review Points", true, 10,
-                  DateTime.now().millisecondsSinceEpoch, wallet["wallet"]);
+                  DateTime.now().millisecondsSinceEpoch, 10);
               Fluttertoast.showToast(msg: "Rating Submitted");
             });
             Fluttertoast.showToast(msg: "Review submited");
@@ -469,7 +474,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                 gradient: const RadialGradient(
                                     radius: 4,
                                     colors: [
-                                      ui.Color.fromARGB(255, 25, 221, 172),
+                                      ui.Color.fromARGB(255, 0, 247, 255),
                                       Color(0xffC4C4C4)
                                     ]),
                                 borderRadius: BorderRadius.circular(50)),
@@ -483,10 +488,11 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                 FirebaseFirestore.instance
                                     .collection('vendor')
                                     .doc(uid)
-                                    .set({
-                                  "name": newName
-                                }, SetOptions(merge: true)).then(
-                                        (value) => Navigator.of(context).pop());
+                                    .set({"businessName": newName},
+                                        SetOptions(merge: true)).then((value) {
+                                  Navigator.of(context).pop();
+                                  loadVendorData(refersh: true);
+                                });
                               } else {
                                 Fluttertoast.showToast(
                                     msg: 'Please Enter Name');
@@ -500,7 +506,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                 gradient: const RadialGradient(
                                     radius: 4,
                                     colors: [
-                                      ui.Color.fromARGB(255, 25, 221, 172),
+                                      ui.Color.fromARGB(255, 0, 247, 255),
                                       Color(0xffC4C4C4)
                                     ]),
                                 borderRadius: BorderRadius.circular(50)),
@@ -804,7 +810,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                   gradient: const RadialGradient(
                                       radius: 4,
                                       colors: [
-                                        ui.Color.fromARGB(255, 25, 221, 172),
+                                        ui.Color.fromARGB(255, 0, 247, 255),
                                         Color(0xffC4C4C4)
                                       ]),
                                   borderRadius: BorderRadius.circular(50)),
@@ -850,8 +856,10 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                       .doc(uid)
                                       .set({
                                     "workingDay": work
-                                  }, SetOptions(merge: true)).then((value) =>
-                                          Navigator.of(context).pop());
+                                  }, SetOptions(merge: true)).then((value) {
+                                    Navigator.of(context).pop();
+                                    loadVendorData(refersh: true);
+                                  });
                                 }
                               }),
                               decoration: BoxDecoration(
@@ -862,7 +870,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                   gradient: const RadialGradient(
                                       radius: 4,
                                       colors: [
-                                        ui.Color.fromARGB(255, 25, 221, 172),
+                                        ui.Color.fromARGB(255, 0, 247, 255),
                                         Color(0xffC4C4C4)
                                       ]),
                                   borderRadius: BorderRadius.circular(50)),
@@ -1013,7 +1021,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                   gradient: const RadialGradient(
                                       radius: 4,
                                       colors: [
-                                        ui.Color.fromARGB(255, 25, 221, 172),
+                                        ui.Color.fromARGB(255, 0, 247, 255),
                                         Color(0xffC4C4C4)
                                       ]),
                                   borderRadius: BorderRadius.circular(50)),
@@ -1029,10 +1037,11 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                 FirebaseFirestore.instance
                                     .collection('vendor')
                                     .doc(uid)
-                                    .set({
-                                  "businessLocation": location
-                                }, SetOptions(merge: true)).then(
-                                        (value) => Navigator.of(context).pop());
+                                    .set({"businessLocation": location},
+                                        SetOptions(merge: true)).then((value) {
+                                  Navigator.of(context).pop();
+                                  loadVendorData(refersh: true);
+                                });
                               }),
                               decoration: BoxDecoration(
                                   border: Border.all(
@@ -1042,7 +1051,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                   gradient: const RadialGradient(
                                       radius: 4,
                                       colors: [
-                                        ui.Color.fromARGB(255, 25, 221, 172),
+                                        ui.Color.fromARGB(255, 0, 247, 255),
                                         Color(0xffC4C4C4)
                                       ]),
                                   borderRadius: BorderRadius.circular(50)),
@@ -1055,6 +1064,10 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         });
   }
 
+  final _controller = StreamController<SwipeRefreshState>.broadcast();
+
+  Stream<SwipeRefreshState> get _stream => _controller.stream;
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -1062,375 +1075,460 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
     return Scaffold(
         body: SafeArea(
       child: !isLoading
-          ? SingleChildScrollView(
-              child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 34, vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: width - 150,
-                        width: width - 68,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Stack(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                final imageProvider = Image.network(
-                                        currentVendor
-                                                .businessImage.isEmptyOrNull
-                                            ? Notifcheck.defCover
-                                            : currentVendor.businessImage)
-                                    .image;
-                                showImageViewer(context, imageProvider,
-                                    onViewerDismissed: () {
-                                  print("dismissed");
-                                });
-                                // showDialog(
-                                //     barrierColor:
-                                //         ui.Color.fromARGB(103, 26, 26, 26),
-                                //     context: (context),
-                                //     builder: (BuildContextcontext) {
-                                //       return Center(
-                                //         child: SizedBox(
-                                //           width: 300,
-                                //           height: 300,
-                                //           child: Image.network(currentVendor
-                                //                   .businessImage.isEmptyOrNull
-                                //               ? Notifcheck.defCover
-                                //               : currentVendor.businessImage),
-                                //         ),
-                                //       );
-                                //     });
-                              },
-                              child: Container(
-                                width: width - 68,
-                                height: width - 205,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  image: DecorationImage(
-                                    image: NetworkImage(currentVendor
-                                            .businessImage.isEmptyOrNull
-                                        ? Notifcheck.defCover
-                                        : currentVendor.businessImage),
-                                    fit: BoxFit.fitWidth,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (widget.isVisiter == false)
-                              Positioned(
-                                right: 12,
-                                top: 12,
-                                child: GestureDetector(
+          ? SwipeRefresh.builder(
+              onRefresh: () {
+                refersh();
+              },
+              stateStream: _stream,
+              itemCount: 1,
+              itemBuilder: (context, i) {
+                return SingleChildScrollView(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 34, vertical: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: width - 150,
+                            width: width - 68,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Stack(
+                              children: [
+                                InkWell(
                                   onTap: () {
-                                    _imgFromGallery().then((e) {
-                                      updateCover();
+                                    final imageProvider = Image.network(
+                                            currentVendor
+                                                    .businessImage.isEmptyOrNull
+                                                ? Notifcheck.defCover
+                                                : currentVendor.businessImage)
+                                        .image;
+                                    showImageViewer(context, imageProvider,
+                                        onViewerDismissed: () {
+                                      print("dismissed");
                                     });
+                                    // showDialog(
+                                    //     barrierColor:
+                                    //         ui.Color.fromARGB(103, 26, 26, 26),
+                                    //     context: (context),
+                                    //     builder: (BuildContextcontext) {
+                                    //       return Center(
+                                    //         child: SizedBox(
+                                    //           width: 300,
+                                    //           height: 300,
+                                    //           child: Image.network(currentVendor
+                                    //                   .businessImage.isEmptyOrNull
+                                    //               ? Notifcheck.defCover
+                                    //               : currentVendor.businessImage),
+                                    //         ),
+                                    //       );
+                                    //     });
                                   },
                                   child: Container(
-                                    width: 30,
-                                    height: 30,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFFFFFEE7),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 16,
+                                    width: width - 68,
+                                    height: width - 205,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      image: DecorationImage(
+                                        image: NetworkImage(currentVendor
+                                                .businessImage.isEmptyOrNull
+                                            ? Notifcheck.defCover
+                                            : currentVendor.businessImage),
+                                        fit: BoxFit.fitWidth,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            Positioned(
-                              bottom: 0,
-                              left: 18,
-                              child: Stack(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      final imageProvider =
-                                          Image.network(userImage).image;
-                                      showImageViewer(context, imageProvider,
-                                          onViewerDismissed: () {
-                                        print("dismissed");
-                                      });
-                                      // showDialog(
-                                      //     barrierColor: ui.Color.fromARGB(
-                                      //         103, 26, 26, 26),
-                                      //     context: (context),
-                                      //     builder: (BuildContextcontext) {
-                                      //       return Center(
-                                      //         child: Container(
-                                      //           width: 300,
-                                      //           height: 300,
-                                      //           child: Image.network(userImage),
-                                      //         ),
-                                      //       );
-                                      //     });
-                                    },
-                                    child: Container(
-                                      height: 110,
-                                      width: 110,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
+                                if (widget.isVisiter == false)
+                                  Positioned(
+                                    right: 12,
+                                    top: 12,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _imgFromGallery().then((e) {
+                                          updateCover();
+                                        });
+                                      },
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFFFFEE7),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt_outlined,
+                                          size: 16,
+                                        ),
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
+                                    ),
+                                  ),
+                                Positioned(
+                                  bottom: 0,
+                                  left: 18,
+                                  child: Stack(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          final imageProvider =
+                                              Image.network(userImage).image;
+                                          showImageViewer(
+                                              context, imageProvider,
+                                              onViewerDismissed: () {
+                                            print("dismissed");
+                                          });
+                                          // showDialog(
+                                          //     barrierColor: ui.Color.fromARGB(
+                                          //         103, 26, 26, 26),
+                                          //     context: (context),
+                                          //     builder: (BuildContextcontext) {
+                                          //       return Center(
+                                          //         child: Container(
+                                          //           width: 300,
+                                          //           height: 300,
+                                          //           child: Image.network(userImage),
+                                          //         ),
+                                          //       );
+                                          //     });
+                                        },
                                         child: Container(
-                                          decoration: BoxDecoration(
+                                          height: 110,
+                                          width: 110,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
                                             shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                              image: NetworkImage(userImage),
-                                              fit: BoxFit.fill,
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                  image:
+                                                      NetworkImage(userImage),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  if (widget.isVisiter == false)
-                                    Positioned(
-                                      right: 10,
-                                      bottom: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          _imgFromGallery().then((e) {
-                                            updateProfile();
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 30,
-                                          height: 30,
-                                          decoration: BoxDecoration(
-                                            color:
-                                                kUserProfileImageChangeContainerColor,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.camera_alt_outlined,
-                                            size: 16,
+                                      if (widget.isVisiter == false)
+                                        Positioned(
+                                          right: 10,
+                                          bottom: 0,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              _imgFromGallery().then((e) {
+                                                updateProfile();
+                                              });
+                                            },
+                                            child: Container(
+                                              width: 30,
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    kUserProfileImageChangeContainerColor,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.camera_alt_outlined,
+                                                size: 16,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  currentVendor.businessName,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
-                                    color: kLoadingScreenTextColor,
-                                  ),
-                                ),
-                                if (!widget.isVisiter)
-                                  GestureDetector(
-                                    onTap: () {
-                                      editName();
-                                    },
-                                    child: const Icon(
-                                      Icons.edit,
-                                      size: 19,
-                                    ),
-                                  )
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5, bottom: 7),
-                              child: Text(
-                                currentVendor.name,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  color: kPlansDescriptionTextColor,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 5, bottom: 7),
-                                child: ReadMoreText(
-                                  currentVendor.bussinesDesc,
-                                  trimLines: 2,
-                                  colorClickableText: Colors.pink,
-                                  trimMode: TrimMode.Line,
-                                  trimCollapsedText: 'Show more',
-                                  trimExpandedText: 'Show less',
-                                  moreStyle: const TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                  lessStyle: const TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                )),
-                            Row(
-                              children: [
-                                Text(
-                                  vendorRating.toStringAsFixed(2),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                    color: kLoadingScreenTextColor,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                RatingBar(
-                                  initialRating: vendorRating,
-                                  itemSize: 17,
-                                  direction: Axis.horizontal,
-                                  allowHalfRating: true,
-                                  ignoreGestures: true,
-                                  tapOnlyMode: false,
-                                  itemCount: 5,
-                                  glowColor:
-                                      kCreditPointScaffoldBackgroundColor,
-                                  ratingWidget: RatingWidget(
-                                    full: Icon(
-                                      Icons.star,
-                                      color: kSelectedStarColor,
-                                    ),
-                                    half: Icon(
-                                      Icons.star_half,
-                                      color: kSelectedStarColor,
-                                    ),
-                                    empty: Icon(
-                                      Icons.star_border_outlined,
-                                      color: kWalletLightTextColor,
-                                    ),
-                                  ),
-                                  itemPadding:
-                                      const EdgeInsets.symmetric(horizontal: 0),
-                                  onRatingUpdate: (rating) {
-                                    print(rating);
-                                  },
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  "$totalRatingCount. Ratings ",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 12,
-                                    color: kLoadingScreenTextColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 26,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    var mobbbb =
-                                        currentVendor.businessMobileNumber;
-                                    var url = "tel:$mobbbb";
-                                    if (await canLaunch(url)) {
-                                      await launch(url);
-                                    } else {
-                                      throw 'Could not launch $url';
-                                    }
-                                    Clipboard.setData(ClipboardData(
-                                        text: currentVendor
-                                            .businessMobileNumber));
-
-                                    Fluttertoast.showToast(
-                                        msg: "Mobile Copied to Clipboard");
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        height: 45,
-                                        width: 45,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border:
-                                              Border.all(color: Colors.black),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(Icons.call),
-                                      ),
                                     ],
                                   ),
                                 ),
-                                if (!widget.isVisiter)
-                                  GestureDetector(
-                                    onTap: () async {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const WalletScreen(),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      currentVendor.businessName,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 20,
+                                        color: kLoadingScreenTextColor,
+                                      ),
+                                    ),
+                                    if (!widget.isVisiter)
+                                      GestureDetector(
+                                        onTap: () {
+                                          editName();
+                                        },
+                                        child: const Icon(
+                                          Icons.edit,
+                                          size: 19,
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                        height: 45,
-                                        width: 45,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border:
-                                              Border.all(color: Colors.black),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(Icons.wallet)),
+                                      )
+                                  ],
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 5, bottom: 7),
+                                  child: Text(
+                                    currentVendor.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16,
+                                      color: kPlansDescriptionTextColor,
+                                    ),
                                   ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return const SizedBox(
-                                                  height: 50,
-                                                  width: 50,
-                                                  child:
-                                                      CircularProgressIndicator())
-                                              .centered();
-                                        });
+                                ),
+                                Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 5, bottom: 7),
+                                    child: ReadMoreText(
+                                      currentVendor.bussinesDesc,
+                                      trimLines: 2,
+                                      colorClickableText: Colors.pink,
+                                      trimMode: TrimMode.Line,
+                                      trimCollapsedText: 'Show more',
+                                      trimExpandedText: 'Show less',
+                                      moreStyle: const TextStyle(
+                                          color: Colors.lightBlue,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                      lessStyle: const TextStyle(
+                                          color: Colors.lightBlue,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                Row(
+                                  children: [
+                                    Text(
+                                      vendorRating.toStringAsFixed(2),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                        color: kLoadingScreenTextColor,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    RatingBar(
+                                      initialRating: vendorRating,
+                                      itemSize: 17,
+                                      direction: Axis.horizontal,
+                                      allowHalfRating: true,
+                                      ignoreGestures: true,
+                                      tapOnlyMode: false,
+                                      itemCount: 5,
+                                      glowColor:
+                                          kCreditPointScaffoldBackgroundColor,
+                                      ratingWidget: RatingWidget(
+                                        full: Icon(
+                                          Icons.star,
+                                          color: kSelectedStarColor,
+                                        ),
+                                        half: Icon(
+                                          Icons.star_half,
+                                          color: kSelectedStarColor,
+                                        ),
+                                        empty: Icon(
+                                          Icons.star_border_outlined,
+                                          color: kWalletLightTextColor,
+                                        ),
+                                      ),
+                                      itemPadding: const EdgeInsets.symmetric(
+                                          horizontal: 0),
+                                      onRatingUpdate: (rating) {
+                                        print(rating);
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "$totalRatingCount. Ratings ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 12,
+                                        color: kLoadingScreenTextColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 26,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        var mobbbb =
+                                            currentVendor.businessMobileNumber;
+                                        var url = "tel:$mobbbb";
+                                        if (await canLaunch(url)) {
+                                          await launch(url);
+                                        } else {
+                                          throw 'Could not launch $url';
+                                        }
+                                        Clipboard.setData(ClipboardData(
+                                            text: currentVendor
+                                                .businessMobileNumber));
 
-                                    var lat =
-                                        currentVendor.businessLocation.lat;
-                                    var long =
-                                        currentVendor.businessLocation.long;
-                                    // var loc = await GeolocatorPlatform.instance
-                                    //     .getCurrentPosition(
-                                    //         locationSettings:
-                                    //             LocationSettings());
-                                    Navigator.of(context).pop();
-                                    MapsLauncher.launchCoordinates(lat, long);
-//map edit
-                                    // Navigator.of(context).push(
-                                    //     MaterialPageRoute(builder: (context) {
-                                    //   return GoogleMapScreen(
-                                    //       lat: loc.latitude,
-                                    //       long: loc.longitude,
-                                    //       show: false);
-                                    // }));
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      Container(
+                                        Fluttertoast.showToast(
+                                            msg: "Mobile Copied to Clipboard");
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: 45,
+                                            width: 45,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.black),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(Icons.call),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (!widget.isVisiter)
+                                      GestureDetector(
+                                        onTap: () async {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const WalletScreen(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                            height: 45,
+                                            width: 45,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.black),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(Icons.wallet)),
+                                      ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return const SizedBox(
+                                                      height: 50,
+                                                      width: 50,
+                                                      child:
+                                                          CircularProgressIndicator())
+                                                  .centered();
+                                            });
+
+                                        var lat =
+                                            currentVendor.businessLocation.lat;
+                                        var long =
+                                            currentVendor.businessLocation.long;
+                                        // var loc = await GeolocatorPlatform.instance
+                                        //     .getCurrentPosition(
+                                        //         locationSettings:
+                                        //             LocationSettings());
+                                        Navigator.of(context).pop();
+                                        MapsLauncher.launchCoordinates(
+                                            lat, long);
+                                        //map edit
+                                        // Navigator.of(context).push(
+                                        //     MaterialPageRoute(builder: (context) {
+                                        //   return GoogleMapScreen(
+                                        //       lat: loc.latitude,
+                                        //       long: loc.longitude,
+                                        //       show: false);
+                                        // }));
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                              height: 45,
+                                              width: 45,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                border: Border.all(
+                                                    color: Colors.black),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                  Icons.location_on)),
+                                          if (!widget.isVisiter)
+                                            GestureDetector(
+                                              onTap: () {
+                                                editLocation();
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 30, bottom: 20),
+                                                child: Container(
+                                                  child: const Icon(
+                                                    Icons.edit,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                        ],
+                                      ),
+                                    ),
+                                    if (widget.isVisiter)
+                                      GestureDetector(
+                                        onTap: () {
+                                          log(FirebaseAuth
+                                              .instance.currentUser!.uid
+                                              .substring(0, 20));
+                                          FirebaseFirestore.instance
+                                              .collection("User")
+                                              .doc(FirebaseAuth
+                                                  .instance.currentUser!.uid
+                                                  .substring(0, 20))
+                                              .collection("bookmarks")
+                                              .doc(widget.id)
+                                              .set({widget.id: widget.id}).then(
+                                                  (value) {
+                                            Fluttertoast.showToast(
+                                                msg: "Added To BookMarks");
+                                            setState(() {
+                                              bookmarks = true;
+                                            });
+                                          });
+                                        },
+                                        child: Container(
+                                            height: 45,
+                                            width: 45,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.black),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.bookmark_add,
+                                              color: bookmarks
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                            )),
+                                      ),
+                                    if (widget.isVisiter)
+                                      GestureDetector(
+                                        onTap: () {
+                                          capturePng();
+                                        },
+                                        child: Container(
                                           height: 45,
                                           width: 45,
                                           decoration: BoxDecoration(
@@ -1439,958 +1537,949 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                                 Border.all(color: Colors.black),
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(Icons.location_on)),
-                                      if (!widget.isVisiter)
-                                        GestureDetector(
-                                          onTap: () {
-                                            editLocation();
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 30, bottom: 20),
-                                            child: Container(
-                                              child: const Icon(
-                                                Icons.edit,
-                                                size: 20,
-                                              ),
+                                          child: const Icon(Icons.share),
+                                        ),
+                                      ),
+                                    if (!widget.isVisiter)
+                                      GestureDetector(
+                                        onTap: () => showModalBottomSheet(
+                                          enableDrag: true,
+                                          isDismissible: false,
+                                          isScrollControlled: true,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.vertical(
+                                              top: Radius.circular(25),
                                             ),
                                           ),
-                                        )
-                                    ],
-                                  ),
-                                ),
-                                if (widget.isVisiter)
-                                  GestureDetector(
-                                    onTap: () {
-                                      log(FirebaseAuth.instance.currentUser!.uid
-                                          .substring(0, 20));
-                                      FirebaseFirestore.instance
-                                          .collection("User")
-                                          .doc(FirebaseAuth
-                                              .instance.currentUser!.uid
-                                              .substring(0, 20))
-                                          .collection("bookmarks")
-                                          .doc(widget.id)
-                                          .set({widget.id: widget.id}).then(
-                                              (value) {
-                                        Fluttertoast.showToast(
-                                            msg: "Added To BookMarks");
-                                        setState(() {
-                                          bookmarks = true;
-                                        });
-                                      });
-                                    },
-                                    child: Container(
-                                        height: 45,
-                                        width: 45,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border:
-                                              Border.all(color: Colors.black),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.bookmark_add,
-                                          color: bookmarks
-                                              ? Colors.blue
-                                              : Colors.black,
-                                        )),
-                                  ),
-                                if (widget.isVisiter)
-                                  GestureDetector(
-                                    onTap: () {
-                                      capturePng();
-                                    },
-                                    child: Container(
-                                      height: 45,
-                                      width: 45,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.black),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(Icons.share),
-                                    ),
-                                  ),
-                                if (!widget.isVisiter)
-                                  GestureDetector(
-                                    onTap: () => showModalBottomSheet(
-                                      enableDrag: true,
-                                      isDismissible: false,
-                                      isScrollControlled: true,
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(25),
-                                        ),
-                                      ),
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return StatefulBuilder(builder:
-                                            (BuildContext context, setStat) {
-                                          return Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Center(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 10, bottom: 46),
-                                                  child: Container(
-                                                    width: 70,
-                                                    height: 3,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              100),
-                                                      color:
-                                                          kSignUpContainerColor,
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return StatefulBuilder(builder:
+                                                (BuildContext context,
+                                                    setStat) {
+                                              return Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Center(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 10,
+                                                              bottom: 46),
+                                                      child: Container(
+                                                        width: 70,
+                                                        height: 3,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      100),
+                                                          color:
+                                                              kSignUpContainerColor,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 15),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  BusinessServicesDetailsScreen(
+                                                                      edit:
+                                                                          true,
+                                                                      data:
+                                                                          currentVendor),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              const Icon(
+                                                                Icons.edit,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 11,
+                                                              ),
+                                                              Text(
+                                                                "Edit Profile",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 15),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //advertise
+                                                        // GestureDetector(
+                                                        //   onTap: () =>
+                                                        //       Navigator.of(context)
+                                                        //           .push(
+                                                        //     MaterialPageRoute(
+                                                        //       builder: (context) =>
+                                                        //           AdvertiseScreen(),
+                                                        //     ),
+                                                        //   ),
+                                                        //   child: Row(
+                                                        //     children: [
+                                                        //       SizedBox(
+                                                        //         width: 2,
+                                                        //       ),
+                                                        //       Icon(Icons.ads_click),
+                                                        //       SizedBox(
+                                                        //         width: 12,
+                                                        //       ),
+                                                        //       Text(
+                                                        //         "Advertise",
+                                                        //         style: TextStyle(
+                                                        //           fontWeight:
+                                                        //               FontWeight
+                                                        //                   .w400,
+                                                        //           fontSize: 14,
+                                                        //           color:
+                                                        //               kLoadingScreenTextColor,
+                                                        //         ),
+                                                        //       ),
+                                                        //     ],
+                                                        //   ),
+                                                        // ),
+                                                        // Padding(
+                                                        //   padding: const EdgeInsets
+                                                        //           .symmetric(
+                                                        //       vertical: 15),
+                                                        //   child: Container(
+                                                        //     height: 0.5,
+                                                        //     color:
+                                                        //         kDrawerDividerColor,
+                                                        //   ),
+                                                        // ),
+                                                        //status
+                                                        Row(
+                                                          children: [
+                                                            const Icon(
+                                                              Icons
+                                                                  .check_circle_outline,
+                                                              color: Colors
+                                                                  .black54,
+                                                              size: 20,
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 11,
+                                                            ),
+                                                            Text(
+                                                              "Status: ${currentVendor.active ? "Active" : "Inactive"}",
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize: 14,
+                                                                color:
+                                                                    kLoadingScreenTextColor,
+                                                              ),
+                                                            ),
+                                                            const Spacer(),
+                                                            Switch(
+                                                              onChanged:
+                                                                  (bool value) {
+                                                                Fluttertoast
+                                                                    .showToast(
+                                                                        msg:
+                                                                            "Status: ${value ? "Active" : "Inactive"}");
+                                                                setStat(() {
+                                                                  currentVendor
+                                                                          .active =
+                                                                      value;
+                                                                });
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'vendor')
+                                                                    .doc(uid)
+                                                                    .set({
+                                                                  "active":
+                                                                      value
+                                                                }, SetOptions(merge: true));
+                                                              },
+                                                              value:
+                                                                  currentVendor
+                                                                      .active,
+                                                            )
+                                                          ],
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 5),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //my transaction
+                                                        // GestureDetector(
+                                                        //   onTap: () =>
+                                                        //       Navigator.of(context)
+                                                        //           .push(
+                                                        //     MaterialPageRoute(
+                                                        //       builder: (context) =>
+                                                        //           TransactionHistoryScreen(
+                                                        //               true),
+                                                        //     ),
+                                                        //   ),
+                                                        //   child: Row(
+                                                        //     children: [
+                                                        //       Icon(
+                                                        //         Icons.change_circle,
+                                                        //         color:
+                                                        //             Colors.black54,
+                                                        //         size: 20,
+                                                        //       ),
+                                                        //       SizedBox(
+                                                        //         width: 11,
+                                                        //       ),
+                                                        //       Text(
+                                                        //         "My Transaction",
+                                                        //         style: TextStyle(
+                                                        //           fontWeight:
+                                                        //               FontWeight
+                                                        //                   .w400,
+                                                        //           fontSize: 14,
+                                                        //           color:
+                                                        //               kLoadingScreenTextColor,
+                                                        //         ),
+                                                        //       ),
+                                                        //     ],
+                                                        //   ),
+                                                        // ),
+                                                        // Padding(
+                                                        //   padding: const EdgeInsets
+                                                        //           .symmetric(
+                                                        //       vertical: 15),
+                                                        //   child: Container(
+                                                        //     height: 0.5,
+                                                        //     color:
+                                                        //         kDrawerDividerColor,
+                                                        //   ),
+                                                        // ),
+                                                        //Check Plans
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const AnnualPlanMainScreen(),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              const Icon(
+                                                                Icons
+                                                                    .lock_outline,
+                                                                color: Colors
+                                                                    .black54,
+                                                                size: 20,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 11,
+                                                              ),
+                                                              Text(
+                                                                "Check Plans",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ).pOnly(
+                                                            top: 15, bottom: 5),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 15),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //renew validity
+
+                                                        //post event
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            if (endDate
+                                                                    .difference(
+                                                                        DateTime
+                                                                            .now())
+                                                                    .inMilliseconds <
+                                                                0) {
+                                                              log(endDate
+                                                                  .difference(
+                                                                      DateTime
+                                                                          .now())
+                                                                  .inMilliseconds
+                                                                  .toString());
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          RenewAnnualPlanScreen(
+                                                                    check:
+                                                                        false,
+                                                                    end:
+                                                                        endDate,
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            } else {
+                                                              log(endDate
+                                                                  .difference(
+                                                                      DateTime
+                                                                          .now())
+                                                                  .inDays
+                                                                  .toString());
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          RenewAnnualPlanScreen(
+                                                                    check: true,
+                                                                    end:
+                                                                        endDate,
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                          child: Row(
+                                                            children: [
+                                                              const Icon(
+                                                                Icons
+                                                                    .lock_outline,
+                                                                color: Colors
+                                                                    .black54,
+                                                                size: 20,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 11,
+                                                              ),
+                                                              Text(
+                                                                "Renew Validity",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                              const Spacer(),
+                                                              "Validity Left"
+                                                                  .text
+                                                                  .bold
+                                                                  .make(),
+                                                              Container(
+                                                                child: ((memberDays)
+                                                                            .toString() +
+                                                                        " Days ")
+                                                                    .text
+                                                                    .sm
+                                                                    .make()
+                                                                    .pOnly(
+                                                                        left:
+                                                                            10,
+                                                                        right:
+                                                                            10),
+                                                              ),
+                                                              Stack(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                children: [
+                                                                  CircularProgressIndicator(
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .red,
+                                                                    value:
+                                                                        (memberDays /
+                                                                            365),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 15),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //post event
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const AddEvent(),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              const Icon(
+                                                                Icons
+                                                                    .add_business,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 11,
+                                                              ),
+                                                              Text(
+                                                                "Post an Event",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 15),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //post offer
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const PostOfferScreen(),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              const Icon(
+                                                                Icons
+                                                                    .local_offer_sharp,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 11,
+                                                              ),
+                                                              Text(
+                                                                "Post an Offer",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 15),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //post offer
+                                                        //post add
+                                                        GestureDetector(
+                                                          onTap: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const adsPlan(),
+                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              const SizedBox(
+                                                                width: 2,
+                                                              ),
+                                                              const Icon(
+                                                                Icons
+                                                                    .speaker_notes_outlined,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 11,
+                                                              ),
+                                                              Text(
+                                                                "Post an Ad",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical: 15),
+                                                          child: Container(
+                                                            height: 0.5,
+                                                            color:
+                                                                kDrawerDividerColor,
+                                                          ),
+                                                        ),
+                                                        //post add
+                                                        //logout
+                                                        GestureDetector(
+                                                          onTap: () async {
+                                                            unsubscribeTopicity()
+                                                                .then((value) =>
+                                                                    FirebaseAuth
+                                                                        .instance
+                                                                        .signOut());
+
+                                                            await Navigator.of(
+                                                                    context)
+                                                                .pushAndRemoveUntil(
+                                                              MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    const LoginSignUpScreen(
+                                                                        loginState:
+                                                                            true),
+                                                              ),
+                                                              (Route route) =>
+                                                                  false,
+                                                            );
+                                                          },
+                                                          child: Row(
+                                                            children: [
+                                                              const Icon(
+                                                                Icons.logout,
+                                                                color: Colors
+                                                                    .black54,
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              Text(
+                                                                "Logout",
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 14,
+                                                                  color:
+                                                                      kLoadingScreenTextColor,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                          },
+                                        ),
+                                        child: Container(
+                                            height: 45,
+                                            width: 45,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                  color: Colors.black12),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                                Icons.more_horiz_rounded)),
+                                      )
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 20,
+                                  ),
+                                  child: Container(
+                                    height: 1,
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.topRight,
+                                        colors: [
+                                          Color(0x116C6464),
+                                          Color(0xFFE7E7E7),
+                                          Color(0x116C6464),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                //rate
+                                widget.isVisiter && showRating
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 20),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Rate This",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 20,
+                                                color: kLoadingScreenTextColor,
                                               ),
-                                              Padding(
+                                            ),
+                                            const SizedBox(
+                                              height: 15,
+                                            ),
+                                            Center(
+                                              child: RatingBar(
+                                                initialRating: 0.0,
+                                                itemSize: 30,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: true,
+                                                itemCount: 5,
+                                                glowColor:
+                                                    kCreditPointScaffoldBackgroundColor,
+                                                ratingWidget: RatingWidget(
+                                                  full: Icon(
+                                                    Icons.star,
+                                                    color: kSelectedStarColor,
+                                                  ),
+                                                  half: Icon(
+                                                    Icons.star_half,
+                                                    color: kSelectedStarColor,
+                                                  ),
+                                                  empty: Icon(
+                                                    Icons.star_border_outlined,
+                                                    color:
+                                                        kWalletLightTextColor,
+                                                  ),
+                                                ),
+                                                itemPadding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5),
+                                                onRatingUpdate: (rat) {
+                                                  setState(() {
+                                                    rating = rat;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            if (widget.isVisiter)
+                                              Container(
+                                                height: 50,
+                                                width: width,
                                                 padding:
                                                     const EdgeInsets.symmetric(
                                                         horizontal: 15),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+                                                child: Stack(
                                                   children: [
-                                                    GestureDetector(
-                                                      onTap: () =>
-                                                          Navigator.of(context)
-                                                              .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              BusinessServicesDetailsScreen(
-                                                                  edit: true,
-                                                                  data:
-                                                                      currentVendor),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const SizedBox(
-                                                            width: 2,
-                                                          ),
-                                                          const Icon(
-                                                            Icons.edit,
-                                                            color: Colors.grey,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 11,
-                                                          ),
-                                                          Text(
-                                                            "Edit Profile",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 15),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
-                                                      ),
-                                                    ),
-                                                    //advertise
-                                                    // GestureDetector(
-                                                    //   onTap: () =>
-                                                    //       Navigator.of(context)
-                                                    //           .push(
-                                                    //     MaterialPageRoute(
-                                                    //       builder: (context) =>
-                                                    //           AdvertiseScreen(),
-                                                    //     ),
-                                                    //   ),
-                                                    //   child: Row(
-                                                    //     children: [
-                                                    //       SizedBox(
-                                                    //         width: 2,
-                                                    //       ),
-                                                    //       Icon(Icons.ads_click),
-                                                    //       SizedBox(
-                                                    //         width: 12,
-                                                    //       ),
-                                                    //       Text(
-                                                    //         "Advertise",
-                                                    //         style: TextStyle(
-                                                    //           fontWeight:
-                                                    //               FontWeight
-                                                    //                   .w400,
-                                                    //           fontSize: 14,
-                                                    //           color:
-                                                    //               kLoadingScreenTextColor,
-                                                    //         ),
-                                                    //       ),
-                                                    //     ],
-                                                    //   ),
-                                                    // ),
-                                                    // Padding(
-                                                    //   padding: const EdgeInsets
-                                                    //           .symmetric(
-                                                    //       vertical: 15),
-                                                    //   child: Container(
-                                                    //     height: 0.5,
-                                                    //     color:
-                                                    //         kDrawerDividerColor,
-                                                    //   ),
-                                                    // ),
-                                                    //status
-                                                    Row(
-                                                      children: [
-                                                        const Icon(
-                                                          Icons
-                                                              .check_circle_outline,
-                                                          color: Colors.black54,
-                                                          size: 20,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 11,
-                                                        ),
-                                                        Text(
-                                                          "Status: ${currentVendor.active ? "Active" : "Inactive"}",
-                                                          style: TextStyle(
+                                                    Form(
+                                                      key: reviewkey,
+                                                      child: TextFormField(
+                                                        focusNode: FocusNode(
+                                                            canRequestFocus:
+                                                                false),
+                                                        validator: (value) {
+                                                          if (value == null ||
+                                                              value.isEmpty) {
+                                                            return 'Please enter some text';
+                                                          }
+                                                          return null;
+                                                        },
+                                                        controller:
+                                                            reviewcontroller,
+                                                        keyboardType:
+                                                            TextInputType.text,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          hintText:
+                                                              'Add Review...',
+                                                          hintStyle: TextStyle(
+                                                            color:
+                                                                kPlansDescriptionTextColor,
+                                                            fontSize: 13,
                                                             fontWeight:
                                                                 FontWeight.w400,
-                                                            fontSize: 14,
-                                                            color:
-                                                                kLoadingScreenTextColor,
+                                                          ),
+                                                          floatingLabelBehavior:
+                                                              FloatingLabelBehavior
+                                                                  .always,
+                                                          prefixIconColor:
+                                                              kHintTextColor,
+                                                          enabledBorder:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    kPlansDescriptionTextColor),
+                                                          ),
+                                                          border:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    kPlansDescriptionTextColor),
+                                                            gapPadding: 10,
+                                                          ),
+                                                          focusedBorder:
+                                                              OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    kPlansDescriptionTextColor),
+                                                            gapPadding: 10,
                                                           ),
                                                         ),
-                                                        const Spacer(),
-                                                        Switch(
-                                                          onChanged:
-                                                              (bool value) {
-                                                            Fluttertoast.showToast(
-                                                                msg:
-                                                                    "Status: ${value ? "Active" : "Inactive"}");
-                                                            setStat(() {
-                                                              currentVendor
-                                                                      .active =
-                                                                  value;
-                                                            });
-                                                            FirebaseFirestore
-                                                                .instance
-                                                                .collection(
-                                                                    'vendor')
-                                                                .doc(uid)
-                                                                .set(
-                                                                    {
-                                                                  "active":
-                                                                      value
-                                                                },
-                                                                    SetOptions(
-                                                                        merge:
-                                                                            true));
-                                                          },
-                                                          value: currentVendor
-                                                              .active,
-                                                        )
-                                                      ],
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 5),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
                                                       ),
-                                                    ),
-                                                    //my transaction
-                                                    // GestureDetector(
-                                                    //   onTap: () =>
-                                                    //       Navigator.of(context)
-                                                    //           .push(
-                                                    //     MaterialPageRoute(
-                                                    //       builder: (context) =>
-                                                    //           TransactionHistoryScreen(
-                                                    //               true),
-                                                    //     ),
-                                                    //   ),
-                                                    //   child: Row(
-                                                    //     children: [
-                                                    //       Icon(
-                                                    //         Icons.change_circle,
-                                                    //         color:
-                                                    //             Colors.black54,
-                                                    //         size: 20,
-                                                    //       ),
-                                                    //       SizedBox(
-                                                    //         width: 11,
-                                                    //       ),
-                                                    //       Text(
-                                                    //         "My Transaction",
-                                                    //         style: TextStyle(
-                                                    //           fontWeight:
-                                                    //               FontWeight
-                                                    //                   .w400,
-                                                    //           fontSize: 14,
-                                                    //           color:
-                                                    //               kLoadingScreenTextColor,
-                                                    //         ),
-                                                    //       ),
-                                                    //     ],
-                                                    //   ),
-                                                    // ),
-                                                    // Padding(
-                                                    //   padding: const EdgeInsets
-                                                    //           .symmetric(
-                                                    //       vertical: 15),
-                                                    //   child: Container(
-                                                    //     height: 0.5,
-                                                    //     color:
-                                                    //         kDrawerDividerColor,
-                                                    //   ),
-                                                    // ),
-                                                    //Check Plans
-                                                    GestureDetector(
-                                                      onTap: () =>
-                                                          Navigator.of(context)
-                                                              .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const AnnualPlanMainScreen(),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.lock_outline,
-                                                            color:
-                                                                Colors.black54,
-                                                            size: 20,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 11,
-                                                          ),
-                                                          Text(
-                                                            "Check Plans",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ).pOnly(top: 15, bottom: 5),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 15),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
-                                                      ),
-                                                    ),
-                                                    //renew validity
-
-                                                    //post event
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        if (endDate
-                                                                .difference(
-                                                                    DateTime
-                                                                        .now())
-                                                                .inMilliseconds <
-                                                            0) {
-                                                          log(endDate
-                                                              .difference(
-                                                                  DateTime
-                                                                      .now())
-                                                              .inMilliseconds
-                                                              .toString());
-                                                          Navigator.of(context)
-                                                              .push(
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  RenewAnnualPlanScreen(
-                                                                check: false,
-                                                                end: endDate,
-                                                              ),
-                                                            ),
-                                                          );
-                                                        } else {
-                                                          log(endDate
-                                                              .difference(
-                                                                  DateTime
-                                                                      .now())
-                                                              .inDays
-                                                              .toString());
-                                                          Navigator.of(context)
-                                                              .push(
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  RenewAnnualPlanScreen(
-                                                                check: true,
-                                                                end: endDate,
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.lock_outline,
-                                                            color:
-                                                                Colors.black54,
-                                                            size: 20,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 11,
-                                                          ),
-                                                          Text(
-                                                            "Renew Validity",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                          const Spacer(),
-                                                          "Validity Left"
-                                                              .text
-                                                              .bold
-                                                              .make(),
-                                                          Container(
-                                                            child: ((memberDays)
-                                                                        .toString() +
-                                                                    " Days ")
-                                                                .text
-                                                                .sm
-                                                                .make()
-                                                                .pOnly(
-                                                                    left: 10,
-                                                                    right: 10),
-                                                          ),
-                                                          Stack(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            children: [
-                                                              CircularProgressIndicator(
-                                                                backgroundColor:
-                                                                    Colors.red,
-                                                                value:
-                                                                    (memberDays /
-                                                                        365),
-                                                              ),
-                                                            ],
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 15),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
-                                                      ),
-                                                    ),
-                                                    //post event
-                                                    GestureDetector(
-                                                      onTap: () =>
-                                                          Navigator.of(context)
-                                                              .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const AddEvent(),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const SizedBox(
-                                                            width: 2,
-                                                          ),
-                                                          const Icon(
-                                                            Icons.add_business,
-                                                            color: Colors.grey,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 11,
-                                                          ),
-                                                          Text(
-                                                            "Post an Event",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 15),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
-                                                      ),
-                                                    ),
-                                                    //post offer
-                                                    GestureDetector(
-                                                      onTap: () =>
-                                                          Navigator.of(context)
-                                                              .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const PostOfferScreen(),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const SizedBox(
-                                                            width: 2,
-                                                          ),
-                                                          const Icon(
-                                                            Icons
-                                                                .local_offer_sharp,
-                                                            color: Colors.grey,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 11,
-                                                          ),
-                                                          Text(
-                                                            "Post an Offer",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 15),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
-                                                      ),
-                                                    ),
-                                                    //post offer
-                                                    //post add
-                                                    GestureDetector(
-                                                      onTap: () =>
-                                                          Navigator.of(context)
-                                                              .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              const adsPlan(),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          const SizedBox(
-                                                            width: 2,
-                                                          ),
-                                                          const Icon(
-                                                            Icons
-                                                                .speaker_notes_outlined,
-                                                            color: Colors.grey,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 11,
-                                                          ),
-                                                          Text(
-                                                            "Post an Ad",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 15),
-                                                      child: Container(
-                                                        height: 0.5,
-                                                        color:
-                                                            kDrawerDividerColor,
-                                                      ),
-                                                    ),
-                                                    //post add
-                                                    //logout
-                                                    GestureDetector(
-                                                      onTap: () async {
-                                                        await unsubscribeTopicity();
-                                                        await FirebaseAuth
-                                                            .instance
-                                                            .signOut();
-                                                        await Navigator.of(
-                                                                context)
-                                                            .pushAndRemoveUntil(
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                const LoginSignUpScreen(
-                                                                    loginState:
-                                                                        true),
-                                                          ),
-                                                          (Route route) =>
-                                                              false,
-                                                        );
-                                                      },
-                                                      child: Row(
-                                                        children: [
-                                                          const Icon(
-                                                            Icons.logout,
-                                                            color:
-                                                                Colors.black54,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 8,
-                                                          ),
-                                                          Text(
-                                                            "Logout",
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                              color:
-                                                                  kLoadingScreenTextColor,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 20,
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                            ],
-                                          );
-                                        });
-                                      },
-                                    ),
-                                    child: Container(
-                                        height: 45,
-                                        width: 45,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border:
-                                              Border.all(color: Colors.black12),
-                                          shape: BoxShape.circle,
+                                            InkWell(
+                                              onTap: () {
+                                                submitRating();
+                                              },
+                                              child: Container(
+                                                  alignment: Alignment.center,
+                                                  margin:
+                                                      const EdgeInsets.all(15),
+                                                  padding:
+                                                      const EdgeInsets.all(15),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.blue,
+                                                        width: 1),
+                                                  ),
+                                                  child: Container(
+                                                      child: const Text(
+                                                          "Submit",
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .blue)))),
+                                            ),
+                                          ],
                                         ),
-                                        child: const Icon(
-                                            Icons.more_horiz_rounded)),
-                                  )
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 20,
-                              ),
-                              child: Container(
-                                height: 1,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                    colors: [
-                                      Color(0x116C6464),
-                                      Color(0xFFE7E7E7),
-                                      Color(0x116C6464),
-                                    ],
+                                      )
+                                    : Container(),
+                                Container(
+                                  height: 1,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.topRight,
+                                      colors: [
+                                        Color(0x116C6464),
+                                        Color(0xFFE7E7E7),
+                                        Color(0x116C6464),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            //rate
-                            widget.isVisiter && showRating
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 20),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Rate This",
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 34),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.map_sharp)
+                                          .onInkTap(() {}),
+                                      const SizedBox(
+                                        width: 32,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          currentVendor.businessAddress,
                                           style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 16,
                                             color: kLoadingScreenTextColor,
                                           ),
                                         ),
-                                        const SizedBox(
-                                          height: 15,
-                                        ),
-                                        Center(
-                                          child: RatingBar(
-                                            initialRating: 0.0,
-                                            itemSize: 30,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: true,
-                                            itemCount: 5,
-                                            glowColor:
-                                                kCreditPointScaffoldBackgroundColor,
-                                            ratingWidget: RatingWidget(
-                                              full: Icon(
-                                                Icons.star,
-                                                color: kSelectedStarColor,
-                                              ),
-                                              half: Icon(
-                                                Icons.star_half,
-                                                color: kSelectedStarColor,
-                                              ),
-                                              empty: Icon(
-                                                Icons.star_border_outlined,
-                                                color: kWalletLightTextColor,
-                                              ),
-                                            ),
-                                            itemPadding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 5),
-                                            onRatingUpdate: (rat) {
-                                              setState(() {
-                                                rating = rat;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        if (widget.isVisiter)
-                                          Container(
-                                            height: 50,
-                                            width: width,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                            child: Stack(
-                                              children: [
-                                                Form(
-                                                  key: reviewkey,
-                                                  child: TextFormField(
-                                                    focusNode: FocusNode(
-                                                        canRequestFocus: false),
-                                                    validator: (value) {
-                                                      if (value == null ||
-                                                          value.isEmpty) {
-                                                        return 'Please enter some text';
-                                                      }
-                                                      return null;
-                                                    },
-                                                    controller:
-                                                        reviewcontroller,
-                                                    keyboardType:
-                                                        TextInputType.text,
-                                                    decoration: InputDecoration(
-                                                      hintText: 'Add Review...',
-                                                      hintStyle: TextStyle(
-                                                        color:
-                                                            kPlansDescriptionTextColor,
-                                                        fontSize: 13,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                      ),
-                                                      floatingLabelBehavior:
-                                                          FloatingLabelBehavior
-                                                              .always,
-                                                      prefixIconColor:
-                                                          kHintTextColor,
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                kPlansDescriptionTextColor),
-                                                      ),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                kPlansDescriptionTextColor),
-                                                        gapPadding: 10,
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                kPlansDescriptionTextColor),
-                                                        gapPadding: 10,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        InkWell(
-                                          onTap: () {
-                                            submitRating();
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        height: 80,
+                                        width: 80,
+                                        child: GoogleMap(
+                                          onTap: (LatLng) {
+                                            MapsLauncher.launchCoordinates(
+                                              currentVendor
+                                                  .businessLocation.lat,
+                                              currentVendor
+                                                  .businessLocation.long,
+                                            );
                                           },
-                                          child: Container(
-                                              alignment: Alignment.center,
-                                              margin: const EdgeInsets.all(15),
-                                              padding: const EdgeInsets.all(15),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.blue,
-                                                    width: 1),
-                                              ),
-                                              child: Container(
-                                                  child: const Text("Submit",
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.blue)))),
+                                          zoomControlsEnabled: false,
+                                          compassEnabled: false,
+                                          initialCameraPosition: CameraPosition(
+                                              bearing: 1,
+                                              zoom: 5.0,
+                                              target: LatLng(
+                                                currentVendor
+                                                    .businessLocation.lat,
+                                                currentVendor
+                                                    .businessLocation.long,
+                                              )),
                                         ),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          image: const DecorationImage(
+                                            image: AssetImage(
+                                              'assets/images/profile/vendor_profile/address.png',
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  height: 1,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.topRight,
+                                      colors: [
+                                        Color(0x116C6464),
+                                        Color(0xFFE7E7E7),
+                                        Color(0x116C6464),
                                       ],
                                     ),
-                                  )
-                                : Container(),
-                            Container(
-                              height: 1,
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.topRight,
-                                  colors: [
-                                    Color(0x116C6464),
-                                    Color(0xFFE7E7E7),
-                                    Color(0x116C6464),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 34),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.map_sharp).onInkTap(() {}),
-                                  const SizedBox(
-                                    width: 32,
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      currentVendor.businessAddress,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 16,
-                                        color: kLoadingScreenTextColor,
-                                      ),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    height: 80,
-                                    width: 80,
-                                    child: GoogleMap(
-                                      onTap: (LatLng) {
-                                        MapsLauncher.launchCoordinates(
-                                          currentVendor.businessLocation.lat,
-                                          currentVendor.businessLocation.long,
-                                        );
-                                      },
-                                      zoomControlsEnabled: false,
-                                      compassEnabled: false,
-                                      initialCameraPosition: CameraPosition(
-                                          bearing: 1,
-                                          zoom: 5.0,
-                                          target: LatLng(
-                                            currentVendor.businessLocation.lat,
-                                            currentVendor.businessLocation.long,
-                                          )),
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: const DecorationImage(
-                                        image: AssetImage(
-                                          'assets/images/profile/vendor_profile/address.png',
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              height: 1,
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.topRight,
-                                  colors: [
-                                    Color(0x116C6464),
-                                    Color(0xFFE7E7E7),
-                                    Color(0x116C6464),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 23),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.access_time),
-                                  const SizedBox(
-                                    width: 32,
-                                  ),
-                                  Row(
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 23),
+                                  child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
+                                      const Icon(Icons.access_time),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: [
                                               Text(
                                                 (DateTime.now().hour * 60 +
@@ -2420,10 +2509,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                                   fontSize: 15,
                                                   color: kSignInContainerColor,
                                                 ),
-                                              ),
-                                              const SizedBox(
-                                                width: 8,
-                                              ),
+                                              ).px2(),
                                               Text(
                                                 (DateFormat('hh:mm a').format(
                                                         DateTime
@@ -2455,386 +2541,389 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(
-                                            height: 6,
-                                          ),
-                                          Text(
-                                            currentVendor.workingDay,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                currentVendor.workingDay,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                      if (!widget.isVisiter)
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              left: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.03),
-                                          child: InkWell(
+                                      (!widget.isVisiter)
+                                          ? InkWell(
                                               onTap: () {
                                                 editTime();
                                               },
-                                              child: const Icon(Icons.edit)),
-                                        )
+                                              child: const Icon(Icons.edit))
+                                          : const Icon(Icons.calendar_month),
                                     ],
                                   ),
+                                ),
+                                Container(
+                                  height: 1,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.topRight,
+                                      colors: [
+                                        Color(0x116C6464),
+                                        Color(0xFFE7E7E7),
+                                        Color(0x116C6464),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 23),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Icon(Icons.call),
+                                        const SizedBox(
+                                          width: 32,
+                                        ),
+                                        Text(
+                                          "Vendor Phone Number",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 16,
+                                            color: kLoadingScreenTextColor,
+                                          ),
+                                        ).onInkTap(() async {
+                                          var mobbbb = currentVendor
+                                              .businessMobileNumber
+                                              .toString();
+                                          var url = "tel:$mobbbb";
+                                          if (await canLaunch(url)) {
+                                            await launch(url);
+                                          } else {
+                                            throw 'Could not launch $url';
+                                          }
+                                        }),
+                                      ],
+                                    )),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              height: 1,
+                              decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.topRight,
+                                colors: [
+                                  Color(0x116C6464),
+                                  Color(0xFFE7E7E7),
+                                  Color(0x116C6464),
+                                ],
+                              ))),
+                          Container(
+                            height: 1,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.topRight,
+                                colors: [
+                                  Color(0x116C6464),
+                                  Color(0xFFE7E7E7),
+                                  Color(0x116C6464),
                                 ],
                               ),
                             ),
-                            Container(
-                              height: 1,
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.topRight,
-                                  colors: [
-                                    Color(0x116C6464),
-                                    Color(0xFFE7E7E7),
-                                    Color(0x116C6464),
-                                  ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Photos",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 20,
+                                    color: kLoadingScreenTextColor,
+                                  ),
                                 ),
+                                const SizedBox(
+                                  height: 13,
+                                ),
+                                getVendorImage(context, uid, widget.isVisiter),
+                                !widget.isVisiter
+                                    ? InkWell(
+                                        onTap: () {
+                                          _imgFromGallery().then((e) {
+                                            saveVndorImages();
+                                          });
+                                        },
+                                        child: Container(
+                                            margin: const EdgeInsets.all(15),
+                                            padding: const EdgeInsets.all(15),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.blue, width: 1),
+                                            ),
+                                            child: Container(
+                                                child: const Text(
+                                                    "Upload Image",
+                                                    style: TextStyle(
+                                                        color: Colors.blue)))),
+                                      )
+                                    : Container(),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 1,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.topRight,
+                                colors: [
+                                  Color(0x116C6464),
+                                  Color(0xFFE7E7E7),
+                                  Color(0x116C6464),
+                                ],
                               ),
                             ),
-                            Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 23),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.call),
-                                    const SizedBox(
-                                      width: 32,
-                                    ),
-                                    Text(
-                                      "Vendor Phone Number",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 16,
-                                        color: kLoadingScreenTextColor,
-                                      ),
-                                    ).onInkTap(() async {
-                                      var mobbbb = currentVendor
-                                          .businessMobileNumber
-                                          .toString();
-                                      var url = "tel:$mobbbb";
-                                      if (await canLaunch(url)) {
-                                        await launch(url);
-                                      } else {
-                                        throw 'Could not launch $url';
-                                      }
-                                    }),
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                      Container(
-                          height: 1,
-                          decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.topRight,
-                            colors: [
-                              Color(0x116C6464),
-                              Color(0xFFE7E7E7),
-                              Color(0x116C6464),
-                            ],
-                          ))),
-                      Container(
-                        height: 1,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.topRight,
-                            colors: [
-                              Color(0x116C6464),
-                              Color(0xFFE7E7E7),
-                              Color(0x116C6464),
-                            ],
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Photos",
+                          widget.isVisiter
+                              ? Column(children: [
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 20),
+                                      child: Text(
+                                        "Reviews & Ratings",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
+                                          color: kLoadingScreenTextColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          color:
+                                              kHomeScreenServicesContainerColor,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            vendorRating.toString(),
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 18,
+                                              color: kLoadingScreenTextColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          "$totalRatingCount Ratings\nRating index based on $totalRatingCount ratings across the web",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                            color: kLoadingScreenTextColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 21,
+                                  ),
+                                  Container(
+                                    height: 1,
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.topRight,
+                                        colors: [
+                                          Color(0x116C6464),
+                                          Color(0xFFE7E7E7),
+                                          Color(0x116C6464),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ])
+                              : Container(),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 25, bottom: 19),
+                            child: Text(
+                              "QR Code",
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 20,
                                 color: kLoadingScreenTextColor,
                               ),
                             ),
-                            const SizedBox(
-                              height: 13,
-                            ),
-                            getVendorImage(context, uid, widget.isVisiter),
-                            !widget.isVisiter
-                                ? InkWell(
-                                    onTap: () {
-                                      _imgFromGallery().then((e) {
-                                        saveVndorImages();
-                                      });
-                                    },
-                                    child: Container(
-                                        margin: const EdgeInsets.all(15),
-                                        padding: const EdgeInsets.all(15),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.blue, width: 1),
-                                        ),
-                                        child: Container(
-                                            child: const Text("Upload Image",
-                                                style: TextStyle(
-                                                    color: Colors.blue)))),
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 1,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.topRight,
-                            colors: [
-                              Color(0x116C6464),
-                              Color(0xFFE7E7E7),
-                              Color(0x116C6464),
-                            ],
                           ),
-                        ),
-                      ),
-                      widget.isVisiter
-                          ? Column(children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 20),
-                                  child: Text(
-                                    "Reviews & Ratings",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 20,
-                                      color: kLoadingScreenTextColor,
-                                    ),
-                                  ),
-                                ),
+                          Center(
+                              child: RepaintBoundary(
+                            key: _globalKey,
+                            child: Container(
+                              child: QrImage(
+                                data: uid,
+                                version: QrVersions.auto,
+                                size: 200.0,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    height: 40,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: kHomeScreenServicesContainerColor,
-                                    ),
-                                    child: Center(
+                              color: Colors.white,
+                            ),
+                          )),
+                          Center(
+                            child: Text(
+                              currentVendor.businessName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: kLoadingScreenTextColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 26,
+                          ),
+                          // Center(
+                          //   child: GestureDetector(
+                          //     // onTap: () => Navigator.of(context).push(
+                          //     //   MaterialPageRoute(
+                          //     //     builder: (context) => StatementScreen(),
+                          //     //   ),
+                          //     // ),
+                          //     child: Container(
+                          //       height: 50,
+                          //       width: width - 68,
+                          //       decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(5),
+                          //         color: kSignInContainerColor,
+                          //       ),
+                          //       child: Center(
+                          //         child: Text(
+                          //           "Download QR Code",
+                          //           style: TextStyle(
+                          //             fontWeight: FontWeight.w400,
+                          //             fontSize: 20,
+                          //             color: Colors.white,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          Container(
+                            height: 1,
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.topRight,
+                                colors: [
+                                  Color(0x116C6464),
+                                  Color(0xFFE7E7E7),
+                                  Color(0x116C6464),
+                                ],
+                              ),
+                            ),
+                          ),
+                          widget.isVisiter
+                              ? Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 25, bottom: 19),
                                       child: Text(
-                                        vendorRating.toString(),
+                                        "User Reviews",
                                         style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
                                           color: kLoadingScreenTextColor,
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      "$totalRatingCount Ratings\nRating index based on $totalRatingCount ratings across the web",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                        color: kLoadingScreenTextColor,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 21,
-                              ),
-                              Container(
-                                height: 1,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                    colors: [
-                                      Color(0x116C6464),
-                                      Color(0xFFE7E7E7),
-                                      Color(0x116C6464),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ])
-                          : Container(),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 25, bottom: 19),
-                        child: Text(
-                          "QR Code",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: kLoadingScreenTextColor,
-                          ),
-                        ),
-                      ),
-                      Center(
-                          child: RepaintBoundary(
-                        key: _globalKey,
-                        child: Container(
-                          child: QrImage(
-                            data: uid,
-                            version: QrVersions.auto,
-                            size: 200.0,
-                          ),
-                          color: Colors.white,
-                        ),
-                      )),
-                      Center(
-                        child: Text(
-                          currentVendor.businessName,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                            color: kLoadingScreenTextColor,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 26,
-                      ),
-                      // Center(
-                      //   child: GestureDetector(
-                      //     // onTap: () => Navigator.of(context).push(
-                      //     //   MaterialPageRoute(
-                      //     //     builder: (context) => StatementScreen(),
-                      //     //   ),
-                      //     // ),
-                      //     child: Container(
-                      //       height: 50,
-                      //       width: width - 68,
-                      //       decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(5),
-                      //         color: kSignInContainerColor,
-                      //       ),
-                      //       child: Center(
-                      //         child: Text(
-                      //           "Download QR Code",
-                      //           style: TextStyle(
-                      //             fontWeight: FontWeight.w400,
-                      //             fontSize: 20,
-                      //             color: Colors.white,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Container(
-                        height: 1,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.topRight,
-                            colors: [
-                              Color(0x116C6464),
-                              Color(0xFFE7E7E7),
-                              Color(0x116C6464),
-                            ],
-                          ),
-                        ),
-                      ),
-                      widget.isVisiter
-                          ? Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 25, bottom: 19),
-                                  child: Text(
-                                    "User Reviews",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 20,
-                                      color: kLoadingScreenTextColor,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 25,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: 1,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            selectedIndex = index;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 25,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            color: selectedIndex == index
-                                                ? kHomeScreenServicesContainerColor
-                                                : Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            border: Border.all(
-                                              color: selectedIndex == index
-                                                  ? const Color(0xFF67BFCF)
-                                                  : const Color(0xFFDADADA),
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              reviews[index],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14,
+                                    SizedBox(
+                                      height: 25,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: 1,
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                selectedIndex = index;
+                                              });
+                                            },
+                                            child: Container(
+                                              height: 25,
+                                              width: 100,
+                                              decoration: BoxDecoration(
                                                 color: selectedIndex == index
-                                                    ? kSignInContainerColor
-                                                    : const Color(0xFFDADADA),
+                                                    ? kHomeScreenServicesContainerColor
+                                                    : Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                                border: Border.all(
+                                                  color: selectedIndex == index
+                                                      ? const Color(0xFF67BFCF)
+                                                      : const Color(0xFFDADADA),
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  reviews[index],
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14,
+                                                    color: selectedIndex ==
+                                                            index
+                                                        ? kSignInContainerColor
+                                                        : const Color(
+                                                            0xFFDADADA),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                          );
+                                        },
+                                        separatorBuilder: (context, index) =>
+                                            const SizedBox(
+                                          width: 16,
                                         ),
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(
-                                      width: 16,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Container(),
+                                  ],
+                                )
+                              : Container(),
 
-                      getVendorReview(context, uid),
-                    ],
-                  )))
+                          getVendorReview(context, uid),
+                        ],
+                      )),
+                );
+              })
           : Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

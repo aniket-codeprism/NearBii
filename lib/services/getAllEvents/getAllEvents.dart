@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
 import 'package:velocity_x/velocity_x.dart';
 

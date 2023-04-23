@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/screens/bottom_bar/event/allEventByCat.dart';
 
+import '../../Model/notifStorage.dart';
 import '../../constants.dart';
 
 Widget getEventCatList(BuildContext context, pos, String userLocation) {

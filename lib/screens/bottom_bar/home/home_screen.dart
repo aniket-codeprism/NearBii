@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:nearbii/Model/ServiceModel.dart';
+import 'package:nearbii/components/shimmer.dart';
 import 'package:nearbii/services/GenerateCoupan.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,7 +38,6 @@ import '../../../components/search_bar.dart';
 import '../../../services/offerService/getOffers.dart';
 import '../../service_slider/searchvendor.dart';
 import '../../service_slider/services_screen.dart';
-import 'categories/categories_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -68,17 +68,19 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  refersh() async {
+  refersh({bool refersh = true}) async {
     _controller.sink.add(SwipeRefreshState.loading);
     log("init");
-    await getCategories(refersh: true);
-    await _fetchUserData(refersh: true);
+    await _fetchUserData(refersh: refersh);
+    await getServices(refersh: refersh);
     getAddressFromLatLong();
-    await getHomeIcons(refersh: true);
-    await getBanners(refersh: true);
-    await getServices(refersh: true);
-    setState(() {});
+    //await getCategories(refersh: refersh);
+
+    await getHomeIcons(refersh: refersh);
+    await getBanners(refersh: refersh);
     _controller.sink.add(SwipeRefreshState.hidden);
+
+    setState(() {});
   }
 
   swipe() {
@@ -113,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _fetchUserData({bool refersh = false}) async {
-    Map data = await Notifcheck.api.fetchUserData(refresh: refersh);
+    Notifcheck.userDAta = await Notifcheck.api.fetchUserData(refresh: refersh);
 
     print('name ${Notifcheck.userDAta!['name']}');
     name = Notifcheck.userDAta!['name'];
@@ -695,36 +697,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                         Spacer(),
-                                        GestureDetector(
-                                          onTap: () => Navigator.of(context)
-                                              .push(MaterialPageRoute(
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "See All",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 13,
+                                                color: kLoadingScreenTextColor,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 12,
+                                            )
+                                          ],
+                                        ).onInkTap(() {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
                                                   builder: (context) =>
-                                                      ServiceScreen())),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                "See All",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 13,
-                                                  color:
-                                                      kLoadingScreenTextColor,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 12,
-                                              )
-                                            ],
-                                          ),
-                                        )
+                                                      ServiceScreen()));
+                                        })
                                       ],
                                     ),
                                   ),
-                                  services.isNotEmpty
+                                  homeIcons.isNotEmpty
                                       ? Column(
                                           children: [
                                             Row(
@@ -890,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ],
                                         )
-                                      : CircularProgressIndicator().centered()
+                                      : ShimmerWidgetServices().centered()
                                 ],
                               ),
                             ),
@@ -898,132 +898,128 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 200,
                               child: getOfferPlates(controller, context),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  "Categories",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
-                                    color: kLoadingScreenTextColor,
-                                  ),
-                                ),
-                                Spacer(),
-                                GestureDetector(
-                                  onTap: () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              CategoriesScreen())),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "See All",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13,
-                                          color: kLoadingScreenTextColor,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 12,
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            SizedBox(
-                              height: 150,
-                              child: Row(
-                                children: [
-                                  categories.isNotEmpty
-                                      ? ListView.separated(
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            var item = categories[index];
-                                            return Container(
-                                              width: 90,
-                                              height: 120,
-                                              decoration: BoxDecoration(
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black26,
-                                                    offset: Offset(1, 1),
-                                                    blurRadius: 2,
-                                                  ),
-                                                ],
-                                                image: DecorationImage(
-                                                    image: NetworkImage(
-                                                        item.image),
-                                                    fit: BoxFit.fill),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                    Color(0xffffeb3b),
-                                                    Color(0xffF57F17),
-                                                    Color(0xfff9a825),
-                                                    Color(0xff403A3A),
-                                                  ],
-                                                ),
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    height: 14,
-                                                    width: 90,
-                                                    color: Colors.white,
-                                                    child: Center(
-                                                      child: Text(
-                                                        item.name,
-                                                        style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ).onInkTap(() {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        SearchVendor(
-                                                            item.name)),
-                                              );
-                                            }).pOnly(bottom: 2, left: 1);
-                                          },
-                                          separatorBuilder: (context, i) {
-                                            return Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 5, right: 5),
-                                            );
-                                          },
-                                          itemCount: categories.length,
-                                        ).expand()
-                                      : CircularProgressIndicator().centered(),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 28,
-                            ),
+                            // Row(
+                            //   children: [
+                            //     Text(
+                            //       "Categories",
+                            //       style: TextStyle(
+                            //         fontWeight: FontWeight.w600,
+                            //         fontSize: 20,
+                            //         color: kLoadingScreenTextColor,
+                            //       ),
+                            //     ),
+                            //     Spacer(),
+                            //     GestureDetector(
+                            //       onTap: () => Navigator.of(context).push(
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   CategoriesScreen())),
+                            //       child: Row(
+                            //         children: [
+                            //           Text(
+                            //             "See All",
+                            //             style: TextStyle(
+                            //               fontWeight: FontWeight.w600,
+                            //               fontSize: 13,
+                            //               color: kLoadingScreenTextColor,
+                            //             ),
+                            //           ),
+                            //           SizedBox(
+                            //             width: 10,
+                            //           ),
+                            //           Icon(
+                            //             Icons.arrow_forward_ios,
+                            //             size: 12,
+                            //           )
+                            //         ],
+                            //       ),
+                            //     )
+                            //   ],
+                            // ),
+                            // SizedBox(
+                            //   height: 16,
+                            // ),
+                            // categories.isNotEmpty
+                            //     ? SizedBox(
+                            //         height: 150,
+                            //         child: Row(
+                            //           children: [
+                            //             ListView.builder(
+                            //               controller: ScrollController(),
+                            //               shrinkWrap: true,
+                            //               scrollDirection: Axis.horizontal,
+                            //               itemBuilder: (context, index) {
+                            //                 var item = categories[index];
+                            //                 return Container(
+                            //                   width: 90,
+                            //                   height: 120,
+                            //                   decoration: BoxDecoration(
+                            //                     boxShadow: [
+                            //                       BoxShadow(
+                            //                         color: Colors.black26,
+                            //                         offset: Offset(1, 1),
+                            //                         blurRadius: 2,
+                            //                       ),
+                            //                     ],
+                            //                     image: DecorationImage(
+                            //                         image: NetworkImage(
+                            //                             item.image),
+                            //                         fit: BoxFit.fill),
+                            //                     borderRadius:
+                            //                         BorderRadius.circular(10),
+                            //                     gradient: LinearGradient(
+                            //                       begin: Alignment.topLeft,
+                            //                       end: Alignment.bottomRight,
+                            //                       colors: [
+                            //                         Color(0xffffeb3b),
+                            //                         Color(0xffF57F17),
+                            //                         Color(0xfff9a825),
+                            //                         Color(0xff403A3A),
+                            //                       ],
+                            //                     ),
+                            //                   ),
+                            //                   child: Column(
+                            //                     mainAxisAlignment:
+                            //                         MainAxisAlignment.end,
+                            //                     crossAxisAlignment:
+                            //                         CrossAxisAlignment.center,
+                            //                     children: [
+                            //                       Container(
+                            //                         height: 14,
+                            //                         width: 90,
+                            //                         color: Colors.white,
+                            //                         child: Center(
+                            //                           child: Text(
+                            //                             item.name,
+                            //                             style: TextStyle(
+                            //                                 color: Colors.black,
+                            //                                 fontSize: 12,
+                            //                                 fontWeight:
+                            //                                     FontWeight
+                            //                                         .w600),
+                            //                           ),
+                            //                         ),
+                            //                       ),
+                            //                     ],
+                            //                   ),
+                            //                 ).onInkTap(() {
+                            //                   Navigator.of(context).push(
+                            //                     MaterialPageRoute(
+                            //                         builder: (context) =>
+                            //                             SearchVendor(
+                            //                                 item.name)),
+                            //                   );
+                            //                 }).pOnly(bottom: 2, left: 10);
+                            //               },
+                            //               itemCount: categories.length,
+                            //             ).expand(),
+                            //           ],
+                            //         ),
+                            //       )
+                            //     : ShimmerWidgetCategories().centered(),
+                            // SizedBox(
+                            //   height: 28,
+                            // ),
                             services.isNotEmpty
                                 ? ListView.builder(
                                         physics: NeverScrollableScrollPhysics(),
@@ -1062,7 +1058,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   )
                                                 ],
                                               ).onInkTap(() {
-                                                //_gotoService(res.id);
+                                                _gotoService(service);
                                               }),
                                               GridView.builder(
                                                   itemCount: sub.length > 4
@@ -1149,7 +1145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         }),
                                         itemCount: services.length)
                                     .pOnly(bottom: 40)
-                                : CircularProgressIndicator().centered(),
+                                : ShimmerServices().centered(),
                             banners.isNotEmpty
                                 ? ListView.builder(
                                     shrinkWrap: true,
@@ -1171,7 +1167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ).centered();
                                     }),
                                     itemCount: banners.isEmpty ? 0 : 1)
-                                : CircularProgressIndicator().centered(),
+                                : BannerShimmer().centered(),
                             SizedBox(
                               height: 15,
                             ),

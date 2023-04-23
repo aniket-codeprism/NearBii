@@ -31,6 +31,9 @@ class _GenerateCoupanState extends State<GenerateCoupan> {
                   child: ListView.builder(
                       itemBuilder: (context, index) {
                         var snap = data[index];
+                        if (!snap.data()["enabled"]) {
+                          snap.reference.delete();
+                        }
                         return Card(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,

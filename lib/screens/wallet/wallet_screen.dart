@@ -36,6 +36,8 @@ class _WalletScreenState extends State<WalletScreen> {
 
   Map<String, dynamic> walletData = {};
 
+  var referalBalance = 0;
+
   Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
     updateTransatcion(
         FirebaseAuth.instance.currentUser!.uid.substring(0, 20),
@@ -100,6 +102,9 @@ class _WalletScreenState extends State<WalletScreen> {
       setState(() {
         myBalance = value.get("wallet");
         beforeBalance = myBalance;
+        referalBalance = value.data()!.containsKey("referBalance")
+            ? value.data()!["referBalance"]
+            : 0;
       });
     });
 
@@ -144,10 +149,13 @@ class _WalletScreenState extends State<WalletScreen> {
 
   addNewBalance() {
     var amount = addBalance * 100.0;
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': amount,
       'name': 'NearBii Add to Wallet',
       'description': 'Add points',
@@ -160,13 +168,7 @@ class _WalletScreenState extends State<WalletScreen> {
     };
 
     try {
-      if (kDebugMode) {
-        PaymentSuccessResponse response =
-            PaymentSuccessResponse("paymentId", "orderId", "signature");
-        _handlePaymentSuccess(response);
-      } else {
-        _razorpay.open(options);
-      }
+      _razorpay.open(options);
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }
@@ -262,7 +264,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Text(
-                              "Referal Wallet",
+                              "Referral Wallet",
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
@@ -271,7 +273,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             ),
                             SizedBox(
                               height: 5,
-                            )
+                            ),
                           ],
                         ),
                       ).px12(),
@@ -512,7 +514,12 @@ class _WalletScreenState extends State<WalletScreen> {
                             ),
                             const Spacer(),
                             Text(
-                              "₹ " + walletData["lastRecharge"].toString(),
+                              "₹ " +
+                                  (walletData["lastRecharge"]
+                                          .toString()
+                                          .isEmptyOrNull
+                                      ? "0"
+                                      : walletData["lastRecharge"].toString()),
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
@@ -535,7 +542,13 @@ class _WalletScreenState extends State<WalletScreen> {
                               ),
                               const Spacer(),
                               Text(
-                                "₹ " + walletData["afterRecharge"].toString(),
+                                "₹ " +
+                                    (walletData["afterRecharge"]
+                                            .toString()
+                                            .isEmptyOrNull
+                                        ? "0"
+                                        : walletData["afterRecharge"]
+                                            .toString()),
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
@@ -557,7 +570,13 @@ class _WalletScreenState extends State<WalletScreen> {
                             ),
                             const Spacer(),
                             Text(
-                              "₹ " + walletData["beforeRecharge"].toString(),
+                              "₹ " +
+                                  (walletData["beforeRecharge"]
+                                          .toString()
+                                          .isEmptyOrNull
+                                      ? "0"
+                                      : walletData["beforeRecharge"]
+                                          .toString()),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,

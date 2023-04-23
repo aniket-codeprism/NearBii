@@ -128,44 +128,73 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
                                               .make()
                                               .pOnly(right: 5),
                                           Spacer(),
-                                          Icon(
-                                            item.book.value
-                                                ? Icons.bookmark
-                                                : Icons.bookmark_outline,
-                                            color: Color(0xff51B6C8),
-                                          ).onInkTap(() async {
-                                            if (item.book.value) {
-                                              FirebaseFirestore.instance
-                                                  .collection("User")
-                                                  .doc(FirebaseAuth
-                                                      .instance.currentUser!.uid
-                                                      .substring(0, 20))
-                                                  .collection("bookmarks")
-                                                  .doc(item.userId)
-                                                  .delete()
-                                                  .then((value) {
-                                                setState(() {
-                                                  item.book.value = false;
-                                                });
+                                          ValueListenableBuilder(
+                                            builder: (contex, value, c) {
+                                              return Icon(
+                                                item.book.value
+                                                    ? Icons.bookmark
+                                                    : Icons.bookmark_outline,
+                                                color: const Color(0xff51B6C8),
+                                              ).onInkTap(() async {
+                                                if (item.book.value) {
+                                                  item.ref!.set({
+                                                    "bookmarks":
+                                                        FieldValue.arrayRemove([
+                                                      FirebaseAuth.instance
+                                                          .currentUser!.uid
+                                                          .substring(0, 20)
+                                                    ])
+                                                  }, SetOptions(merge: true));
+                                                  FirebaseFirestore.instance
+                                                      .collection("User")
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid
+                                                          .substring(0, 20))
+                                                      .set(
+                                                          {
+                                                        "bookmarks": FieldValue
+                                                            .arrayRemove([
+                                                          item.userId.toString()
+                                                        ])
+                                                      },
+                                                          SetOptions(
+                                                              merge:
+                                                                  true)).then(
+                                                          (value) {
+                                                    item.book.value = false;
+                                                  });
+                                                } else {
+                                                  item.ref!.set({
+                                                    "bookmarks":
+                                                        FieldValue.arrayUnion([
+                                                      FirebaseAuth.instance
+                                                          .currentUser!.uid
+                                                          .substring(0, 20)
+                                                    ])
+                                                  }, SetOptions(merge: true));
+                                                  FirebaseFirestore.instance
+                                                      .collection("User")
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid
+                                                          .substring(0, 20))
+                                                      .set(
+                                                          {
+                                                        "bookmarks": FieldValue
+                                                            .arrayUnion([
+                                                          item.userId.toString()
+                                                        ])
+                                                      },
+                                                          SetOptions(
+                                                              merge:
+                                                                  true)).then(
+                                                          (value) {
+                                                    item.book.value = true;
+                                                  });
+                                                }
                                               });
-                                            } else {
-                                              FirebaseFirestore.instance
-                                                  .collection("User")
-                                                  .doc(FirebaseAuth
-                                                      .instance.currentUser!.uid
-                                                      .substring(0, 20))
-                                                  .collection("bookmarks")
-                                                  .doc(item.userId.toString())
-                                                  .set({
-                                                item.userId.toString():
-                                                    item.userId.toString()
-                                              }).then((value) {
-                                                setState(() {
-                                                  item.book.value = true;
-                                                });
-                                              });
-                                            }
-                                          })
+                                            },
+                                            valueListenable: item.book,
+                                          )
                                         ],
                                       ).pOnly(top: 5, right: 10),
                                       Row(
@@ -286,26 +315,19 @@ class _BookmarksScreenState extends State<BookmarksScreen> {
         desiredAccuracy: LocationAccuracy.high);
     print(FirebaseAuth.instance.currentUser!.uid);
     var b = await FirebaseFirestore.instance
-        .collection("User")
-        .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
-        .collection("bookmarks")
+        .collection("vendor")
+        .where("bookmarks",
+            arrayContains:
+                FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
         .get();
     for (var elt in b.docs) {
-      var c = await FirebaseFirestore.instance
-          .collection("vendor")
-          .doc(elt.data().entries.first.value.substring(0, 20))
-          .get();
-      if (c.exists) {
-        var vend = VendorModel.fromMap(c.data()!);
-        vend.userId = c.id;
-        vend.book.value = true;
-        vend.distance = Geolocator.distanceBetween(
-            vend.businessLocation.lat,
-            vend.businessLocation.long,
-            pos.latitude,
-            pos.longitude);
-        bookmarks.add(vend);
-      }
+      var vend = VendorModel.fromMap(elt.data());
+      vend.ref = elt.reference;
+      vend.userId = elt.id;
+      vend.book.value = true;
+      vend.distance = Geolocator.distanceBetween(vend.businessLocation.lat,
+          vend.businessLocation.long, pos.latitude, pos.longitude);
+      bookmarks.add(vend);
     }
     if (mounted) {
       setState(() {

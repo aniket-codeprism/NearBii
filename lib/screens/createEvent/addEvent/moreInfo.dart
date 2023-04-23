@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nearbii/Model/notifStorage.dart';
 
 import 'package:nearbii/screens/plans/eventPlan/eventPlan.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 import '../../../constants.dart';
 import '../../bottom_bar/bottomBar/bottomBar.dart';
@@ -462,41 +463,52 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
 
                     getTimeSlotDrop(context),
                     Container(
-                      width: 120,
-                      height: 30,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(5),
                           border: Border.all(
-                              color: const Color.fromARGB(255, 81, 182, 200))),
+                              color: const Color.fromARGB(173, 125, 209, 248))),
                       child: DropdownSearch<String>(
-                        dropdownButtonProps: DropdownButtonProps(
+                        dropdownButtonProps: const DropdownButtonProps(
                           padding: EdgeInsets.all(0),
                         ),
                         //mode of dropdown
                         //list of dropdown items
-                        popupProps: const PopupProps.menu(
+                        popupProps: PopupProps.bottomSheet(
+                          title: const Divider(
+                            height: 10,
+                            thickness: 2,
+                            color: Color.fromARGB(255, 81, 182, 200),
+                          ).px(128).py2(),
+                          interceptCallBacks: true,
+                          showSelectedItems: true,
+                          searchDelay: Duration.zero,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                                icon: const Icon(Icons.search),
+                                hintText: "Search Category",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                          ),
+                          bottomSheetProps: BottomSheetProps(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 232, 244, 247),
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20))),
                           showSearchBox: true,
                         ),
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                          labelText: "Target City",
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                            color: Color.fromARGB(173, 125, 209, 248),
-                          )),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Color.fromARGB(173, 125, 209, 248),
-                                width: 1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Color.fromARGB(173, 125, 209, 248),
-                                width: 1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        )),
+                        dropdownDecoratorProps: const DropDownDecoratorProps(
+                            baseStyle:
+                                TextStyle(overflow: TextOverflow.ellipsis),
+                            textAlignVertical: TextAlignVertical.center,
+                            textAlign: TextAlign.start,
+                            dropdownSearchDecoration: InputDecoration.collapsed(
+                                floatingLabelAlignment:
+                                    FloatingLabelAlignment.start,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.auto,
+                                focusColor: Colors.lightBlue,
+                                hintText: 'City')),
                         items: CityList.eventCity.map((e) {
                           return e.name;
                         }).toList(),
@@ -508,8 +520,8 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                         }),
                         //show selected item
                         selectedItem: eventTargetCity,
-                      ),
-                    ),
+                      ).px(10),
+                    ).px(20).pOnly(top: 20),
                     Container(
                       margin:
                           const EdgeInsets.only(top: 20, left: 20, right: 20),

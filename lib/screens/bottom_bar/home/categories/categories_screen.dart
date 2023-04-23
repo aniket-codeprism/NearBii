@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/Model/catModel.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/components/search_bar.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/home/categories/category_list.dart';
@@ -73,7 +74,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             //search box
             Padding(
                 padding: const EdgeInsets.only(top: 18, left: 34, right: 34),
-                child: SearchBar(search: ((val) {}), val: "")),
+                child: SearchBar(
+                    onTypeSearch: true,
+                    search: ((val) {
+                      search(val);
+                    }),
+                    val: "")),
             SizedBox(
               height: height - 196,
               child: Padding(
@@ -202,11 +208,28 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   List<CategoriesModel> categories = [];
+  List<CategoriesModel> allCategories = [];
   getCategories() async {
     var b = await FirebaseFirestore.instance.collection("categories").get();
     for (var elemnt in b.docs) {
       if (elemnt != null) {
         var cat = CategoriesModel.fromMap(elemnt.data());
+        categories.add(cat);
+      }
+    }
+    allCategories = categories;
+    setState(() {});
+  }
+
+  void search(val) {
+    categories = [];
+    for (var cat in allCategories) {
+      if (cat.desc
+              .toLowerCase()
+              .contains(val.toString().trim().toLowerCase()) ||
+          cat.name
+              .toLowerCase()
+              .contains(val.toString().trim().toLowerCase())) {
         categories.add(cat);
       }
     }

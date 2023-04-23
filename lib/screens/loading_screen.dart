@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/screens/bottom_bar/permissiondenied_screen.dart';
 
+import '../Model/notifStorage.dart';
 import 'auth/LoginSignUpScreen.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -21,6 +22,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
   final auth = FirebaseAuth.instance;
   @override
   void initState() {
+    Notifcheck.api.getServices();
+    Notifcheck.api.getBanners();
+    Notifcheck.api.getCategories();
+    Notifcheck.api.getHomeIconData();
+
     super.initState();
     if (auth.currentUser != null) {
       _determinePosition();

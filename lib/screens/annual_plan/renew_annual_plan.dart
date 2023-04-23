@@ -104,10 +104,13 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
   }
 
   void buyMembership() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 49900.0,
       'name': 'NearBii Update Membership Plan',
       'description': 'Join the large world',
@@ -120,13 +123,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
     };
 
     try {
-      if (kDebugMode) {
-        PaymentSuccessResponse response =
-            PaymentSuccessResponse("paymentId", "orderId", "signature");
-        _handlePaymentSuccess(response);
-      } else {
-        _razorpay.open(options);
-      }
+      _razorpay.open(options);
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }

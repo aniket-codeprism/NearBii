@@ -398,13 +398,15 @@ class _BusinessAdditionalDetailsScreenState
                                   EdgeInsets.only(left: 10, right: 20),
                               label: (widget.businessDetailData["closeTime"] !=
                                           null
-                                      ? DateTime(widget.businessDetailData[
-                                                  "closeTime"])
+                                      ? DateTime.fromMillisecondsSinceEpoch(
+                                                  widget.businessDetailData[
+                                                      "closeTime"])
                                               .hour
                                               .toString() +
                                           " : " +
-                                          DateTime(widget.businessDetailData[
-                                                  "closeTime"])
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                                  widget.businessDetailData[
+                                                      "closeTime"])
                                               .minute
                                               .toString()
                                       : "Close Time")
@@ -416,9 +418,8 @@ class _BusinessAdditionalDetailsScreenState
                                   borderRadius: BorderRadius.zero),
                             ),
                             onTap: () {
-                              DatePicker.showTimePicker(context,
-                                  showTitleActions: true,
-                                  showSecondsColumn: false, onChanged: (date) {
+                              DatePicker.showTime12hPicker(context,
+                                  showTitleActions: true, onChanged: (date) {
                                 print('change $date');
                               }, onConfirm: (date) {
                                 int h =
@@ -788,8 +789,9 @@ class _BusinessAdditionalDetailsScreenState
                           msg: "Please Select Business bussinesDesc");
                       return;
                     }
-                    if (widget.businessDetailData["openTime"].toString() ==
-                        null) {
+                    if (widget.businessDetailData["openTime"]
+                        .toString()
+                        .isEmptyOrNull) {
                       Fluttertoast.showToast(
                           msg: "Please Select Business openTime");
                       return;

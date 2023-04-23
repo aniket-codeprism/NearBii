@@ -47,6 +47,7 @@ class _MasterPageState extends State<MasterPage> {
 
   @override
   void initState() {
+    selectedIndex = widget.currentIndex;
     getcity();
     loadUser();
     subscribeTopicCity();
@@ -193,20 +194,22 @@ class _MasterPageState extends State<MasterPage> {
     super.initState();
   }
 
+  final screens = [
+    const HomeScreen(),
+    const EventScreen(),
+    const OffersScreen(),
+    const ScanScreen(),
+    const ProfileScreen(),
+  ];
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      const HomeScreen(),
-      const EventScreen(),
-      const OffersScreen(),
-      const ScanScreen(),
-      const ProfileScreen(),
-    ];
     return WillPopScope(
       onWillPop: () async {
         if (selectedIndex == 0) return true;
         selectedIndex = 0;
+
         setState(() {});
+
         return false;
       },
       child: Scaffold(
@@ -257,6 +260,18 @@ class _MasterPageState extends State<MasterPage> {
           ],
           currentIndex: selectedIndex,
           onTap: (index) {
+            if (index == 2) {
+              FirebaseFirestore.instance
+                  .collection("User")
+                  .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
+                  .set({"offerNotif": false}, SetOptions(merge: true));
+            }
+            if (index == 1) {
+              FirebaseFirestore.instance
+                  .collection("User")
+                  .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
+                  .set({"eventNotif": false}, SetOptions(merge: true));
+            }
             setState(() {
               selectedIndex = index;
             });

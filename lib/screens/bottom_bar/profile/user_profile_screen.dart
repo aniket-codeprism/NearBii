@@ -20,7 +20,7 @@ import 'package:nearbii/screens/createEvent/addEvent/addEvent.dart';
 import 'package:nearbii/services/sendNotification/registerToken/registerTopicNotificaion.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 bool isListBusiness = false;
@@ -75,8 +75,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       File imageFile = File(pickedImage!.path);
 
       try {
-        firebase_storage.TaskSnapshot uploadTask = await firebase_storage
-            .FirebaseStorage.instance
+        TaskSnapshot uploadTask = await FirebaseStorage.instance
             .ref("user/" + fileName!)
             .putFile(imageFile);
         _db

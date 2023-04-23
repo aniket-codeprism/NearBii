@@ -54,10 +54,13 @@ class _EventPaymentState extends State<EventPayment> {
   }
 
   void openCheckout() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 49900.0,
       'name': 'Acme Corp.',
       'description': 'Fine T-Shirt',
@@ -70,13 +73,7 @@ class _EventPaymentState extends State<EventPayment> {
     };
 
     try {
-      if (kDebugMode) {
-        PaymentSuccessResponse response =
-            PaymentSuccessResponse("paymentId", "orderId", "signature");
-        _handlePaymentSuccess(response);
-      } else {
-        _razorpay.open(options);
-      }
+      _razorpay.open(options);
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }

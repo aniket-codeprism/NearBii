@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/services/getcity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +21,7 @@ void subscribeTopicCity() async {
   //Fluttertoast.showToast(msg: "Notifications On");
 }
 
-unsubscribeTopicity() async {
+Future unsubscribeTopicity() async {
   SharedPreferences session = await SharedPreferences.getInstance();
 
   String? city = session.getString("userLocation");
@@ -37,6 +36,4 @@ unsubscribeTopicity() async {
   await FirebaseMessaging.instance.unsubscribeFromTopic("Offer");
   await FirebaseMessaging.instance.unsubscribeFromTopic(
       FirebaseAuth.instance.currentUser!.uid.substring(0, 20));
-
-  Fluttertoast.showToast(msg: "Notifications Off");
 }

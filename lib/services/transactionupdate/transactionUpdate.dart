@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nearbii/services/savePaymentRecipt/savePaymentRecipt.dart';
 import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 
+import '../../Model/notifStorage.dart';
+
 void updateTransatcion(uid, titlle, id, status, amount, time) {
   saveRecipt(
     amount,

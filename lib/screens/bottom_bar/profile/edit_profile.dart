@@ -1,9 +1,9 @@
 // ignore_for_file: await_only_futures, unused_local_variable, unnecessary_const, prefer_typing_uninitialized_variables, unused_element, prefer_const_constructors, unnecessary_string_interpolations, unnecessary_null_comparison
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 

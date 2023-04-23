@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/event/all_nearby_events_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -48,10 +49,6 @@ class _EventScreenState extends State<EventScreen> {
     super.initState();
     getLocation();
 
-    FirebaseFirestore.instance
-        .collection("User")
-        .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
-        .set({"eventNotif": false}, SetOptions(merge: true));
     getDates();
   }
 
@@ -459,8 +456,10 @@ class _EventScreenState extends State<EventScreen> {
       lastDocument = null;
     }
     final _firestore = FirebaseFirestore.instance;
-    Query<Map<String, dynamic>> snap =
-        _firestore.collection('Events').where("city", isEqualTo: city);
+    Query<Map<String, dynamic>> snap = _firestore
+        .collection('Events')
+        .where("eventTargetCity", isEqualTo: city)
+        .orderBy("eventStartDate", descending: true);
     if (lastDocument != null) {
       snap = snap.startAfterDocument(lastDocument!);
     }

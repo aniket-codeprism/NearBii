@@ -60,7 +60,7 @@ class _ReferalState extends State<Referal> {
 
     return Scaffold(
       appBar: AppBar(
-        title: "Referals".text.black.make(),
+        title: "Referral".text.black.make(),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Icon(

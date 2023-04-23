@@ -1,9 +1,11 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/screens/auth/auth_services.dart';
 import 'package:nearbii/services/case_search_generator.dart';
+import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:nearbii/services/setUserMode.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,10 +33,6 @@ class NearBiiMembershipPlanScreen extends StatefulWidget {
 
 class _NearBiiMembershipPlanScreenState
     extends State<NearBiiMembershipPlanScreen> {
-  late FirebaseFirestore db;
-
-  late FirebaseStorage storage;
-
   String? uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
 
   late final Razorpay _razorpay = Razorpay();
@@ -58,7 +56,7 @@ class _NearBiiMembershipPlanScreenState
   }
 
   saveToDB(String path, String paymentID, String orderId, String sig) async {
-    db = FirebaseFirestore.instance;
+    FirebaseFirestore db = FirebaseFirestore.instance;
 
     if (!widget.renew) {
       print('runnnn');
@@ -85,6 +83,9 @@ class _NearBiiMembershipPlanScreenState
       cases.add(widget.businessDetailData["businessAddress"]);
       var generateCases = generateCaseSearches(cases);
       widget.businessDetailData["caseSearch"] = generateCases;
+      widget.businessDetailData["isImported"] = false;
+      widget.businessDetailData["importedFrom"] = "Paid User";
+      widget.businessDetailData["bookmarks"] = [];
 
       await db
           .collection("vendor")
@@ -144,6 +145,7 @@ class _NearBiiMembershipPlanScreenState
         });
       });
       Notifcheck.api.disableCoupan(widget.businessDetailData["coupan"]);
+      sendNotificationForVendor(widget.businessDetailData["name"]);
       return true;
     }).onError((error, stackTrace) {
       Fluttertoast.showToast(msg: "Error to Save model");
@@ -205,10 +207,13 @@ class _NearBiiMembershipPlanScreenState
   }
 
   void buyMembership() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 49900.0,
       'name': 'NearBii Membership Plan',
       'description': 'Join the large world',
@@ -224,8 +229,9 @@ class _NearBiiMembershipPlanScreenState
 
     try {
       if (isCoupan) {
-        PaymentSuccessResponse response =
-            PaymentSuccessResponse("paymentId", "orderId", "signature");
+        Fluttertoast.showToast(msg: "Coupon Applied !!");
+        PaymentSuccessResponse response = PaymentSuccessResponse(
+            widget.businessDetailData["coupan"], "orderId", "signature");
         _handlePaymentSuccess(response);
         Fluttertoast.showToast(msg: "Coupan Applied");
       } else {

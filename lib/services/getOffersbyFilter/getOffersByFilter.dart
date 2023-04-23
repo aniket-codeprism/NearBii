@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/screens/vendor/vendorHome.dart';
 
+import '../../Model/notifStorage.dart';
 import '../../constants.dart';
 
 Widget getOffersByFilter(BuildContext context, String cat, int off) {

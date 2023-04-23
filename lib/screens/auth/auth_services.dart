@@ -10,6 +10,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import 'package:nearbii/Model/notifStorage.dart';
@@ -80,6 +81,7 @@ Future<void> signup(BuildContext context, String referalcode) async {
             .set(employeeDetails)
             .then((value) {
           if (exists.uid.isNotEmpty) {
+            showNotification(employeeDetails["name"]);
             saveReferalWallet(
                 referalcode, user.displayName, randomUUDI, exists, "gsa");
           }
@@ -119,7 +121,10 @@ Future<ReferalCheck> checkReferalCode(String referalcode) async {
       .collection("User")
       .where("referCode", isEqualTo: referalcode)
       .get();
-  if (doc.size > 0) return ReferalCheck(uid: doc.docs.first.id, value: true);
+  if (doc.size > 0) {
+    Fluttertoast.showToast(msg: "Valid referral ");
+    return ReferalCheck(uid: doc.docs.first.id, value: true);
+  }
   return ReferalCheck(uid: "", value: false);
 }
 
@@ -162,7 +167,7 @@ enum Status { Success, Error, Cancelled }
 Future<Resource?> signInWithFacebook(
     BuildContext context, String referalcode) async {
   var exists = await checkReferalCode(referalcode);
-  if (exists == false) {
+  if (exists.value == false) {
     Fluttertoast.showToast(msg: "Invalid Referal");
     return null;
   }
@@ -200,6 +205,7 @@ Future<Resource?> signInWithFacebook(
                 .doc(auth.currentUser!.uid.substring(0, 20))
                 .set(employeeDetails)
                 .then((value) {
+              showNotification(employeeDetails["name"]);
               saveReferalWallet(referalcode, auth.currentUser!.displayName,
                   auth.currentUser!.uid.substring(0, 20), exists, "fb");
 

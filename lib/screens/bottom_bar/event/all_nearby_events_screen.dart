@@ -139,6 +139,11 @@ class _AllNearbyEventsScreenState extends State<AllNearbyEventsScreen> {
                         //mode of dropdown
                         //list of dropdown items
                         popupProps: PopupProps.bottomSheet(
+                          title: const Divider(
+                            height: 10,
+                            thickness: 2,
+                            color: Color.fromARGB(255, 81, 182, 200),
+                          ).px(128).py2(),
                           interceptCallBacks: true,
                           showSelectedItems: true,
                           searchDelay: Duration.zero,
@@ -158,8 +163,10 @@ class _AllNearbyEventsScreenState extends State<AllNearbyEventsScreen> {
                           showSearchBox: true,
                         ),
                         dropdownDecoratorProps: const DropDownDecoratorProps(
+                            baseStyle:
+                                TextStyle(overflow: TextOverflow.ellipsis),
                             textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.end,
+                            textAlign: TextAlign.center,
                             dropdownSearchDecoration: InputDecoration.collapsed(
                                 focusColor: Colors.lightBlue,
                                 hintText: 'City')),
@@ -176,8 +183,8 @@ class _AllNearbyEventsScreenState extends State<AllNearbyEventsScreen> {
                         }),
                         //show selected item
                         selectedItem: city,
-                      ).px16(),
-                    ),
+                      ),
+                    ).px2(),
                   ),
                   if (messageWidgets.isEmpty && query.isNotEmptyAndNotNull)
                     const CircularProgressIndicator().centered()
@@ -363,13 +370,13 @@ class _AllNearbyEventsScreenState extends State<AllNearbyEventsScreen> {
 
   bool moreData = true;
   getAllEvents() async {
-    Query<Map<String, dynamic>> snap;
+    Query<Map<String, dynamic>> snap = FirebaseFirestore.instance
+        .collection('Events')
+        .orderBy("eventStartDate", descending: true);
     if (city != "All India") {
-      snap = FirebaseFirestore.instance
-          .collection('Events')
-          .where("eventTargetCity", isEqualTo: city);
+      snap = snap.where("eventTargetCity", isEqualTo: city);
     } else {
-      snap = FirebaseFirestore.instance.collection('Events');
+      snap = snap;
     }
     if (lastDocument != null) {
       snap = snap.startAfterDocument(lastDocument!);

@@ -5,12 +5,13 @@ import 'dart:developer';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/Model/vendormodel.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/annual_plan/GoogleMapScreen.dart';
 import 'package:nearbii/screens/annual_plan/business_additional_details_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import '../../Model/notifStorage.dart';
 
 class BusinessServicesDetailsScreen extends StatefulWidget {
   final bool edit;
@@ -321,50 +322,73 @@ class _BusinessServicesDetailsScreenState
                       ),
                       //City
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: DropdownSearch<String>(
-                          dropdownButtonProps: const DropdownButtonProps(
-                            padding: EdgeInsets.all(0),
-                          ),
-                          //mode of dropdown
-                          //list of dropdown items
-                          popupProps: PopupProps.bottomSheet(
-                            interceptCallBacks: true,
-                            showSelectedItems: true,
-                            searchDelay: Duration.zero,
-                            searchFieldProps: TextFieldProps(
-                              decoration: InputDecoration(
-                                  icon: const Icon(Icons.search),
-                                  hintText: "Search City",
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20))),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 10),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: kAdvertiseContainerColor),
+                              borderRadius: BorderRadius.circular(8.6)),
+                          child: Center(
+                            child: DropdownSearch<String>(
+                              selectedItem: businessDetailData['businessCity'],
+                              enabled: !widget.edit,
+                              dropdownButtonProps: const DropdownButtonProps(
+                                padding: EdgeInsets.all(0),
+                              ),
+                              //mode of dropdown
+                              //list of dropdown items
+                              popupProps: PopupProps.bottomSheet(
+                                title: const Divider(
+                                  height: 10,
+                                  thickness: 2,
+                                  color: Color.fromARGB(255, 81, 182, 200),
+                                ).px(128).py2(),
+                                interceptCallBacks: true,
+                                showSelectedItems: true,
+                                searchDelay: Duration.zero,
+                                searchFieldProps: TextFieldProps(
+                                  decoration: InputDecoration(
+                                      icon: const Icon(Icons.search),
+                                      hintText: "Search City",
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20))),
+                                ),
+                                bottomSheetProps: BottomSheetProps(
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 232, 244, 247),
+                                    elevation: 10,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20))),
+                                showSearchBox: true,
+                              ),
+                              dropdownDecoratorProps:
+                                  const DropDownDecoratorProps(
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      textAlign: TextAlign.start,
+                                      dropdownSearchDecoration:
+                                          InputDecoration.collapsed(
+                                              hintTextDirection:
+                                                  TextDirection.ltr,
+                                              focusColor: Colors.lightBlue,
+                                              hintText: 'City')),
+                              items: CityList.ListCity.map((e) {
+                                return e.name;
+                              }).toList(),
+                              onChanged: (val) =>
+                                  businessDetailData['businessCity'] = val,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter some text';
+                                }
+                                return null;
+                              },
                             ),
-                            bottomSheetProps: BottomSheetProps(
-                                backgroundColor:
-                                    const Color.fromARGB(255, 232, 244, 247),
-                                elevation: 10,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20))),
-                            showSearchBox: true,
-                          ),
-                          dropdownDecoratorProps: const DropDownDecoratorProps(
-                              textAlignVertical: TextAlignVertical.center,
-                              textAlign: TextAlign.end,
-                              dropdownSearchDecoration:
-                                  InputDecoration.collapsed(
-                                      focusColor: Colors.lightBlue,
-                                      hintText: 'City')),
-                          items: CityList.ListCity.map((e) {
-                            return e.name;
-                          }).toList(),
-                          onChanged: (val) =>
-                              businessDetailData['businessCity'] = val,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter some text';
-                            }
-                            return null;
-                          },
+                          ).px12(),
                         ),
                       ),
                       //Pincode
@@ -602,12 +626,12 @@ class _BusinessServicesDetailsScreenState
                 GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate() &&
-                        businessDetailData['businessLocation']["lat"] != null &&
-                        businessDetailData['businessLocation']["long"] !=
-                            null &&
+                            businessDetailData['businessLocation']["lat"] !=
+                                null &&
+                            businessDetailData['businessLocation']["long"] !=
+                                null
                         // businessDetailData['aadharCardNumber'].length == 12 &&
-                        businessDetailData['businessMobileNumber'].length ==
-                            10) {
+                        ) {
                       // ScaffoldMessenger.of(context).showSnackBar(
                       //     const SnackBar(content: Text("error"))
                       // );

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/Model/vendormodel.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/profile/vendor_profile_screen.dart';

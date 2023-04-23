@@ -36,7 +36,9 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
   String city = "";
   getCity() async {
     city = await getcurrentCityFromLocation();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   TextEditingController title = TextEditingController();
@@ -76,7 +78,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
     offerData["city"] = city;
     offerData["off"] = double.parse(title.text);
     offerData["uid"] = uid;
-    offerData["date"] = DateTime.now();
+    offerData["date"] = DateTime.now().millisecondsSinceEpoch;
     offerData["location"] = Notifcheck.currentVendor!.businessLocation.toMap();
     offerData["category"] = Notifcheck.currentVendor!.businessCat;
 

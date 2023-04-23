@@ -16,6 +16,7 @@ import 'package:nearbii/screens/createEvent/addEvent/addEvent.dart';
 import 'package:nearbii/screens/loading_screen.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/annual_plan/business_service_details_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -131,6 +132,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  NotificationPermissions.requestNotificationPermissions();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -141,14 +143,14 @@ void main() async {
     android: initializationSettingsAndroid,
   );
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  await flutterLocalNotificationsPlugin
+  flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,

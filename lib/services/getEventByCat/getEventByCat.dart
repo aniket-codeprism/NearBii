@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
 
+import '../../Model/notifStorage.dart';
 import '../../constants.dart';
 
 Widget getEventByCat(
