@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,9 @@ Future<String> getcurrentCityFromLocation() async {
 
   SharedPreferences session = await SharedPreferences.getInstance();
   log(place.locality.toString());
+  if (kDebugMode) {
+    return "Pune";
+  }
   return place.locality.toString();
   session.setString("userLocation", place.locality.toString());
   session.setString("pincode", place.postalCode.toString());

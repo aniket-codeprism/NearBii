@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/annual_plan/nearbii_membership_plan.dart';
 
+import '../../Model/notifStorage.dart';
+
 class AnnualPlanMainScreen extends StatefulWidget {
   const AnnualPlanMainScreen({Key? key}) : super(key: key);
 
@@ -18,7 +20,7 @@ class _AnnualPlanMainScreenState extends State<AnnualPlanMainScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -85,7 +87,7 @@ class _AnnualPlanMainScreenState extends State<AnnualPlanMainScreen> {
                       color: kSignInContainerColor,
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Continue",
                         style: TextStyle(

@@ -15,7 +15,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(

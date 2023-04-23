@@ -4,19 +4,19 @@ import 'dart:developer';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/Model/vendormodel.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/annual_plan/GoogleMapScreen.dart';
 import 'package:nearbii/screens/annual_plan/business_additional_details_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+import '../../Model/notifStorage.dart';
+
 class BusinessServicesDetailsScreen extends StatefulWidget {
   final bool edit;
   VendorModel? data;
-  BusinessServicesDetailsScreen({Key? key, this.edit = false, this.data = null})
+  BusinessServicesDetailsScreen({Key? key, this.edit = false, this.data})
       : super(key: key);
 
   @override
@@ -76,7 +76,7 @@ class _BusinessServicesDetailsScreenState
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.blue),
                     textStyle: MaterialStateProperty.all(
-                        TextStyle(color: Colors.white)),
+                        const TextStyle(color: Colors.white)),
                   ),
                   onPressed: () async {
                     if (lattitudeController.text.isEmptyOrNull ||
@@ -93,7 +93,7 @@ class _BusinessServicesDetailsScreenState
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.blue),
                     textStyle: MaterialStateProperty.all(
-                        TextStyle(color: Colors.white)),
+                        const TextStyle(color: Colors.white)),
                   ),
                   onPressed: () async {
                     showDialog(
@@ -104,7 +104,6 @@ class _BusinessServicesDetailsScreenState
                                   width: 50,
                                   child: CircularProgressIndicator())
                               .centered();
-                          ;
                         });
 
                     var loc = await GeolocatorPlatform.instance
@@ -323,62 +322,73 @@ class _BusinessServicesDetailsScreenState
                       ),
                       //City
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: DropdownSearch<String>(
-                          //mode of dropdown
-                          //list of dropdown items
-                          popupProps: PopupProps.menu(
-                            showSearchBox: true,
-                          ),
-                          dropdownDecoratorProps: DropDownDecoratorProps(
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.start,
-                            dropdownSearchDecoration: InputDecoration(
-                              hintText: 'City *',
-                              hintStyle: TextStyle(
-                                color: kAdvertiseContainerTextColor,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 10),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: kAdvertiseContainerColor),
+                              borderRadius: BorderRadius.circular(8.6)),
+                          child: Center(
+                            child: DropdownSearch<String>(
+                              selectedItem: businessDetailData['businessCity'],
+                              enabled: !widget.edit,
+                              dropdownButtonProps: const DropdownButtonProps(
+                                padding: EdgeInsets.all(0),
                               ),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              prefixIconColor: kHintTextColor,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 13,
+                              //mode of dropdown
+                              //list of dropdown items
+                              popupProps: PopupProps.bottomSheet(
+                                title: const Divider(
+                                  height: 10,
+                                  thickness: 2,
+                                  color: Color.fromARGB(255, 81, 182, 200),
+                                ).px(128).py2(),
+                                interceptCallBacks: true,
+                                showSelectedItems: true,
+                                searchDelay: Duration.zero,
+                                searchFieldProps: TextFieldProps(
+                                  decoration: InputDecoration(
+                                      icon: const Icon(Icons.search),
+                                      hintText: "Search City",
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20))),
+                                ),
+                                bottomSheetProps: BottomSheetProps(
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 232, 244, 247),
+                                    elevation: 10,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20))),
+                                showSearchBox: true,
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: kAdvertiseContainerColor),
-                                gapPadding: 10,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: kAdvertiseContainerColor),
-                                gapPadding: 10,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: kAdvertiseContainerColor),
-                                gapPadding: 10,
-                              ),
+                              dropdownDecoratorProps:
+                                  const DropDownDecoratorProps(
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      textAlign: TextAlign.start,
+                                      dropdownSearchDecoration:
+                                          InputDecoration.collapsed(
+                                              hintTextDirection:
+                                                  TextDirection.ltr,
+                                              focusColor: Colors.lightBlue,
+                                              hintText: 'City')),
+                              items: CityList.ListCity.map((e) {
+                                return e.name;
+                              }).toList(),
+                              onChanged: (val) =>
+                                  businessDetailData['businessCity'] = val,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter some text';
+                                }
+                                return null;
+                              },
                             ),
-                          ),
-                          selectedItem: businessDetailData['businessCity'],
-                          items: CityList.ListCity.map((e) {
-                            return e.name;
-                          }).toList(),
-                          onChanged: (val) =>
-                              businessDetailData['businessCity'] = val,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter some text';
-                            }
-                            return null;
-                          },
+                          ).px12(),
                         ),
                       ),
                       //Pincode
@@ -479,53 +489,54 @@ class _BusinessServicesDetailsScreenState
                         ),
                       ),
                       //Aadhar Number
-                      TextFormField(
-                        enabled: !widget.edit,
-                        initialValue: businessDetailData['aadharCardNumber'],
-                        onChanged: (val) =>
-                            businessDetailData['aadharCardNumber'] = val,
-                        validator: (value) {
-                          if (value == null ||
-                              value.isEmpty ||
-                              value.length < 12) {
-                            return 'Please enter Correct Aadhar Number';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Aadhar Number *',
-                          hintStyle: TextStyle(
-                            color: kAdvertiseContainerTextColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          prefixIconColor: kHintTextColor,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 13,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: kAdvertiseContainerColor),
-                            gapPadding: 10,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: kAdvertiseContainerColor),
-                            gapPadding: 10,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                BorderSide(color: kAdvertiseContainerColor),
-                            gapPadding: 10,
+                      if (false)
+                        TextFormField(
+                          enabled: !widget.edit,
+                          initialValue: businessDetailData['aadharCardNumber'],
+                          onChanged: (val) =>
+                              businessDetailData['aadharCardNumber'] = val,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                value.length < 12) {
+                              return 'Please enter Correct Aadhar Number';
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Aadhar Number *',
+                            hintStyle: TextStyle(
+                              color: kAdvertiseContainerTextColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            prefixIconColor: kHintTextColor,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 13,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: kAdvertiseContainerColor),
+                              gapPadding: 10,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: kAdvertiseContainerColor),
+                              gapPadding: 10,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide:
+                                  BorderSide(color: kAdvertiseContainerColor),
+                              gapPadding: 10,
+                            ),
                           ),
                         ),
-                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -615,12 +626,12 @@ class _BusinessServicesDetailsScreenState
                 GestureDetector(
                   onTap: () {
                     if (_formKey.currentState!.validate() &&
-                        businessDetailData['businessLocation']["lat"] != null &&
-                        businessDetailData['businessLocation']["long"] !=
-                            null &&
-                        businessDetailData['aadharCardNumber'].length == 12 &&
-                        businessDetailData['businessMobileNumber'].length ==
-                            10) {
+                            businessDetailData['businessLocation']["lat"] !=
+                                null &&
+                            businessDetailData['businessLocation']["long"] !=
+                                null
+                        // businessDetailData['aadharCardNumber'].length == 12 &&
+                        ) {
                       // ScaffoldMessenger.of(context).showSnackBar(
                       //     const SnackBar(content: Text("error"))
                       // );
@@ -645,7 +656,7 @@ class _BusinessServicesDetailsScreenState
                       color: kSignInContainerColor,
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Continue",
                         style: TextStyle(
@@ -657,7 +668,7 @@ class _BusinessServicesDetailsScreenState
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 61,
                 ),
               ],

@@ -15,8 +15,6 @@ import 'package:nearbii/screens/bottom_bar/profile/profile_screen.dart';
 import 'package:nearbii/screens/bottom_bar/scan_screen.dart';
 import 'package:nearbii/services/sendNotification/registerToken/registerTopicNotificaion.dart';
 import 'package:nearbii/services/setUserMode.dart';
-import '../../Model/services.dart';
-import '../authentication/isUser.dart';
 
 class MasterPage extends StatefulWidget {
   final int currentIndex;
@@ -29,43 +27,27 @@ class MasterPage extends StatefulWidget {
 class _MasterPageState extends State<MasterPage> {
   int selectedIndex = 0;
   final firestore = FirebaseFirestore.instance;
-  _addServicesData() async {
-    await Future.delayed(Duration(seconds: 1));
-    await firestore.collection('Services').get().then((value) {
-      for (var docs in value.docs) {
-        ServicesData data =
-            ServicesData(title: docs.id, category: docs.get('subcategory'));
-        ServicesList.list.add(data);
-        ServicesList.alldata.add(data);
-        TitleList.data.add(docs.id);
-        TitleList.allData.add(docs.id);
-      }
-    });
-    if (mounted) {
-      setState(() {});
-    }
-  }
 
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
   loadUser() async {
-    bool user = await isUser();
+    bool user = await Notifcheck.api.isUser();
     if (!user) {
       var b =
           await FirebaseFirestore.instance.collection('vendor').doc(uid).get();
-      if (b.data() != null)
+      if (b.data() != null) {
         Notifcheck.currentVendor = VendorModel.fromMap(b.data()!);
+      }
     }
   }
 
-  late FirebaseMessaging messaging;
   getcity() async {
     await CityList.getCities();
     setState(() {});
-    ;
   }
 
   @override
   void initState() {
+    selectedIndex = widget.currentIndex;
     getcity();
     loadUser();
     subscribeTopicCity();
@@ -73,7 +55,8 @@ class _MasterPageState extends State<MasterPage> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
-      log(message.data["type"].toString(), name: "notifications");
+      log(android.toString(), name: "notifications");
+      log(notification.toString(), name: "notifications");
       if (notification != null && android != null) {
         if (message.data["type"].toString() == "event") {
           flutterLocalNotificationsPlugin.show(
@@ -208,33 +191,37 @@ class _MasterPageState extends State<MasterPage> {
       }
     });
 
-    _addServicesData();
     super.initState();
   }
 
+  final screens = [
+    const HomeScreen(),
+    const EventScreen(),
+    const OffersScreen(),
+    const ScanScreen(),
+    const ProfileScreen(),
+  ];
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      HomeScreen(),
-      EventScreen(),
-      OffersScreen(),
-      ScanScreen(),
-      ProfileScreen(),
-    ];
     return WillPopScope(
       onWillPop: () async {
         if (selectedIndex == 0) return true;
         selectedIndex = 0;
+
         setState(() {});
+
         return false;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: screens[selectedIndex],
+        body: IndexedStack(
+          index: selectedIndex,
+          children: screens,
+        ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               label: 'Home',
             ),
@@ -262,17 +249,29 @@ class _MasterPageState extends State<MasterPage> {
               ),
               label: 'Offers',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.qr_code_scanner_outlined),
               label: 'Scan',
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.person_outline_outlined),
               label: 'Profile',
             ),
           ],
           currentIndex: selectedIndex,
           onTap: (index) {
+            if (index == 2) {
+              FirebaseFirestore.instance
+                  .collection("User")
+                  .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
+                  .set({"offerNotif": false}, SetOptions(merge: true));
+            }
+            if (index == 1) {
+              FirebaseFirestore.instance
+                  .collection("User")
+                  .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
+                  .set({"eventNotif": false}, SetOptions(merge: true));
+            }
             setState(() {
               selectedIndex = index;
             });

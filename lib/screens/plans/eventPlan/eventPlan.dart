@@ -3,24 +3,22 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
-import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/screens/createEvent/paymentDone/paymentDone.dart';
+import 'package:nearbii/services/case_search_generator.dart';
 import 'package:nearbii/services/savePaymentRecipt/savePaymentRecipt.dart';
 import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as Path;
 
 import '../../../services/transactionupdate/transactionUpdate.dart';
 
 class eventPlan extends StatefulWidget {
   final Map<String, dynamic> eventInfo;
   final List<String> path;
-  eventPlan({required this.eventInfo, required this.path, Key? key})
+  const eventPlan({required this.eventInfo, required this.path, Key? key})
       : super(key: key);
 
   @override
@@ -30,9 +28,7 @@ class eventPlan extends StatefulWidget {
 class _eventPlanState extends State<eventPlan> {
   late FirebaseFirestore db;
 
-  late FirebaseStorage storage;
-
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   saveToDB(List<String> path) async {
     int i = 0;
@@ -52,6 +48,16 @@ class _eventPlanState extends State<eventPlan> {
 
     widget.eventInfo["eventImage"] = imageUrl;
     print(imageUrl);
+    List<String> cases = [];
+    cases.add(widget.eventInfo["eventDesc"]!);
+    cases.add(widget.eventInfo["pin"]!);
+    cases.add(widget.eventInfo["org"]);
+    cases.add(widget.eventInfo["city"]!);
+    cases.add(widget.eventInfo["addr"]!);
+    cases.add(widget.eventInfo["eventCat"]!);
+    cases.add(widget.eventInfo["name"]!);
+    List<String> caseSearches = generateCaseSearches(cases);
+    widget.eventInfo["caseSearch"] = caseSearches;
 
     db = FirebaseFirestore.instance;
 
@@ -67,7 +73,7 @@ class _eventPlanState extends State<eventPlan> {
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: ((context) {
-      return paymentDone();
+      return const paymentDone();
     })), (route) => false);
     updateTransatcion(
         FirebaseAuth.instance.currentUser!.uid.substring(0, 20),
@@ -124,10 +130,13 @@ class _eventPlanState extends State<eventPlan> {
   }
 
   void buyPlane() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 99900.0,
       'name': 'NearBii Add Event Price',
       'description': 'Pay for events and enjoy with croud',
@@ -154,7 +163,7 @@ class _eventPlanState extends State<eventPlan> {
           appBar: AppBar(
             leading: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 35,
                 ),
                 GestureDetector(
@@ -184,7 +193,7 @@ class _eventPlanState extends State<eventPlan> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 30, bottom: 45),
+                    padding: const EdgeInsets.only(top: 30, bottom: 0),
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -203,7 +212,7 @@ class _eventPlanState extends State<eventPlan> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 26),
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -215,7 +224,7 @@ class _eventPlanState extends State<eventPlan> {
                                     color: kLoadingScreenTextColor,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 RichText(
@@ -277,10 +286,10 @@ class _eventPlanState extends State<eventPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Event visible to every user in the target city.",
                                         style: TextStyle(
@@ -302,10 +311,10 @@ class _eventPlanState extends State<eventPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
                                           "Push notification to every user in the target city.",
                                           style: TextStyle(
@@ -325,10 +334,10 @@ class _eventPlanState extends State<eventPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Event visible in events window and category of event.",
                                         style: TextStyle(
@@ -350,10 +359,10 @@ class _eventPlanState extends State<eventPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
                                           "Pay via payment gateway.",
                                           style: TextStyle(
@@ -373,10 +382,10 @@ class _eventPlanState extends State<eventPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Valid till end day of the event. ",
                                         style: TextStyle(
@@ -401,14 +410,14 @@ class _eventPlanState extends State<eventPlan> {
                     },
                     child: Container(
                         width: MediaQuery.of(context).size.width * 0.80,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(20),
+                        margin: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(81, 182, 200, 1),
+                          color: const Color.fromRGBO(81, 182, 200, 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Make Payment",
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         )),

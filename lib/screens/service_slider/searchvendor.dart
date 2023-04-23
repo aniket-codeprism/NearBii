@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_null_comparison, prefer_typing_uninitialized_variables
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -15,8 +15,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class SearchVendor extends StatefulWidget {
-  final String category;
-  const SearchVendor(this.category, {Key? key}) : super(key: key);
+  String category;
+  SearchVendor(this.category, {Key? key}) : super(key: key);
 
   @override
   State<SearchVendor> createState() => _SearchVendorState();
@@ -44,71 +44,56 @@ class _SearchVendorState extends State<SearchVendor> {
 
     pos ??= await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
     getVendors();
   }
 
   getVendors() async {
+    if (vendorList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          searching = true;
+        });
+      }
+    }
     String finalCity = city;
-    Query<Map<String, dynamic>> snap =
-        FirebaseFirestore.instance.collection("vendor");
+    Query<Map<String, dynamic>> snap = FirebaseFirestore.instance
+        .collection("vendor")
+        .orderBy("adsBuyTimestamp", descending: true)
+        .orderBy("businessName", descending: false);
     if (finalCity == "All India") {
-      snap = FirebaseFirestore.instance.collection("vendor");
       if (widget.category.isEmptyOrNull) {
       } else {
         snap = snap.where("businessSubCat", isEqualTo: widget.category);
       }
     } else {
-      snap = FirebaseFirestore.instance
-          .collection("vendor")
-          .where("businessCity", isEqualTo: finalCity);
+      snap = snap.where("businessCity", isEqualTo: finalCity);
+      log(finalCity.toString(), name: "snap");
+
       if (widget.category.isEmptyOrNull) {
       } else {
         snap = snap.where("businessSubCat", isEqualTo: widget.category);
       }
     }
     if (searchval.isNotEmptyAndNotNull) {
-      snap = snap.where("caseSearch", arrayContains: searchval);
+      snap = snap.where("caseSearch",
+          arrayContains: searchval.trim().toLowerCase());
     }
     if (lastDocument != null) {
       snap = snap.startAfterDocument(lastDocument!);
     }
     QuerySnapshot<Map<String, dynamic>> snapshot = await snap.limit(5).get();
-    print(snapshot.size);
+    List<VendorModel> tempList = [];
     if (snapshot.size > 0) {
       lastDocument = snapshot.docs.last;
       for (var ele in snapshot.docs) {
         moreData = true;
         var vendor = VendorModel.fromMap(ele.data());
-        // if ((vendor.businessCat
-        //             .toString()
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase()) ||
-        //         vendor.businessAddress
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase()) ||
-        //         vendor.businessCity
-        //             .toString()
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase()) ||
-        //         vendor.bussinesDesc
-        //             .toString()
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase()) ||
-        //         vendor.businessName
-        //             .toString()
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase()) ||
-        //         vendor.name
-        //             .toString()
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase()) ||
-        //         vendor.businessSubCat
-        //             .toString()
-        //             .toLowerCase()
-        //             .contains(searchval.toLowerCase())) &&
-        //     vendor.active)
+        vendor.ref = ele.reference;
+
         {
+          pos ??= await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high);
           vendor.userId = ele.id;
           vendor.distance = Geolocator.distanceBetween(
               pos.latitude,
@@ -140,33 +125,45 @@ class _SearchVendorState extends State<SearchVendor> {
               today <= work[workday.last.toLowerCase()]!) {
             if (nowMin < openMin || nowMin > closeMin) {
               vendor.open = ("closed");
-              vendor.active = false;
             } else {
               vendor.open = ("open");
             }
           } else {
             vendor.open = ("closed");
-            vendor.active = false;
           }
-
+          if (vendor.bookmarks.contains(
+              FirebaseAuth.instance.currentUser!.uid.substring(0, 20))) {
+            vendor.book.value = true;
+          }
           vendor.isAds = false;
-          if (vendor.adsBuyTimestamp != null &&
-              vendor.adsBuyTimestamp > DateTime.now().millisecondsSinceEpoch) {
+
+          if (vendor.adsBuyTimestamp > DateTime.now().millisecondsSinceEpoch) {
             vendor.isAds = true;
           }
-          if (vendor.active || true) vendorList.add(vendor);
+          if (vendor.active) tempList.add(vendor);
         }
       }
-      if (searchval.isNotEmptyAndNotNull) {
-        await getBookmarkData();
-      }
+
+      tempList.sort((a, b) {
+        if (b.isAds) {
+          return 1;
+        }
+        return -1;
+      });
+      vendorList.addAll(tempList);
     } else {
       moreData = false;
     }
-    if (this.mounted)
+    if (snapshot.size == 5 &&
+        moreData &&
+        vendorList.length < 5 &&
+        lastDocument != null) {
+      getVendors();
+    } else if (mounted) {
       setState(() {
         searching = false;
       });
+    }
   }
 
   sort() {
@@ -196,47 +193,92 @@ class _SearchVendorState extends State<SearchVendor> {
 
     return Material(
       child: Scaffold(
+        appBar: AppBar(
+          title: widget.category.text.color(Colors.black).make(),
+          leading: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              )),
+        ),
         body: SafeArea(
             child: Container(
           child: Column(
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Icon(Icons.arrow_back)),
-                ],
-              ).pOnly(top: y / 32, left: y / 32, bottom: y / 32),
               SearchBar(
                 search: search,
-                onTypeSearch: true,
                 val: "",
-              ).px16(),
+              ).px16().pOnly(top: y / 64),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  Container(
                     width: 120,
                     height: 30,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: const Color.fromARGB(255, 81, 182, 200))),
                     child: Center(
                       child: DropdownSearch<String>(
+                        dropdownButtonProps: const DropdownButtonProps(
+                          padding: EdgeInsets.all(0),
+                        ),
                         //mode of dropdown
                         //list of dropdown items
-                        popupProps: PopupProps.menu(
+                        popupProps: PopupProps.bottomSheet(
+                          title: const Divider(
+                            height: 10,
+                            thickness: 2,
+                            color: Color.fromARGB(255, 81, 182, 200),
+                          ).px(128).py2(),
+                          interceptCallBacks: true,
+                          showSelectedItems: true,
+                          searchDelay: Duration.zero,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                                icon: const Icon(Icons.search),
+                                hintText: "Search City",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                          ),
+                          bottomSheetProps: BottomSheetProps(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 232, 244, 247),
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20))),
                           showSearchBox: true,
                         ),
-                        dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownDecoratorProps: const DropDownDecoratorProps(
+                            baseStyle:
+                                TextStyle(overflow: TextOverflow.ellipsis),
                             textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.end,
+                            textAlign: TextAlign.center,
                             dropdownSearchDecoration: InputDecoration.collapsed(
+                                floatingLabelAlignment:
+                                    FloatingLabelAlignment.center,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.auto,
                                 focusColor: Colors.lightBlue,
                                 hintText: 'City')),
                         items: CityList.ListCity.map((e) {
                           return e.name;
                         }).toList(),
-                        onChanged: ((value) {
+                        onChanged: ((value) async {
                           if (value == null) return;
-                          city = value;
+                          // if (value == city) {
+                          log(vendorList.length.toString(), name: "snap");
+                          log(value.toString(), name: "snap");
+                          log(city.toString(), name: "snap");
+                          log(lastDocument.toString(), name: "snap");
+
+                          setState(() {
+                            lastDocument = null;
+                            city = value;
+                            vendorList = [];
+                          });
                           getVendors();
                         }),
                         //show selected item\
@@ -244,24 +286,24 @@ class _SearchVendorState extends State<SearchVendor> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 120,
-                    height: 30,
-                    child: DropdownSearch<String>(
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            textAlignVertical: TextAlignVertical.center,
-                            textAlign: TextAlign.end,
-                            dropdownSearchDecoration: InputDecoration.collapsed(
-                                focusColor: Colors.lightBlue,
-                                hintText: 'City')),
-                        selectedItem: applied,
-                        items: filter.map((e) => e).toList(),
-                        onChanged: ((value) {
-                          if (value == null) return;
-                          applied = value.toString();
-                          sort();
-                        })),
-                  )
+                  // SizedBox(
+                  //   width: 120,
+                  //   height: 30,
+                  //   child:  DropdownSearch<String>(
+                  //       dropdownDecoratorProps: DropDownDecoratorProps(
+                  //           textAlignVertical: TextAlignVertical.center,
+                  //           textAlign: TextAlign.end,
+                  //           dropdownSearchDecoration: InputDecoration.collapsed(
+                  //               focusColor: Colors.lightBlue,
+                  //               hintText: 'City')),
+                  //       selectedItem: applied,
+                  //       items: filter.map((e) => e).toList(),
+                  //       onChanged: ((value) {
+                  //         if (value == null) return;
+                  //         applied = value.toString();
+                  //         sort();
+                  //       })),
+                  // )
                 ],
               ).px16().pOnly(top: 8).pOnly(bottom: y / 32),
               result()
@@ -280,7 +322,7 @@ class _SearchVendorState extends State<SearchVendor> {
     return city == ""
         ? Column(
             children: [
-              CircularProgressIndicator(),
+              const CircularProgressIndicator(),
               5.heightBox,
               "Please wait,Getting your Location Info".text.makeCentered(),
             ],
@@ -292,7 +334,7 @@ class _SearchVendorState extends State<SearchVendor> {
                 children: [
                   "Searching for $searchval".text.make(),
                   5.widthBox,
-                  CircularProgressIndicator()
+                  const CircularProgressIndicator()
                 ],
               )
             : vendorList.isNotEmpty
@@ -314,6 +356,7 @@ class _SearchVendorState extends State<SearchVendor> {
                         shrinkWrap: true,
                         padding: const EdgeInsets.only(bottom: 20),
                         itemBuilder: ((context, i) {
+                          if (vendorList.length < 5) moreData = false;
                           if (i < vendorList.length) {
                             var item = vendorList[i];
                             return ValueListenableBuilder(
@@ -341,10 +384,11 @@ class _SearchVendorState extends State<SearchVendor> {
                                                   ? "Ad"
                                                       .text
                                                       .bold
-                                                      .color(Color(0xff51B6C8))
+                                                      .color(const Color(
+                                                          0xff51B6C8))
                                                       .make()
                                                   : "".text.make(),
-                                              Spacer(),
+                                              const Spacer(),
                                               ValueListenableBuilder(
                                                 builder: (contex, value, c) {
                                                   return Icon(
@@ -352,9 +396,25 @@ class _SearchVendorState extends State<SearchVendor> {
                                                         ? Icons.bookmark
                                                         : Icons
                                                             .bookmark_outline,
-                                                    color: Color(0xff51B6C8),
+                                                    color:
+                                                        const Color(0xff51B6C8),
                                                   ).onInkTap(() async {
                                                     if (item.book.value) {
+                                                      item.ref!.set(
+                                                          {
+                                                            "bookmarks":
+                                                                FieldValue
+                                                                    .arrayRemove([
+                                                              FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid
+                                                                  .substring(
+                                                                      0, 20)
+                                                            ])
+                                                          },
+                                                          SetOptions(
+                                                              merge: true));
                                                       FirebaseFirestore.instance
                                                           .collection("User")
                                                           .doc(FirebaseAuth
@@ -362,14 +422,37 @@ class _SearchVendorState extends State<SearchVendor> {
                                                               .currentUser!
                                                               .uid
                                                               .substring(0, 20))
-                                                          .collection(
-                                                              "bookmarks")
-                                                          .doc(item.userId)
-                                                          .delete()
-                                                          .then((value) {
+                                                          .set(
+                                                              {
+                                                            "bookmarks":
+                                                                FieldValue
+                                                                    .arrayRemove([
+                                                              item.userId
+                                                                  .toString()
+                                                            ])
+                                                          },
+                                                              SetOptions(
+                                                                  merge:
+                                                                      true)).then(
+                                                              (value) {
                                                         item.book.value = false;
                                                       });
                                                     } else {
+                                                      item.ref!.set(
+                                                          {
+                                                            "bookmarks":
+                                                                FieldValue
+                                                                    .arrayUnion([
+                                                              FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid
+                                                                  .substring(
+                                                                      0, 20)
+                                                            ])
+                                                          },
+                                                          SetOptions(
+                                                              merge: true));
                                                       FirebaseFirestore.instance
                                                           .collection("User")
                                                           .doc(FirebaseAuth
@@ -377,14 +460,19 @@ class _SearchVendorState extends State<SearchVendor> {
                                                               .currentUser!
                                                               .uid
                                                               .substring(0, 20))
-                                                          .collection(
-                                                              "bookmarks")
-                                                          .doc(item.userId)
-                                                          .set({
-                                                        item.userId.toString():
-                                                            item.userId
-                                                                .toString()
-                                                      }).then((value) {
+                                                          .set(
+                                                              {
+                                                            "bookmarks":
+                                                                FieldValue
+                                                                    .arrayUnion([
+                                                              item.userId
+                                                                  .toString()
+                                                            ])
+                                                          },
+                                                              SetOptions(
+                                                                  merge:
+                                                                      true)).then(
+                                                              (value) {
                                                         item.book.value = true;
                                                       });
                                                     }
@@ -406,7 +494,7 @@ class _SearchVendorState extends State<SearchVendor> {
                                                 itemCount: 5,
                                                 itemSize: 20,
                                                 itemBuilder: (context, _) =>
-                                                    Icon(
+                                                    const Icon(
                                                   Icons.star,
                                                   color: Colors.amber,
                                                   size: 1,
@@ -427,13 +515,13 @@ class _SearchVendorState extends State<SearchVendor> {
                                           ).pOnly(top: 5, right: 10),
                                           Row(
                                             children: [
-                                              Icon(
+                                              const Icon(
                                                 Icons.location_on,
                                                 color: Colors.grey,
                                               ),
                                               "${(item.distance / 1000).toDoubleStringAsPrecised(length: 2)} km"
                                                   .text
-                                                  .color(Color.fromARGB(
+                                                  .color(const Color.fromARGB(
                                                       96, 0, 0, 0))
                                                   .make()
                                                   .pOnly(right: 5),
@@ -441,7 +529,8 @@ class _SearchVendorState extends State<SearchVendor> {
                                                   .toUpperCase()
                                                   .text
                                                   .bold
-                                                  .color(Color(0xff51B6C8))
+                                                  .color(
+                                                      const Color(0xff51B6C8))
                                                   .make()
                                                   .pOnly(right: 5),
                                             ],
@@ -458,22 +547,22 @@ class _SearchVendorState extends State<SearchVendor> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.phone,
                                                       color: Color(0xff51B6C8),
                                                     ),
                                                     "Call Now "
                                                         .text
-                                                        .color(
-                                                            Color(0xff51B6C8))
+                                                        .color(const Color(
+                                                            0xff51B6C8))
                                                         .lg
                                                         .make()
                                                   ],
                                                 ),
                                                 decoration: BoxDecoration(
                                                     border: Border.all(
-                                                        color:
-                                                            Color(0xff51B6C8))),
+                                                        color: const Color(
+                                                            0xff51B6C8))),
                                               ),
                                             ],
                                           ).onInkTap(() async {
@@ -501,7 +590,7 @@ class _SearchVendorState extends State<SearchVendor> {
                                 }));
                           } else {
                             return moreData
-                                ? CircularProgressIndicator().centered()
+                                ? const CircularProgressIndicator().centered()
                                 : "Opps !! No More Vendors"
                                     .text
                                     .make()
@@ -509,7 +598,7 @@ class _SearchVendorState extends State<SearchVendor> {
                           }
                         }),
                         separatorBuilder: ((context, i) {
-                          return Divider(color: Color(0xff51B6C8));
+                          return const Divider(color: Color(0xff51B6C8));
                         }),
                         itemCount: vendorList.length + 1),
                   ))
@@ -518,7 +607,6 @@ class _SearchVendorState extends State<SearchVendor> {
 
   var pos;
   String searchval = "";
-  List<VendorModel> allVendorList = [];
   search(String val) {
     searchval = val;
     searching = true;

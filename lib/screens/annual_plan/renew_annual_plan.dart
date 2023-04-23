@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nearbii/constants.dart';
@@ -21,7 +22,7 @@ class RenewAnnualPlanScreen extends StatefulWidget {
 }
 
 class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   late FirebaseFirestore db;
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
@@ -36,7 +37,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
             .millisecondsSinceEpoch
       }, SetOptions(merge: true));
     } else {
-      log((Duration(days: 1).inMilliseconds * 365).toString());
+      log((const Duration(days: 1).inMilliseconds * 365).toString());
       await db.collection("User").doc(uid).set({
         "endDate": DateTime(widget.end.year + 1, widget.end.month,
                 widget.end.day, widget.end.hour, widget.end.minute)
@@ -48,9 +49,9 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    Navigator.of(this.context).pushAndRemoveUntil(
+    Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) {
-      return paymentDone();
+      return const paymentDone();
     }), (route) => false);
     updateTransatcion(
         FirebaseAuth.instance.currentUser!.uid.substring(0, 20),
@@ -103,10 +104,13 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
   }
 
   void buyMembership() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 49900.0,
       'name': 'NearBii Update Membership Plan',
       'description': 'Join the large world',
@@ -131,7 +135,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -194,7 +198,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                                 color: kLoadingScreenTextColor,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
                             Row(
@@ -229,7 +233,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 12,
                                 ),
                                 Padding(
@@ -276,10 +280,10 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Nearbii annual membership. ",
                                     style: TextStyle(
@@ -300,10 +304,10 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Get 100% cashback in the form of nearbii reward points in your nearbii wallet. ",
                                       style: TextStyle(
@@ -323,10 +327,10 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                                   color: kSignUpContainerColor,
                                   size: 20,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
-                                Flexible(
+                                const Flexible(
                                   child: Text(
                                     "Access to all the features of promotions. ",
                                     style: TextStyle(
@@ -347,10 +351,10 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                                     color: kSignUpContainerColor,
                                     size: 20,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
+                                  const Flexible(
                                     child: Text(
                                       "Valid for 1year",
                                       style: TextStyle(
@@ -381,7 +385,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                     color: kSignInContainerColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Renew Plan",
                       style: TextStyle(
@@ -393,7 +397,7 @@ class _RenewAnnualPlanScreenState extends State<RenewAnnualPlanScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 61,
               ),
             ],

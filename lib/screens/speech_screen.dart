@@ -39,7 +39,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -70,7 +70,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
       body: SingleChildScrollView(
         reverse: true,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 34, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 20),
           child: Center(
             child: TextHighlight(
               text: _text,

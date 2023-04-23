@@ -1,16 +1,12 @@
 // ignore_for_file: curly_braces_in_flow_control_structures, prefer_const_constructors
 
-import 'dart:developer';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/screens/annual_plan/GoogleMapScreen.dart';
-import 'package:nearbii/screens/createEvent/moreInfo/moreInfo.dart';
+import 'package:nearbii/screens/createEvent/addEvent/moreInfo.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:csc_picker/csc_picker.dart';
 
 import '../../../constants.dart';
 import '../../bottom_bar/bottomBar/bottomBar.dart';
@@ -135,7 +131,8 @@ class _AddEventState extends State<AddEvent> {
                                   decoration: InputDecoration(
                                     errorStyle: TextStyle(
                                       color: Theme.of(context)
-                                          .errorColor, // or any other color
+                                          .colorScheme
+                                          .error, // or any other color
                                     ),
                                     icon: Icon(Icons.location_on),
                                     hintText: hintLable[index],
@@ -162,8 +159,7 @@ class _AddEventState extends State<AddEvent> {
                                     ),
                                   ),
                                   validator: (value) {
-                                    if (map.text == null ||
-                                        map.text.isEmptyOrNull) {
+                                    if (map.text.isEmptyOrNull) {
                                       return hintLable[index];
                                     }
                                     return null;
@@ -192,7 +188,8 @@ class _AddEventState extends State<AddEvent> {
                                     decoration: InputDecoration(
                                       errorStyle: TextStyle(
                                         color: Theme.of(context)
-                                            .errorColor, // or any other color
+                                            .colorScheme
+                                            .error, // or any other color
                                       ),
                                       hintText: hintLable[index],
                                       hintStyle: TextStyle(
@@ -228,15 +225,12 @@ class _AddEventState extends State<AddEvent> {
                       if (!_formKey.currentState!.validate()) {
                         return;
                       }
-                      if (mobo.text.length != 10) {
-                        Fluttertoast.showToast(
-                            msg: 'Enter Valid Mobile Number');
-                      }
+
                       if (addhr.text.length != 12) {
                         Fluttertoast.showToast(
                             msg: 'Enter Valid Aadhar Number');
                       }
-                      if (mobo.text.length == 10 && addhr.text.length == 12) {
+                      if (addhr.text.length == 12) {
                         eventInfo["name"] = nameOfEvent.text;
                         eventInfo["org"] = ogrName.text;
                         eventInfo["addhr"] = addhr.text;

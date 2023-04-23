@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nearbii/screens/bottom_bar/home/home_screen.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 
 class paymentDone extends StatefulWidget {
-  paymentDone({Key? key}) : super(key: key);
+  const paymentDone({Key? key}) : super(key: key);
 
   @override
   State<paymentDone> createState() => _paymentDoneState();
@@ -13,9 +12,9 @@ class _paymentDoneState extends State<paymentDone> {
   @override
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 10), () {
-       Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: ((context) {
-        return MasterPage(
+        return const MasterPage(
           currentIndex: 0,
         );
       })), (route) => false);
@@ -40,8 +39,8 @@ class _paymentDoneState extends State<paymentDone> {
                     Card(
                         elevation: 6,
                         child: Container(
-                          padding: EdgeInsets.all(30),
-                          child: Column(children: [
+                          padding: const EdgeInsets.all(30),
+                          child: Column(children: const [
                             Icon(Icons.check_circle,
                                 size: 154, color: Colors.green),
                             SizedBox(

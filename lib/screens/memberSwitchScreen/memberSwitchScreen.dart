@@ -3,7 +3,7 @@ import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
 
 class memberSwitchScreen extends StatefulWidget {
-  memberSwitchScreen({Key? key}) : super(key: key);
+  const memberSwitchScreen({Key? key}) : super(key: key);
 
   @override
   State<memberSwitchScreen> createState() => _memberSwitchScreenState();
@@ -19,7 +19,7 @@ class _memberSwitchScreenState extends State<memberSwitchScreen> {
           appBar: AppBar(
             leading: Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 45,
                   height: 20,
                 ),
@@ -34,14 +34,14 @@ class _memberSwitchScreenState extends State<memberSwitchScreen> {
               ],
             ),
           ),
-          body: Container(
+          body: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: Column(
                 children: [
                   Container(
                     alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(left: 20),
+                    padding: const EdgeInsets.only(left: 20),
                     child: Text(
                       "Update Membership",
                       style: TextStyle(

@@ -1,5 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
-import 'package:nearbii/screens/bottom_bar/master_screen.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:nearbii/Model/notifStorage.dart';
+import 'package:nearbii/screens/auth/auth_services.dart';
+import 'package:nearbii/services/case_search_generator.dart';
+import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:nearbii/services/setUserMode.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +17,7 @@ import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/createEvent/paymentDone/paymentDone.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class NearBiiMembershipPlanScreen extends StatefulWidget {
   final Map<String, dynamic> businessDetailData;
@@ -26,17 +33,16 @@ class NearBiiMembershipPlanScreen extends StatefulWidget {
 
 class _NearBiiMembershipPlanScreenState
     extends State<NearBiiMembershipPlanScreen> {
-  late FirebaseFirestore db;
-
-  late FirebaseStorage storage;
-
   String? uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
 
   late final Razorpay _razorpay = Razorpay();
 
   int balance = 0;
 
+  String referalCode = "";
+
   loadBalance() async {
+    log(uid.toString());
     await FirebaseFirestore.instance
         .collection('User')
         .doc(uid)
@@ -44,26 +50,42 @@ class _NearBiiMembershipPlanScreenState
         .then((value) {
       setState(() {
         balance = value.get("wallet");
+        referalCode = value.get("referalcode");
       });
     });
   }
 
   saveToDB(String path, String paymentID, String orderId, String sig) async {
-    db = FirebaseFirestore.instance;
+    FirebaseFirestore db = FirebaseFirestore.instance;
 
     if (!widget.renew) {
       print('runnnn');
       // var fileName = File(path);
-      Reference reference = FirebaseStorage.instance.ref().child(
-          'businessImage/' +
-              FirebaseAuth.instance.currentUser!.uid.substring(0, 20) +
-              ".jpg");
-      TaskSnapshot snapshot = await reference.putFile(File(path));
+      if (path.isNotEmptyAndNotNull) {
+        Reference reference = FirebaseStorage.instance.ref().child(
+            'businessImage/' +
+                FirebaseAuth.instance.currentUser!.uid.substring(0, 20) +
+                ".jpg");
+        TaskSnapshot snapshot = await reference.putFile(File(path));
 
-      var imageUrl = await snapshot.ref.getDownloadURL();
+        var imageUrl = await snapshot.ref.getDownloadURL();
 
-      widget.businessDetailData["businessImage"] = imageUrl;
-      print(imageUrl);
+        widget.businessDetailData["businessImage"] = imageUrl;
+      }
+      List<String> cases = [];
+      cases.add(widget.businessDetailData["businessPinCode"]);
+      cases.add(widget.businessDetailData["name"]);
+      cases.add(widget.businessDetailData["bussinesDesc"]);
+      cases.add(widget.businessDetailData["businessName"]);
+      cases.add(widget.businessDetailData["businessMobileNumber"]);
+      cases.add(widget.businessDetailData["businessCity"]);
+      cases.add(widget.businessDetailData["businessCat"]);
+      cases.add(widget.businessDetailData["businessAddress"]);
+      var generateCases = generateCaseSearches(cases);
+      widget.businessDetailData["caseSearch"] = generateCases;
+      widget.businessDetailData["isImported"] = false;
+      widget.businessDetailData["importedFrom"] = "Paid User";
+      widget.businessDetailData["bookmarks"] = [];
 
       await db
           .collection("vendor")
@@ -80,7 +102,10 @@ class _NearBiiMembershipPlanScreenState
         .set(widget.businessDetailData)
         .then((value) async {
       Fluttertoast.showToast(msg: "Saved");
-
+      var referalCheck = await checkReferalCode(referalCode);
+      if (referalCheck.uid.isNotEmptyAndNotNull) {
+        updateReferalWallet(referalCode, uid, referalCheck);
+      }
       Map<String, dynamic> userdata = {};
       Map<String, dynamic> memberData = {};
       userdata["type"] = "Vendor";
@@ -119,7 +144,8 @@ class _NearBiiMembershipPlanScreenState
               DateTime.now().millisecondsSinceEpoch, balance);
         });
       });
-
+      Notifcheck.api.disableCoupan(widget.businessDetailData["coupan"]);
+      sendNotificationForVendor(widget.businessDetailData["name"]);
       return true;
     }).onError((error, stackTrace) {
       Fluttertoast.showToast(msg: "Error to Save model");
@@ -138,11 +164,17 @@ class _NearBiiMembershipPlanScreenState
     widget.businessDetailData["payment"] = "Success";
     widget.businessDetailData["isAds"] = false;
     widget.businessDetailData["timestamp"] = Timestamp.now();
+    widget.businessDetailData["adsBuyTimestamp"] = 0;
+
     await saveToDB(
         widget.businessDetailData["businessImage"],
         response.paymentId.toString(),
         response.orderId.toString(),
         response.signature.toString());
+    var referalCheck = await checkReferalCode(referalCode);
+    if (referalCheck.uid.isNotEmptyAndNotNull) {
+      updateReferalWallet(referalCode, uid, referalCheck);
+    }
     Fluttertoast.showToast(
         msg: "SUCCESS: " + response.paymentId!,
         toastLength: Toast.LENGTH_SHORT);
@@ -175,10 +207,13 @@ class _NearBiiMembershipPlanScreenState
   }
 
   void buyMembership() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 49900.0,
       'name': 'NearBii Membership Plan',
       'description': 'Join the large world',
@@ -189,9 +224,19 @@ class _NearBiiMembershipPlanScreenState
         'wallets': ['paytm']
       }
     };
+    bool isCoupan = await Notifcheck.api
+        .checkCoupan(coupan: widget.businessDetailData["coupan"]);
 
     try {
-      _razorpay.open(options);
+      if (isCoupan) {
+        Fluttertoast.showToast(msg: "Coupon Applied !!");
+        PaymentSuccessResponse response = PaymentSuccessResponse(
+            widget.businessDetailData["coupan"], "orderId", "signature");
+        _handlePaymentSuccess(response);
+        Fluttertoast.showToast(msg: "Coupan Applied");
+      } else {
+        _razorpay.open(options);
+      }
     } catch (e) {
       debugPrint('Error: e' + e.toString());
     }
@@ -218,7 +263,7 @@ class _NearBiiMembershipPlanScreenState
         ),
       ),
       body: paymen
-          ? paymentDone()
+          ? const paymentDone()
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 34),

@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nearbii/Model/notifStorage.dart';
 
 import 'package:nearbii/screens/plans/eventPlan/eventPlan.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 import '../../../constants.dart';
 import '../../bottom_bar/bottomBar/bottomBar.dart';
@@ -18,7 +19,7 @@ import 'package:intl/intl.dart';
 
 class AddMoreInfo extends StatefulWidget {
   final Map<String, dynamic> eventInfo;
-  AddMoreInfo({required this.eventInfo, Key? key}) : super(key: key);
+  const AddMoreInfo({required this.eventInfo, Key? key}) : super(key: key);
 
   @override
   State<AddMoreInfo> createState() => _AddMoreInfoState();
@@ -83,7 +84,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
             .snapshots()
             .handleError((error) {
           return Container(
-            child: SizedBox(
+            child: const SizedBox(
               width: 30,
               height: 30,
               child: CircularProgressIndicator(),
@@ -98,7 +99,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
           }
           var first = snapshot.data!.docs.first.data() as Map;
           return Container(
-              margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+              margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
               child: DropdownButtonFormField(
                   hint: const Text(
                     "Time Slot *",
@@ -106,8 +107,8 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                   ),
                   decoration: InputDecoration(
                     hintText: "Time Slot *",
-                    hintStyle:
-                        TextStyle(color: Color.fromARGB(255, 203, 207, 207)),
+                    hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 203, 207, 207)),
                     enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
                       color: Color.fromARGB(173, 125, 209, 248),
@@ -123,7 +124,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  dropdownColor: Color.fromARGB(255, 243, 243, 243),
+                  dropdownColor: const Color.fromARGB(255, 243, 243, 243),
                   onChanged: (String? newValue) {
                     updatedTime(newValue);
                   },
@@ -140,7 +141,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
     } catch (Ex) {
       print("0x1Error To Get User");
       return Container(
-        child: SizedBox(
+        child: const SizedBox(
           width: 30,
           height: 30,
           child: CircularProgressIndicator(),
@@ -199,7 +200,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                     ),
                   ),
                   dropdownColor: const Color.fromARGB(255, 243, 243, 243),
-                  value: first!["Title"].toString(),
+                  value: first["Title"].toString(),
                   onChanged: (String? newValue) {
                     _onShopDropItemSelected(newValue);
                   },
@@ -217,7 +218,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
     } catch (Ex) {
       print("0x1Error To Get User");
       return Container(
-        child: SizedBox(
+        child: const SizedBox(
           width: 30,
           height: 30,
           child: CircularProgressIndicator(),
@@ -239,14 +240,12 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
   _imgFromGallery() async {
     List<XFile>? images = await ImagePicker().pickMultiImage();
     //.getImage(source: ImageSource.gallery, imageQuality: 88);
-    if (images != null) {
-      int i = 0;
-      for (var img in images) {
-        eventImage.add(img.path);
-        i++;
-      }
-      setState(() {});
+    int i = 0;
+    for (var img in images) {
+      eventImage.add(img.path);
+      i++;
     }
+    setState(() {});
   }
 
   void updatedTime(String? value) {
@@ -264,7 +263,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
             appBar: AppBar(
               leading: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 45,
                     height: 20,
                   ),
@@ -279,7 +278,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                 ],
               ),
             ),
-            body: Container(
+            body: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
@@ -289,7 +288,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                   children: [
                     Container(
                       alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.only(left: 20),
                       child: Text(
                         "Event Details",
                         style: TextStyle(
@@ -339,7 +338,8 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                     //       items: dropdownItems),
                     // ),
                     Container(
-                      margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                      margin:
+                          const EdgeInsets.only(top: 20, left: 20, right: 20),
                       child: TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -431,7 +431,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                                     setState(() {
                                       eventEndDate.text = formattedDate;
                                       endMili = pickedDate
-                                          .add(Duration(hours: 23))
+                                          .add(const Duration(hours: 23))
                                           .millisecondsSinceEpoch;
                                     }); //formatted date output using intl package =>  2021-03-16
                                   } else {
@@ -463,34 +463,52 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
 
                     getTimeSlotDrop(context),
                     Container(
-                      margin:
-                          const EdgeInsets.only(top: 20, left: 20, right: 20),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                              color: const Color.fromARGB(173, 125, 209, 248))),
                       child: DropdownSearch<String>(
+                        dropdownButtonProps: const DropdownButtonProps(
+                          padding: EdgeInsets.all(0),
+                        ),
                         //mode of dropdown
                         //list of dropdown items
-                        popupProps: PopupProps.menu(
+                        popupProps: PopupProps.bottomSheet(
+                          title: const Divider(
+                            height: 10,
+                            thickness: 2,
+                            color: Color.fromARGB(255, 81, 182, 200),
+                          ).px(128).py2(),
+                          interceptCallBacks: true,
+                          showSelectedItems: true,
+                          searchDelay: Duration.zero,
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                                icon: const Icon(Icons.search),
+                                hintText: "Search Category",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                          ),
+                          bottomSheetProps: BottomSheetProps(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 232, 244, 247),
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20))),
                           showSearchBox: true,
                         ),
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                          labelText: "Target City",
-                          enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                            color: Color.fromARGB(173, 125, 209, 248),
-                          )),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Color.fromARGB(173, 125, 209, 248),
-                                width: 1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Color.fromARGB(173, 125, 209, 248),
-                                width: 1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        )),
+                        dropdownDecoratorProps: const DropDownDecoratorProps(
+                            baseStyle:
+                                TextStyle(overflow: TextOverflow.ellipsis),
+                            textAlignVertical: TextAlignVertical.center,
+                            textAlign: TextAlign.start,
+                            dropdownSearchDecoration: InputDecoration.collapsed(
+                                floatingLabelAlignment:
+                                    FloatingLabelAlignment.start,
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.auto,
+                                focusColor: Colors.lightBlue,
+                                hintText: 'City')),
                         items: CityList.eventCity.map((e) {
                           return e.name;
                         }).toList(),
@@ -502,8 +520,8 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                         }),
                         //show selected item
                         selectedItem: eventTargetCity,
-                      ),
-                    ),
+                      ).px(10),
+                    ).px(20).pOnly(top: 20),
                     Container(
                       margin:
                           const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -548,22 +566,22 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                                 return StatefulBuilder(
                                     builder: (context, state) {
                                   return Dialog(
-                                    child: Container(
+                                    child: SizedBox(
                                       height: 300,
                                       child: Column(
                                         children: [
-                                          Container(
+                                          SizedBox(
                                             height: 200,
                                             child: GridView.builder(
                                               gridDelegate:
-                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                  const SliverGridDelegateWithFixedCrossAxisCount(
                                                 crossAxisCount: 3,
                                                 crossAxisSpacing: 10,
                                                 mainAxisSpacing: 10,
                                               ),
                                               itemCount: eventImage.length,
                                               itemBuilder: (context, index) {
-                                                return Container(
+                                                return SizedBox(
                                                   width: 70,
                                                   height: 70,
                                                   child: Column(
@@ -585,7 +603,7 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                                                           height: 20,
                                                           width: 70,
                                                           color: Colors.red,
-                                                          child: Center(
+                                                          child: const Center(
                                                               child: Text(
                                                             'Remove',
                                                             style: TextStyle(
@@ -600,37 +618,37 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                                               },
                                             ),
                                           ),
-                                          Spacer(),
+                                          const Spacer(),
                                           //add btn
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Container(
+                                              SizedBox(
                                                 height: 50,
                                                 child: ElevatedButton(
                                                   onPressed: () {
                                                     Navigator.pop(context);
                                                   },
-                                                  child: Text("Cancel"),
+                                                  child: const Text("Cancel"),
                                                 ),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 10,
                                               ),
-                                              Container(
+                                              SizedBox(
                                                 height: 50,
                                                 child: ElevatedButton(
                                                   onPressed: () {
                                                     _imgFromGallery();
                                                     Navigator.pop(context);
                                                   },
-                                                  child: Text("Add"),
+                                                  child: const Text("Add"),
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 10,
                                           )
                                         ],
@@ -644,13 +662,13 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.80,
                         height: 120,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(9),
+                        margin: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.all(9),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             width: 1,
-                            color: Color.fromARGB(173, 125, 209, 248),
+                            color: const Color.fromARGB(173, 125, 209, 248),
                           ),
                         ),
                         child: Row(
@@ -662,18 +680,18 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                                         fit: BoxFit.cover,
                                         image: FileImage(File(eventImage[0])))
                                     : null,
-                                color: Color.fromRGBO(241, 246, 247, 1),
+                                color: const Color.fromRGBO(241, 246, 247, 1),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               width: 110,
                               height: 110,
-                              child: Icon(Icons.add_outlined,
+                              child: const Icon(Icons.add_outlined,
                                   size: 60,
                                   color: Color.fromRGBO(196, 196, 196, 1)),
                             ),
                             Container(
-                                margin: EdgeInsets.only(left: 10),
-                                child: Text(
+                                margin: const EdgeInsets.only(left: 10),
+                                child: const Text(
                                   "Add Photo",
                                   style: TextStyle(
                                       color: Color.fromARGB(255, 203, 207, 207),
@@ -690,19 +708,19 @@ class _AddMoreInfoState extends State<AddMoreInfo> {
                       },
                       child: Container(
                           width: MediaQuery.of(context).size.width * 0.80,
-                          margin: EdgeInsets.only(top: 20),
-                          padding: EdgeInsets.all(20),
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Color.fromRGBO(81, 182, 200, 1),
+                            color: const Color.fromRGBO(81, 182, 200, 1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           alignment: Alignment.center,
-                          child: Text(
+                          child: const Text(
                             "Make Payment",
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           )),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 60,
                     )
                   ],

@@ -1,22 +1,23 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:nearbii/Model/cityModel.dart';
 import 'package:nearbii/Model/vendormodel.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:nearbii/services/Backend.dart';
+
 class Notifcheck {
   static final ValueNotifier<bool> bell = ValueNotifier(false);
   static final ValueNotifier<bool> event = ValueNotifier(false);
   static final ValueNotifier<bool> offer = ValueNotifier(false);
-  static late VendorModel? currentVendor = null;
+  static VendorModel? currentVendor;
   static String defCover =
       "https://firebasestorage.googleapis.com/v0/b/neabiiapp.appspot.com/o/RWD_Why-Is-My-Shopify-Store-Not-Working_Blog_v1_Header.png?alt=media&token=c7491530-7ac5-4664-82d0-4a5978d3c481";
 
   static bool vendor = false;
 
   static var userDAta;
+  static Backend api = Backend();
 }
 
 class CityList {

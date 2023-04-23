@@ -1,14 +1,13 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:nearbii/Model/services.dart';
+import 'package:nearbii/Model/ServiceModel.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/service_slider/searchvendor.dart';
 import 'package:velocity_x/velocity_x.dart';
-import '../bottom_bar/bottomBar/bottomBar.dart';
 
 class MoreServices extends StatefulWidget {
-  final int index;
+  final ServiceModel index;
   const MoreServices({Key? key, required this.index}) : super(key: key);
 
   @override
@@ -22,7 +21,6 @@ class _MoreServicesState extends State<MoreServices> {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      bottomNavigationBar: addBottomBar(context),
       appBar: AppBar(
         leading: Row(
           children: [
@@ -48,7 +46,7 @@ class _MoreServicesState extends State<MoreServices> {
             children: [
               //Daily Needs label
               Text(
-                ServicesList.alldata[widget.index].title,
+                widget.index.id,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
@@ -59,26 +57,24 @@ class _MoreServicesState extends State<MoreServices> {
                 height: 35,
               ),
 
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: height * .9,
                 child: ListView.builder(
-                  itemCount: ServicesList.alldata[widget.index].category.length,
+                  itemCount: widget.index.subcategory.length,
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return ListElement(
-                      title: ServicesList.alldata[widget.index].category[index]
-                          ['title'],
-                      imageUrl: ServicesList.alldata[widget.index].category[index]
-                          ['image'],
-                    ).onInkTap(() {
+                            title: widget.index.subcategory[index].title,
+                            imageUrl: widget.index.subcategory[index].image)
+                        .onInkTap(() {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SearchVendor(ServicesList.alldata[widget.index].category[index]
-                          ['title'])));
+                              builder: (context) => SearchVendor(
+                                  widget.index.subcategory[index].title)));
                     });
                   },
                 ),

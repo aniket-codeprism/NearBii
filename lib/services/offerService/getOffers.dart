@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:nearbii/screens/offersbyCat/offersByCat.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../Model/notifStorage.dart';
 import '../../constants.dart';
 
 Widget getOfferPlates(PageController controller, BuildContext context) {
@@ -17,7 +17,7 @@ Widget getOfferPlates(PageController controller, BuildContext context) {
           .snapshots()
           .handleError((error) {
         return Container(
-          child: SizedBox(
+          child: const SizedBox(
             width: 30,
             height: 30,
             child: CircularProgressIndicator(),
@@ -41,7 +41,7 @@ Widget getOfferPlates(PageController controller, BuildContext context) {
           );
         }).toList();
 
-        return Container(
+        return SizedBox(
           width: MediaQuery.of(context).size.width,
           height: 200,
           child: Column(
@@ -71,11 +71,11 @@ Widget getOfferPlates(PageController controller, BuildContext context) {
                             ),
                             onDotClicked: (index) => controller.animateToPage(
                               index,
-                              duration: Duration(milliseconds: 500),
+                              duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
                             ),
                           )
-                        : SizedBox(
+                        : const SizedBox(
                             width: 7,
                             height: 7,
                           ),
@@ -90,7 +90,7 @@ Widget getOfferPlates(PageController controller, BuildContext context) {
   } catch (Ex) {
     print("0x1Error To Get User");
     return Container(
-      child: SizedBox(
+      child: const SizedBox(
         width: 30,
         height: 30,
         child: CircularProgressIndicator(),
@@ -108,7 +108,7 @@ Widget offerCard(String title, int off, String bgimg, String cat) {
             //     : null,
             borderRadius: BorderRadius.circular(10),
             gradient: bgimg == ""
-                ? LinearGradient(
+                ? const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
@@ -124,7 +124,7 @@ Widget offerCard(String title, int off, String bgimg, String cat) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 // Text(
                 //   title,
                 //   style: TextStyle(
@@ -183,6 +183,6 @@ Widget offerCard(String title, int off, String bgimg, String cat) {
           imageUrl: bgimg,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
-          errorWidget: (context, url, error) => Icon(Icons.error),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
         );
 }

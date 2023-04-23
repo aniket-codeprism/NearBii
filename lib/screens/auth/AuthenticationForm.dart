@@ -4,14 +4,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/screens/bottom_bar/permissiondenied_screen.dart';
+import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:nearbii/services/setUserMode.dart';
-
-import '../../main.dart';
 
 class AuthenticationForm extends StatefulWidget {
   String Phone;
@@ -35,28 +33,11 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
       "phone": "+91" + mobileController.text,
       "name": nameController.text,
     }, SetOptions(merge: true)).then((value) {
-      _showNotification(nameController.text);
+      setUserMode();
+
+      showNotification(nameController.text);
       _determinePosition();
     });
-  }
-
-  _showNotification(String name) {
-    setUserMode();
-    flutterLocalNotificationsPlugin.show(
-      0,
-      "Welcome To Nearbii",
-      "Thank you $name, for choosing NEARBII ❤",
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channelDescription: channel.description,
-          color: Colors.blue,
-          playSound: true,
-          styleInformation: BigTextStyleInformation(''),
-        ),
-      ),
-    );
   }
 
   Future<void> _determinePosition() async {
@@ -122,7 +103,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
                   child: Column(
                     children: [
                       //name field
-                      Container(
+                      SizedBox(
                         height: 50,
                         child: TextFormField(
                           //controller: mobileController,
@@ -171,7 +152,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
                       if (widget.Phone.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 25),
-                          child: Container(
+                          child: SizedBox(
                             height: 50,
                             child: TextFormField(
                               controller: mobileController,

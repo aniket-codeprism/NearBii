@@ -20,7 +20,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -75,7 +75,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                             color: kSignInContainerColor,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Row(
                           children: [
                             GestureDetector(
@@ -86,13 +86,13 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                 color: kSignInContainerColor,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 15,
                             ),
                             GestureDetector(
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => SpeechScreen(),
+                                  builder: (context) => const SpeechScreen(),
                                 ),
                               ),
                               child: Icon(
@@ -132,7 +132,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                             child: Stack(
                               children: [
                                 Container(
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
                                         'assets/images/categories/restaurants/barley_and_grapes_cafe.png',
@@ -147,7 +147,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                   left: 5,
                                   child: Container(
                                     height: 104,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(5),
@@ -162,7 +162,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                         children: [
                                           Row(
                                             children: [
-                                              Text(
+                                              const Text(
                                                 "Barley and Grapes Cafe",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w700,
@@ -170,7 +170,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                                   color: Colors.black,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Container(
                                                 height: 18,
                                                 width: 36,
@@ -182,7 +182,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
-                                                  children: [
+                                                  children: const [
                                                     Text(
                                                       "4.0",
                                                       style: TextStyle(
@@ -212,7 +212,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                                   color: kHintTextColor,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 "₹300 for one",
                                                 style: TextStyle(
@@ -243,7 +243,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                                   color: kSignInContainerColor,
                                                 ),
                                               ),
-                                              Spacer(),
+                                              const Spacer(),
                                               Text(
                                                 "7 Km",
                                                 style: TextStyle(
@@ -254,7 +254,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 3,
                                           ),
                                           Text(
@@ -278,7 +278,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                                     child: Container(
                                       width: 30,
                                       height: 30,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: Colors.white,
                                       ),
@@ -296,7 +296,7 @@ class _RestaurantsScreenState extends State<RestaurantsScreen> {
                         ),
                       );
                     },
-                    separatorBuilder: (context, index) => SizedBox(
+                    separatorBuilder: (context, index) => const SizedBox(
                       height: 30,
                     ),
                   ),

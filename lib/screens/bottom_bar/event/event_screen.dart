@@ -1,19 +1,24 @@
 // ignore_for_file: unused_local_variable, avoid_print, unused_import
 
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/event/all_events_screen.dart';
-import 'package:nearbii/screens/bottom_bar/event/all_nearby_events/all_nearby_events_screen.dart';
+import 'package:nearbii/screens/bottom_bar/event/all_nearby_events_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:nearbii/screens/bottom_bar/event/eventByDate/eventByDate.dart';
+import 'package:nearbii/screens/bottom_bar/event/eventByDate.dart';
+import 'package:nearbii/screens/bottom_bar/event/viewEvent.dart';
 import 'package:nearbii/services/getEventCat/eventCat.dart';
 import 'package:nearbii/services/getNearEvent/getNearEvent.dart';
 import 'package:nearbii/services/getcity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swipe_refresh/swipe_refresh.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class EventScreen extends StatefulWidget {
@@ -27,13 +32,6 @@ class _EventScreenState extends State<EventScreen> {
   int selectedIndex = 0;
   final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   final events = ['Concert', 'Art', 'Sports', 'Education', 'Food'];
-  final eventIcons = [
-    Image.asset('assets/images/events/concert.png'),
-    Image.asset('assets/images/events/arts.png'),
-    Image.asset('assets/images/events/sports.png'),
-    Image.asset('assets/images/events/education.png'),
-    Image.asset('assets/images/events/food.png'),
-  ];
 
   int dateStartIndex = 0;
   int dateWeekDay = 0;
@@ -42,28 +40,23 @@ class _EventScreenState extends State<EventScreen> {
   List<String> weekDayList = [];
   List<DateTime> weekFullDate = [];
 
-  String userLocation = "";
+  String city = "";
 
-  var controller = new ScrollController();
+  var controller = ScrollController();
   var pos;
   @override
   void initState() {
     super.initState();
     getLocation();
 
-    FirebaseFirestore.instance
-        .collection("User")
-        .doc(FirebaseAuth.instance.currentUser!.uid.substring(0, 20))
-        .set({"eventNotif": false}, SetOptions(merge: true));
     getDates();
   }
 
   Future<void> getLocation() async {
-    userLocation = await getcurrentCityFromLocation();
+    city = await getcurrentCityFromLocation();
     pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-
-    if (this.mounted) setState(() {});
+    getEventsFromCity(city: city, refresh: true);
   }
 
   void getDates() {
@@ -93,166 +86,445 @@ class _EventScreenState extends State<EventScreen> {
 
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          controller: controller,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 34),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //Events label
-                Text(
-                  "Events",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20,
-                    color: kLoadingScreenTextColor,
-                  ),
-                ),
-                //dates
-                SizedBox(
-                  height: 112,
+        body: NotificationListener<ScrollEndNotification>(
+          onNotification: (scrollEnd) {
+            final metrics = scrollEnd.metrics;
+            if (metrics.atEdge) {
+              bool isTop = metrics.pixels == 0;
+              if (isTop) {
+                print('At the top');
+              } else {
+                print("botom");
+                getEventsFromCity(city: city);
+              }
+            }
+            return true;
+          },
+          child: SwipeRefresh.builder(
+              scrollController: controller,
+              itemCount: 1,
+              stateStream: _stream,
+              onRefresh: swipe,
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              itemBuilder: (BuildContext context, int index) {
+                return SingleChildScrollView(
+                  controller: controller,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 8),
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: weekDateList.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedIndex = index;
+                    padding: const EdgeInsets.symmetric(horizontal: 34),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Events label
+                        Text(
+                          "Events",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                            color: kLoadingScreenTextColor,
+                          ),
+                        ),
+                        //dates
+                        SizedBox(
+                          height: 112,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8, bottom: 8),
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: weekDateList.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = index;
 
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) {
-                                return allEventByDate(
-                                    date: weekFullDate[index]);
-                              }));
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: selectedIndex == index
-                                  ? kSignInContainerColor
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 9, horizontal: 7),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    weekDayList[index].toString(),
-                                    style: TextStyle(
-                                      fontWeight: selectedIndex == index
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                      fontSize: 18,
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        return allEventByDate(
+                                            date: weekFullDate[index]);
+                                      }));
+                                    });
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
                                       color: selectedIndex == index
-                                          ? Colors.white
-                                          : kLoadingScreenTextColor,
+                                          ? kSignInContainerColor
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 9, horizontal: 7),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            weekDayList[index].toString(),
+                                            style: TextStyle(
+                                              fontWeight: selectedIndex == index
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              fontSize: 18,
+                                              color: selectedIndex == index
+                                                  ? Colors.white
+                                                  : kLoadingScreenTextColor,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          Text(
+                                            weekDateList[index].toString(),
+                                            style: TextStyle(
+                                              fontWeight: selectedIndex == index
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                              fontSize: 18,
+                                              color: selectedIndex == index
+                                                  ? Colors.white
+                                                  : kLoadingScreenTextColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
+                                );
+                              },
+                              separatorBuilder: (context, index) =>
                                   const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Text(
-                                    weekDateList[index].toString(),
-                                    style: TextStyle(
-                                      fontWeight: selectedIndex == index
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                      fontSize: 18,
-                                      color: selectedIndex == index
-                                          ? Colors.white
-                                          : kLoadingScreenTextColor,
-                                    ),
-                                  ),
-                                ],
+                                width: 10,
                               ),
                             ),
                           ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => const SizedBox(
-                        width: 10,
-                      ),
-                    ),
-                  ),
-                ),
-                //Divider
-                Container(
-                  color: kDrawerDividerColor,
-                  height: 0.5,
-                  width: double.infinity,
-                ),
-                //All Events label
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 19),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Text(
-                      "All Events",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: kLoadingScreenTextColor,
-                      ),
-                    ),
-                  ),
-                ),
-                //all events
-                getEventCatList(context, pos, userLocation),
-                Row(
-                  children: [
-                    Text(
-                      "Events Nearby",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: kLoadingScreenTextColor,
-                      ),
-                    ),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => AllNearbyEventsScreen(),
                         ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            "See All",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                              color: kLoadingScreenTextColor,
+                        //Divider
+                        Container(
+                          color: kDrawerDividerColor,
+                          height: 0.5,
+                          width: double.infinity,
+                        ),
+                        //All Events label
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20, bottom: 19),
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Text(
+                              "All Events",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: kLoadingScreenTextColor,
+                              ),
                             ),
                           ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: kLoadingScreenTextColor,
-                            size: 13,
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                        ),
+                        //all events
+                        getEventCatList(context, pos, city),
+                        Row(
+                          children: [
+                            Text(
+                              "Events Nearby",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: kLoadingScreenTextColor,
+                              ),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const AllNearbyEventsScreen(),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "See All",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: kLoadingScreenTextColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: kLoadingScreenTextColor,
+                                    size: 13,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
 
-                if (pos != null)
-                  getNearEvent(context, userLocation, height, controller, pos),
-              ],
-            ),
-          ).pOnly(top: 20),
+                        if (pos != null)
+                          messageWidgets.isNotEmpty
+                              ? Container(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: ListView.separated(
+                                      controller: controller,
+                                      shrinkWrap: true,
+                                      itemCount: messageWidgets.length + 1,
+                                      itemBuilder: (context, i) {
+                                        if (messageWidgets.length < 5) {
+                                          moreData = false;
+                                        }
+                                        if (i < messageWidgets.length) {
+                                          return messageWidgets[i];
+                                        } else {
+                                          return (moreData
+                                                  ? const CircularProgressIndicator()
+                                                      .centered()
+                                                  : "Opps !! No More Events"
+                                                      .text
+                                                      .make()
+                                                      .centered())
+                                              .py8();
+                                        }
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(
+                                        width: 15,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : //   return Padding(
+                              const Padding(
+                                  padding: EdgeInsets.only(top: 150),
+                                  child: Center(
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: Text("No Nearby Events to show "),
+                                    ),
+                                  ),
+                                )
+                        else
+                          Column(
+                            children: [
+                              const CircularProgressIndicator(),
+                              5.heightBox,
+                              "Please wait,Getting your Location Info"
+                                  .text
+                                  .makeCentered(),
+                            ],
+                          )
+                      ],
+                    ),
+                  ).pOnly(top: 20),
+                );
+              }),
         ),
       ),
     );
+  }
+
+  Widget eventBox(BuildContext context, String title, int startDate,
+      String time, String addr, String img, double dis) {
+    return Container(
+      padding: const EdgeInsets.only(top: 25),
+      child: Material(
+        elevation: 1,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.80,
+          height: 140,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        color: kLoadingScreenTextColor,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 15,
+                          color: kDividerColor,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, right: 6),
+                          child: Text(
+                            DateFormat("dd-MM-yyyy").format(
+                                DateTime.fromMillisecondsSinceEpoch(startDate)),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 12,
+                              color: kDividerColor,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          time,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: kSignInContainerColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 20,
+                          color: kDividerColor,
+                        ),
+                        Text(
+                          addr,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            color: kDividerColor,
+                          ),
+                        ).scrollHorizontal().px(6),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.social_distance,
+                          color: Colors.grey,
+                          size: 15,
+                        ),
+                        (dis.toStringAsPrecision(3) + " Km")
+                            .text
+                            .color(Colors.grey)
+                            .make()
+                            .px4()
+                            .px(6),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(5),
+                    bottomRight: Radius.circular(5),
+                  ),
+                ),
+                child: Image.network(
+                  img,
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  var lastDocument;
+  bool moreData = true;
+  List<Widget> messageWidgets = [];
+  void getEventsFromCity({required String city, bool refresh = false}) async {
+    if (refresh) {
+      messageWidgets = [];
+      lastDocument = null;
+    }
+    final _firestore = FirebaseFirestore.instance;
+    Query<Map<String, dynamic>> snap = _firestore
+        .collection('Events')
+        .where("eventTargetCity", isEqualTo: city)
+        .orderBy("eventStartDate", descending: true);
+    if (lastDocument != null) {
+      snap = snap.startAfterDocument(lastDocument!);
+    }
+    QuerySnapshot<Map<String, dynamic>> snapshot = await snap.limit(5).get();
+    print(snapshot.size);
+    if (snapshot.size > 0) {
+      lastDocument = snapshot.docs.last;
+      for (var ele in snapshot.docs) {
+        moreData = true;
+
+        final data = ele.data as dynamic;
+
+        {
+          log(data()['eventLocation']["lat"].toString(), name: "event");
+          var dis = Geolocator.distanceBetween(
+                pos.latitude,
+                pos.longitude,
+                data()["eventLocation"]["lat"],
+                data()["eventLocation"]["long"],
+              ) /
+              1000;
+          DateTime dt =
+              DateTime.fromMillisecondsSinceEpoch(data()['eventEndData']);
+          print(dt);
+
+          final difference = dt.difference(DateTime.now()).inSeconds;
+          print(difference);
+          if (difference >= 0) {
+            messageWidgets.add(InkWell(
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return ViewEvent(
+                      data: data,
+                      dis: dis,
+                    );
+                  }));
+                },
+                child: eventBox(
+                    context,
+                    data()["name"],
+                    data()["eventStartDate"],
+                    data()["eventTime"],
+                    data()["addr"],
+                    data()["eventImage"][0],
+                    dis)));
+          } else {
+            print("time over");
+            ele.reference.delete();
+          }
+        }
+      }
+    } else {
+      moreData = false;
+    }
+    _controller.sink.add(SwipeRefreshState.hidden);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  final _controller = StreamController<SwipeRefreshState>.broadcast();
+
+  Stream<SwipeRefreshState> get _stream => _controller.stream;
+  swipe() {
+    getEventsFromCity(city: city, refresh: true);
   }
 }

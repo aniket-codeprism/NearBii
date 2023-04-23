@@ -1,24 +1,36 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
 import 'package:nearbii/main.dart';
-import 'package:nearbii/screens/authentication/AuthenticationForm.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
 import 'package:nearbii/screens/bottom_bar/permissiondenied_screen.dart';
 import 'package:nearbii/services/setUserMode.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:velocity_x/velocity_x.dart';
+
+import 'auth_services.dart';
 
 class OTP extends StatefulWidget {
   final String phone;
   final String name;
   final String password;
-  const OTP({required this.phone, this.name = 'Guest', this.password = 'fd'});
+  final ReferalCheck exists;
+  final String referal;
+  const OTP(
+      {super.key,
+      required this.phone,
+      this.name = 'Guest',
+      this.password = 'fd',
+      required this.referal,
+      required this.exists});
 
   @override
   _OTPState createState() => _OTPState();
@@ -35,7 +47,7 @@ class _OTPState extends State<OTP> {
       fontWeight: FontWeight.w400,
     ),
     decoration: BoxDecoration(
-      border: Border.all(color: Color.fromRGBO(234, 239, 243, 1)),
+      border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
       borderRadius: BorderRadius.circular(20),
     ),
   );
@@ -48,88 +60,20 @@ class _OTPState extends State<OTP> {
     }
   }
 
-  Future<void> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return PermissionDenied();
-      })));
-      await Geolocator.openLocationSettings();
-      // return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return PermissionDenied();
-      })));
-      return;
-    }
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: ((context) {
-      return MasterPage(
-        currentIndex: 0,
-      );
-    })), (route) => false);
-  }
-
   late String _verificationCode;
   String smsCode = "123456";
   _verifyPhone() async {
+    log(widget.exists.toString(), name: "referal");
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: '+91${widget.phone}',
         verificationCompleted: (PhoneAuthCredential credential) async {
+          log("auto");
           await FirebaseAuth.instance
               .signInWithCredential(credential)
               .then((value) async {
             if (value.user != null) {
-              smsCode = credential.smsCode!;
-
-              Map<String, dynamic> employeeDetails = {
-                "phone": "+91${widget.phone}",
-                "token": token,
-                "name": widget.name,
-                "password": widget.password,
-                "type": "User",
-                "offerNotif": false,
-                "eventNotif": false,
-                "newNotif": false,
-                "userId": value.user!.uid.substring(0, 20),
-                "wallet": 0,
-                "image":
-                    "https://firebasestorage.googleapis.com/v0/b/neabiiapp.appspot.com/o/360_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg?alt=media&token=27052833-5800-4721-9429-d21c4a3eac1b",
-              };
-              FirebaseFirestore.instance
-                  .collection("User")
-                  .doc(value.user!.uid.substring(0, 20))
-                  .get()
-                  .then((values) async {
-                var data = values.data();
-                print(data);
-                if (data == null) {
-                  FirebaseFirestore.instance
-                      .collection("User")
-                      .doc(value.user!.uid.substring(0, 20))
-                      .set(employeeDetails);
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text('Done')));
-                  value.user!.updateDisplayName(widget.name);
-                  data = employeeDetails;
-                }
-
-                if (data != null) {
-                  data["type"] == "User" ? setUserMode() : setVendorMode();
-                  _determinePosition();
-                } else {
-                  setUserMode();
-                  _determinePosition();
-                }
-              });
-            }
+              registerUser(value.user!);
+            } else {}
           });
         },
         verificationFailed: (FirebaseAuthException e) {
@@ -145,7 +89,7 @@ class _OTPState extends State<OTP> {
         codeAutoRetrievalTimeout: (String verificationID) {
           _verificationCode = verificationID;
         },
-        timeout: const Duration(seconds: 120));
+        timeout: const Duration(seconds: 30));
   }
 
   bool isLoading = false;
@@ -162,7 +106,7 @@ class _OTPState extends State<OTP> {
           channelDescription: channel.description,
           color: Colors.blue,
           playSound: true,
-          styleInformation: BigTextStyleInformation(''),
+          styleInformation: const BigTextStyleInformation(''),
         ),
       ),
     );
@@ -200,7 +144,7 @@ class _OTPState extends State<OTP> {
         ),
         title: const Text(
           'Verify phone',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 19,
             color: Colors.black,
@@ -254,7 +198,7 @@ class _OTPState extends State<OTP> {
                       style: const TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 13,
-                        color: const Color(0xFF676767),
+                        color: Color(0xFF676767),
                       ),
                       children: [
                         TextSpan(
@@ -283,41 +227,7 @@ class _OTPState extends State<OTP> {
                               smsCode: smsCode))
                           .then((value) async {
                         if (value.user != null) {
-                          Map<String, dynamic> employeeDetails = {
-                            "phone": "+91${widget.phone}",
-                            "token": token,
-                            "name": widget.name,
-                            "password": widget.password,
-                            "type": "User",
-                            "userId": value.user!.uid.substring(0, 20),
-                            "wallet": 0,
-                            "image":
-                                "https://firebasestorage.googleapis.com/v0/b/neabiiapp.appspot.com/o/360_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg?alt=media&token=27052833-5800-4721-9429-d21c4a3eac1b",
-                          };
-                          FirebaseFirestore.instance
-                              .collection("User")
-                              .where("phone", isEqualTo: "+91${widget.phone}")
-                              .get()
-                              .then((values) {
-                            if (values.docs.isEmpty) {
-                              FirebaseFirestore.instance
-                                  .collection("User")
-                                  .doc(value.user!.uid.substring(0, 20))
-                                  .set(employeeDetails)
-                                  .then((value) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-
-                                sp.setBool("user", true);
-                                sp.setString("type", "User");
-                                _showNotification(widget.name);
-                                _determinePosition();
-                              });
-                            } else {
-                              _determinePosition();
-                            }
-                          });
+                          registerUser(value.user!);
                         }
                       });
                     } catch (e) {
@@ -350,5 +260,80 @@ class _OTPState extends State<OTP> {
         ),
       ),
     );
+  }
+
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
+        return const PermissionDenied();
+      })));
+      await Geolocator.openLocationSettings();
+      // return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
+        return const PermissionDenied();
+      })));
+      return;
+    }
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: ((context) {
+      return const MasterPage(
+        currentIndex: 0,
+      );
+    })), (route) => false);
+  }
+
+  void registerUser(User user) {
+    Map<String, dynamic> employeeDetails = {
+      "phone": "+91${widget.phone}",
+      "token": token,
+      "name": widget.name,
+      "password": widget.password,
+      "type": "User",
+      "offerNotif": false,
+      "eventNotif": false,
+      "newNotif": false,
+      "userId": user.uid.substring(0, 20),
+      "wallet": 0,
+      "image":
+          "https://firebasestorage.googleapis.com/v0/b/neabiiapp.appspot.com/o/360_F_64678017_zUpiZFjj04cnLri7oADnyMH0XBYyQghG.jpg?alt=media&token=27052833-5800-4721-9429-d21c4a3eac1b",
+      "referalcode": widget.referal
+    };
+    FirebaseFirestore.instance
+        .collection("User")
+        .doc(user.uid.substring(0, 20))
+        .get()
+        .then((values) async {
+      var data = values.data();
+      if (data == null) {
+        log("null", name: "checkuser");
+        FirebaseFirestore.instance
+            .collection("User")
+            .doc(user.uid.substring(0, 20))
+            .set(employeeDetails);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Done')));
+        user.updateDisplayName(widget.name);
+        data = employeeDetails;
+        if (widget.exists.uid.isNotEmptyAndNotNull) {
+          saveReferalWallet(widget.referal, user.displayName,
+              user.uid.substring(0, 20), widget.exists, "otp");
+        }
+        setUserMode();
+        _determinePosition();
+      } else {
+        log("notnull", name: "checkuser");
+        data["type"] == "User" ? setUserMode() : setVendorMode();
+        _determinePosition();
+      }
+    });
   }
 }

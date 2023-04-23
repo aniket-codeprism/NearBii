@@ -1,17 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class EventPayment extends StatefulWidget {
-  EventPayment({Key? key}) : super(key: key);
+  const EventPayment({Key? key}) : super(key: key);
 
   @override
   State<EventPayment> createState() => _EventPaymentState();
 }
 
 class _EventPaymentState extends State<EventPayment> {
-  late Razorpay _razorpay = Razorpay();
+  late final Razorpay _razorpay = Razorpay();
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     updateTransatcion(
@@ -53,10 +54,13 @@ class _EventPaymentState extends State<EventPayment> {
   }
 
   void openCheckout() async {
+    var key = kDebugMode || kProfileMode
+        ? 'rzp_test_q0FLy0FYnKC94V'
+        : 'rzp_live_EaquIenmibGbWl';
     var options = {
       //TODO:test key when deployment then change key
       // 'key': 'rzp_test_q0FLy0FYnKC94V',
-      'key': 'rzp_live_EaquIenmibGbWl',
+      'key': key,
       'amount': 49900.0,
       'name': 'Acme Corp.',
       'description': 'Fine T-Shirt',

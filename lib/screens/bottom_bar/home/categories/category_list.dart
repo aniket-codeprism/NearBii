@@ -110,7 +110,9 @@ class _CategoryItemState extends State<CategoryItem> {
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
                                             image: NetworkImage(
-                                              item.businessImage.isEmptyOrNull?Notifcheck.defCover:item.businessImage,
+                                              item.businessImage.isEmptyOrNull
+                                                  ? Notifcheck.defCover
+                                                  : item.businessImage,
                                             ),
                                             fit: BoxFit.fill,
                                           ),
@@ -324,11 +326,12 @@ class _CategoryItemState extends State<CategoryItem> {
         }
       }
     }
-    if (this.mounted)
+    if (mounted) {
       setState(() {
         x = 1;
         cat = catAll;
       });
+    }
   }
 
   search(String val) {

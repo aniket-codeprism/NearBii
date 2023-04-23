@@ -4,12 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/annual_plan/GoogleMapScreen.dart';
 import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter/services.dart';
-import 'package:nearbii/services/zommableimage.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -41,7 +36,7 @@ class _ViewEventState extends State<ViewEvent> {
             child: Column(children: [
               Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.only(left: 20),
                 child: Text(
                   "Event Info",
                   style: TextStyle(
@@ -51,7 +46,7 @@ class _ViewEventState extends State<ViewEvent> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               Container(
@@ -83,13 +78,14 @@ class _ViewEventState extends State<ViewEvent> {
                             ),
                           ).onTap(() {
                             showGeneralDialog(
-                                barrierColor: Color.fromARGB(103, 26, 26, 26),
+                                barrierColor:
+                                    const Color.fromARGB(103, 26, 26, 26),
                                 context: context,
                                 pageBuilder: (BuildContext context,
                                     Animation<double> animation,
                                     Animation<double> secondaryAnimation) {
                                   return Center(
-                                    child: Container(
+                                    child: SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       height:
                                           MediaQuery.of(context).size.height,
@@ -100,12 +96,12 @@ class _ViewEventState extends State<ViewEvent> {
                                               .height,
                                           scrollDirection: Axis.horizontal,
                                           scrollPhysics:
-                                              BouncingScrollPhysics(),
+                                              const BouncingScrollPhysics(),
                                           enableInfiniteScroll: false,
                                           autoPlay: false,
                                           reverse: false,
                                           pauseAutoPlayOnTouch:
-                                              Duration(seconds: 3),
+                                              const Duration(seconds: 3),
                                           isFastScrollingEnabled: false,
                                           onPageChanged: (value) {
                                             print(value);
@@ -123,7 +119,7 @@ class _ViewEventState extends State<ViewEvent> {
                     : Image.network(
                         "https://thumbs.dreamstime.com/b/event-planning-working-desk-notebook-events-word-computer-pencil-notepad-clock-concept-98612010.jpg"),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
@@ -137,58 +133,61 @@ class _ViewEventState extends State<ViewEvent> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
                 alignment: Alignment.centerLeft,
                 child: Row(children: [
-                  Icon(
+                  const Icon(
                     Icons.calendar_month,
                     color: Color.fromARGB(255, 211, 211, 211),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Text(
                     DateFormat("dd-MM-yyyy").format(
                         DateTime.fromMillisecondsSinceEpoch(
                             widget.data()["eventStartDate"])),
-                    style: TextStyle(color: Color.fromARGB(255, 211, 211, 211)),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 211, 211, 211)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Text(
                     widget.data()["eventTime"],
-                    style: TextStyle(color: Color.fromARGB(255, 29, 202, 224)),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 29, 202, 224)),
                   )
                 ]),
               ),
               Container(
                   alignment: Alignment.centerLeft,
                   width: MediaQuery.of(context).size.width * .6,
-                  child: Text('to',
+                  child: const Text('to',
                       style: TextStyle(
                           color: Color.fromARGB(255, 211, 211, 211)))),
               //end date
               Container(
                 alignment: Alignment.centerLeft,
                 child: Row(children: [
-                  Icon(
+                  const Icon(
                     Icons.calendar_month,
                     color: Color.fromARGB(255, 211, 211, 211),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Text(
                     DateFormat("dd-MM-yyyy").format(
                         DateTime.fromMillisecondsSinceEpoch(
                             widget.data()["eventEndData"])),
-                    style: TextStyle(color: Color.fromARGB(255, 211, 211, 211)),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 211, 211, 211)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                 ]),
@@ -196,16 +195,17 @@ class _ViewEventState extends State<ViewEvent> {
               Container(
                 alignment: Alignment.centerLeft,
                 child: Row(children: [
-                  Icon(
+                  const Icon(
                     Icons.location_on_outlined,
                     color: Color.fromARGB(255, 211, 211, 211),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Text(
                     widget.data()["addr"],
-                    style: TextStyle(color: Color.fromARGB(255, 211, 211, 211)),
+                    style: const TextStyle(
+                        color: Color.fromARGB(255, 211, 211, 211)),
                   ),
                   (widget.dis.toDoubleStringAsFixed(digit: 2) + " Km")
                       .text
@@ -244,11 +244,11 @@ class _ViewEventState extends State<ViewEvent> {
                 child: Container(
                   alignment: Alignment.centerLeft,
                   child: Row(children: [
-                    Icon(
+                    const Icon(
                       Icons.call_outlined,
                       color: Color.fromARGB(255, 211, 211, 211),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     InkWell(
@@ -263,14 +263,14 @@ class _ViewEventState extends State<ViewEvent> {
                       },
                       child: Text(
                         widget.data()["mobo"],
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Color.fromARGB(255, 211, 211, 211)),
                       ),
                     ),
                   ]),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
@@ -284,7 +284,7 @@ class _ViewEventState extends State<ViewEvent> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(
@@ -297,7 +297,7 @@ class _ViewEventState extends State<ViewEvent> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Container(

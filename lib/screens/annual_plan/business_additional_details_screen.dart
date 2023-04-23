@@ -49,7 +49,7 @@ class _BusinessAdditionalDetailsScreenState
   @override
   void initState() {
     businessDetailData = widget.businessDetailData;
-    widget.businessDetailData["refCode"] = "12345";
+    widget.businessDetailData["coupan"] = "12345";
     // TODO: implement initState
     log(businessDetailData["businessCat"].toString());
     super.initState();
@@ -398,13 +398,15 @@ class _BusinessAdditionalDetailsScreenState
                                   EdgeInsets.only(left: 10, right: 20),
                               label: (widget.businessDetailData["closeTime"] !=
                                           null
-                                      ? DateTime(widget.businessDetailData[
-                                                  "closeTime"])
+                                      ? DateTime.fromMillisecondsSinceEpoch(
+                                                  widget.businessDetailData[
+                                                      "closeTime"])
                                               .hour
                                               .toString() +
                                           " : " +
-                                          DateTime(widget.businessDetailData[
-                                                  "closeTime"])
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                                  widget.businessDetailData[
+                                                      "closeTime"])
                                               .minute
                                               .toString()
                                       : "Close Time")
@@ -416,9 +418,8 @@ class _BusinessAdditionalDetailsScreenState
                                   borderRadius: BorderRadius.zero),
                             ),
                             onTap: () {
-                              DatePicker.showTimePicker(context,
-                                  showTitleActions: true,
-                                  showSecondsColumn: false, onChanged: (date) {
+                              DatePicker.showTime12hPicker(context,
+                                  showTitleActions: true, onChanged: (date) {
                                 print('change $date');
                               }, onConfirm: (date) {
                                 int h =
@@ -643,12 +644,12 @@ class _BusinessAdditionalDetailsScreenState
                       enabled: !widget.edit,
                       onChanged: (text) {
                         setState(() {
-                          widget.businessDetailData["refCode"] = text;
+                          widget.businessDetailData["coupan"] = text;
                         });
                       },
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: 'Reference Code/Name (Optional)',
+                        hintText: 'Coupon Code (Optional)',
                         hintStyle: TextStyle(
                           color: kAdvertiseContainerTextColor,
                           fontSize: 18,
@@ -744,18 +745,6 @@ class _BusinessAdditionalDetailsScreenState
               //make payment button
               GestureDetector(
                 onTap: () async {
-                  widget.businessDetailData["refCode"].toString().isNotEmpty
-                      ? await FirebaseFirestore.instance
-                          .collection('EmpCode')
-                          .where("code",
-                              isEqualTo: widget.businessDetailData["refCode"])
-                          .get()
-                          .then((value) async {
-                          if (value.docs.isEmpty) {
-                            print("No data");
-                          }
-                        })
-                      : null;
                   {
                     if (widget.businessDetailData["businessCat"]
                         .toString()
@@ -800,8 +789,9 @@ class _BusinessAdditionalDetailsScreenState
                           msg: "Please Select Business bussinesDesc");
                       return;
                     }
-                    if (widget.businessDetailData["openTime"].toString() ==
-                        null) {
+                    if (widget.businessDetailData["openTime"]
+                        .toString()
+                        .isEmptyOrNull) {
                       Fluttertoast.showToast(
                           msg: "Please Select Business openTime");
                       return;

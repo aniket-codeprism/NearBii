@@ -1,19 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/annual_plan/GoogleMapScreen.dart';
-import 'package:nearbii/screens/bottom_bar/home/drawer/advertise/advertise_screen.dart';
-import 'package:nearbii/screens/bottom_bar/offers_screen.dart';
 import 'package:nearbii/screens/plans/offerPlan/offerPlan.dart';
 import 'package:nearbii/services/getcity.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -43,7 +36,9 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
   String city = "";
   getCity() async {
     city = await getcurrentCityFromLocation();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   TextEditingController title = TextEditingController();
@@ -81,9 +76,9 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
     offerData["subTitle"] = subTitle.text;
     offerData["offerImg"] = offImg;
     offerData["city"] = city;
-    offerData["off"] = 0;
+    offerData["off"] = double.parse(title.text);
     offerData["uid"] = uid;
-    offerData["date"] = DateTime.now();
+    offerData["date"] = DateTime.now().millisecondsSinceEpoch;
     offerData["location"] = Notifcheck.currentVendor!.businessLocation.toMap();
     offerData["category"] = Notifcheck.currentVendor!.businessCat;
 
@@ -109,7 +104,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -138,7 +133,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 34,
               ),
             ],
@@ -161,12 +156,12 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                             ? Notifcheck.defCover
                             : Notifcheck.currentVendor!.businessImage),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 9,
                   ),
                   Text(
                     Notifcheck.currentVendor!.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 16,
                       color: Colors.black,
@@ -175,7 +170,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                 ],
               ),
 
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
 
@@ -185,7 +180,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
               //   color: kWalletLightTextColor,
               // ),
 
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.80,
                 // margin: EdgeInsets.only(
                 //   top: 20,
@@ -256,8 +251,8 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.80,
                   height: MediaQuery.of(context).size.height * 0.50,
-                  margin: EdgeInsets.only(top: 20),
-                  padding: EdgeInsets.all(9),
+                  margin: const EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
                     image: offImg != ""
                         ? DecorationImage(
@@ -266,7 +261,7 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       width: 1,
-                      color: Color.fromARGB(173, 125, 209, 248),
+                      color: const Color.fromARGB(173, 125, 209, 248),
                     ),
                   ),
                   child: Column(
@@ -280,28 +275,28 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                         width: 110,
                         height: 110,
                         child: offImg == ""
-                            ? Icon(Icons.add_outlined,
+                            ? const Icon(Icons.add_outlined,
                                 size: 60,
                                 color: Color.fromRGBO(196, 196, 196, 1))
-                            : SizedBox(),
+                            : const SizedBox(),
                       ),
                       offImg == ""
                           ? Container(
-                              margin: EdgeInsets.only(left: 10),
-                              child: Text(
+                              margin: const EdgeInsets.only(left: 10),
+                              child: const Text(
                                 "Add Photo",
                                 style: TextStyle(
                                     color: Color.fromARGB(255, 203, 207, 207),
                                     fontSize: 18),
                               ))
-                          : SizedBox()
+                          : const SizedBox()
                     ],
                   ),
                 ),
               ),
               Container(
                 width: MediaQuery.of(context).size.width * 0.80,
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   top: 20,
                 ),
                 child: TextField(
@@ -366,14 +361,14 @@ class _PostOfferScreenState extends State<PostOfferScreen> {
                 },
                 child: Container(
                     width: MediaQuery.of(context).size.width * 0.80,
-                    margin: EdgeInsets.only(top: 20),
-                    padding: EdgeInsets.all(20),
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Color.fromRGBO(81, 182, 200, 1),
+                      color: const Color.fromRGBO(81, 182, 200, 1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     alignment: Alignment.center,
-                    child: Text(
+                    child: const Text(
                       "Post Offer ",
                       style: TextStyle(color: Colors.white, fontSize: 20),
                     )),

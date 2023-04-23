@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:nearbii/Model/notifStorage.dart';
 import 'package:nearbii/constants.dart';
 
 class AboutUsScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       appBar: AppBar(
         leading: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 35,
             ),
             GestureDetector(
@@ -62,7 +63,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                                       DocumentSnapshot<Map<String, dynamic>>>
                                   snapshot) {
                             if (!snapshot.hasData) {
-                              return CircularProgressIndicator();
+                              return const CircularProgressIndicator();
                             }
                             var data = snapshot.data!.data();
                             return Html(data: data!["about"]);

@@ -1,11 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nearbii/screens/bottom_bar/master_screen.dart';
-
-import '../event/event_screen.dart';
-import '../home/home_screen.dart';
-import '../offers_screen.dart';
-import '../profile/profile_screen.dart';
-import '../scan_screen.dart';
 
 addBottomBar(BuildContext context) {
   var selectedIndex = 0;
@@ -38,12 +31,12 @@ addBottomBar(BuildContext context) {
     onTap: (index) {
       selectedIndex = index;
 
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: ((context) {
-        return MasterPage(
-          currentIndex: 0,
-        );
-      })), (route) => false);
+      // Navigator.of(context).pushAndRemoveUntil(
+      //     MaterialPageRoute(builder: ((context) {
+      //   return const MasterPage(
+      //     currentIndex: 0,
+      //   );
+      // })), (route) => false);
     },
   );
 }

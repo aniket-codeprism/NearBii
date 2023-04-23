@@ -6,21 +6,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nearbii/constants.dart';
-import 'package:nearbii/screens/bottom_bar/bottomBar/bottomBar.dart';
 import 'package:nearbii/screens/bottom_bar/master_screen.dart';
-import 'package:nearbii/screens/createEvent/paymentDone/paymentDone.dart';
-import 'package:nearbii/services/savePaymentRecipt/savePaymentRecipt.dart';
 import 'package:nearbii/services/sendNotification/notificatonByCity/cityNotiication.dart';
 import 'package:nearbii/services/transactionupdate/transactionUpdate.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart';
 
 class offerPlan extends StatefulWidget {
   final Map<String, dynamic> eventInfo;
   final String path;
-  offerPlan({required this.eventInfo, required this.path, Key? key})
+  const offerPlan({required this.eventInfo, required this.path, Key? key})
       : super(key: key);
 
   @override
@@ -29,8 +23,6 @@ class offerPlan extends StatefulWidget {
 
 class _offerPlanState extends State<offerPlan> {
   late FirebaseFirestore db;
-
-  late FirebaseStorage storage;
 
   @override
   void initState() {
@@ -64,7 +56,7 @@ class _offerPlanState extends State<offerPlan> {
   final uid = FirebaseAuth.instance.currentUser!.uid.substring(0, 20);
 
   void buyPlane(BuildContext context) async {
-    loadBalance();
+    await loadBalance();
 
     if (balance <= 50) {
       Fluttertoast.showToast(
@@ -91,6 +83,7 @@ class _offerPlanState extends State<offerPlan> {
             .child('vndor/offers/${fileName.absolute.toString()}');
         UploadTask uploadTask = reference.putFile(File(widget.path));
         TaskSnapshot snapshot = await uploadTask;
+
         var imageUrl = await snapshot.ref.getDownloadURL();
 
         widget.eventInfo["offerImg"] = imageUrl;
@@ -100,37 +93,22 @@ class _offerPlanState extends State<offerPlan> {
             .add(widget.eventInfo)
             .then((value) async {
           String myid = value.id;
-          await FirebaseFirestore.instance
-              .collection('vendor')
-              .doc(uid)
-              .get()
-              .then((value) {
-            var time = DateTime.now().millisecondsSinceEpoch;
-            name = value.get("businessName");
-            FirebaseFirestore.instance.collection("notif").doc(myid).set({
-              "id": myid,
-              "isOffer": true,
-              "uid": widget.eventInfo["uid"],
-              "location": value.get("businessLocation"),
-              "name": value.get("businessName"),
-              "image": value.get("businessImage"),
-            });
-          });
           Fluttertoast.showToast(msg: "OfferPosted");
 
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: ((context) {
-            return MasterPage(
+            return const MasterPage(
               currentIndex: 0,
             );
           })), (route) => false);
         }).catchError((onError) async {
           Fluttertoast.showToast(
-              msg: "Something went Wrong we will Added amount again");
+              msg: "cant take you to home page due to some error");
 
           Map<String, dynamic> wallet = {};
 
           wallet["wallet"] = balance;
+          wallet["error"] = onError.toString();
 
           await FirebaseFirestore.instance
               .collection('User')
@@ -161,7 +139,7 @@ class _offerPlanState extends State<offerPlan> {
           appBar: AppBar(
             leading: Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 35,
                 ),
                 GestureDetector(
@@ -222,7 +200,7 @@ class _offerPlanState extends State<offerPlan> {
                                     color: kLoadingScreenTextColor,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Text(
@@ -263,10 +241,10 @@ class _offerPlanState extends State<offerPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Publish your poster/post on the offer page. ",
                                         style: TextStyle(
@@ -288,12 +266,12 @@ class _offerPlanState extends State<offerPlan> {
                                         color: kSignUpContainerColor,
                                         size: 20,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Flexible(
+                                      const Flexible(
                                         child: Text(
-                                          "Notifications to the user within 3kms around you. ",
+                                          "Notifications to the users around you. ",
                                           style: TextStyle(
                                             fontWeight: FontWeight.w400,
                                             fontSize: 16,
@@ -311,10 +289,10 @@ class _offerPlanState extends State<offerPlan> {
                                       color: kSignUpContainerColor,
                                       size: 20,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 20,
                                     ),
-                                    Flexible(
+                                    const Flexible(
                                       child: Text(
                                         "Redeem your Nearbii points for publishing offer or buy more via Nearbii wallet. ",
                                         style: TextStyle(
@@ -325,32 +303,6 @@ class _offerPlanState extends State<offerPlan> {
                                       ),
                                     ),
                                   ],
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: kSignUpContainerColor,
-                                        size: 20,
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Flexible(
-                                        child: Text(
-                                          "Valid for 1 day",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ],
                             ),
@@ -365,14 +317,14 @@ class _offerPlanState extends State<offerPlan> {
                     },
                     child: Container(
                         width: MediaQuery.of(context).size.width * 0.80,
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(20),
+                        margin: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Color.fromRGBO(81, 182, 200, 1),
+                          color: const Color.fromRGBO(81, 182, 200, 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Make Payment",
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         )),

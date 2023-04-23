@@ -1,7 +1,4 @@
-import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
@@ -23,7 +20,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   Map<String, dynamic> latlong = {};
 
   late GoogleMapController myController;
-  LatLng _center = LatLng(20.5937, 78.9629);
+  LatLng _center = const LatLng(20.5937, 78.9629);
   @override
   void initState() {
     // TODO: implement initState
@@ -47,7 +44,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
           children: [
             GoogleMap(
               buildingsEnabled: true,
-              markers: {},
+              markers: const {},
               myLocationEnabled: true,
               zoomControlsEnabled: false,
               onCameraMove: (CameraPosition cameraPositiona) {
@@ -73,7 +70,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 zoom: 4.0,
               ),
             ),
-            Center(
+            const Center(
               //picker image on google map
               child: Icon(Icons.center_focus_strong_outlined),
             ),
@@ -101,13 +98,13 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                         child: Container(
                           width: double.infinity,
                           height: 60,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.blue,
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(16),
                                 topRight: Radius.circular(16)),
                           ),
-                          child: Center(
+                          child: const Center(
                               child: Text(
                             "Select Location",
                             style: TextStyle(color: Colors.white),
